@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { TreeNode, TabEntry } from "@/types/content";
 import ResizeHandle from "@/components/layout/ResizeHandle";
+import ContentPanel from "@/components/content/ContentPanel";
 
 type AppShellProps = {
   treeData: TreeNode[];
@@ -137,8 +138,16 @@ export default function AppShell({
 
       {/* Panel 2 */}
       <div className="flex-1 min-w-[400px] overflow-hidden flex flex-col">
-        {/* ContentPanel goes here — placeholder until S2-10 */}
-        {children}
+        <ContentPanel
+          openTabs={openTabs}
+          activeSlug={activeSlug}
+          onTabClick={(slug) => router.push("/" + slug)}
+          onTabClose={handleTabClose}
+          onNewTab={() => {}} // TODO: wire to SearchModal in Sprint 3
+          onTogglePanel3={() => setPanel3Visible((v) => !v)}
+        >
+          {children}
+        </ContentPanel>
       </div>
 
       <ResizeHandle onResize={setPanel3Width} />
