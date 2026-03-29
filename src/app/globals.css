@@ -100,6 +100,7 @@
      the correct theme colors when [data-theme] is set.
      The [data-theme] selectors in themes.css have higher specificity and
      override the :root values defined above whenever a theme is active. */
+  /* Non-circular shadcn variable remaps — these bridge shadcn component tokens to project theme variables */
   :root {
     --input: var(--border);
     --ring: var(--accent);
