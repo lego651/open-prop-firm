@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { TreeNode, TabEntry } from "@/types/content";
+import ResizeHandle from "@/components/layout/ResizeHandle";
 
 type AppShellProps = {
   treeData: TreeNode[];
@@ -140,8 +141,7 @@ export default function AppShell({
         {children}
       </div>
 
-      {/* ResizeHandle — placeholder 4px div until S2-5 */}
-      <div className="w-1 shrink-0 cursor-col-resize bg-transparent hover:bg-[var(--accent)]/40 transition-colors" />
+      <ResizeHandle onResize={setPanel3Width} />
 
       {/* Panel 3 */}
       {panel3Visible && (
