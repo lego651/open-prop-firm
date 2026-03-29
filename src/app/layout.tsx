@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getContentTree } from "@/lib/content/getContentTree";
+import AppShell from "@/components/layout/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,10 +25,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { treeData, validSlugs } = await getContentTree();
-  // AppShell will replace this placeholder div in S2-4.
-  // treeData and validSlugs are passed as props once AppShell exists.
-  void treeData;
-  void validSlugs;
 
   return (
     <html
@@ -43,8 +40,10 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
-        <div className="flex h-screen">{children}</div>
+      <body>
+        <AppShell treeData={treeData} validSlugs={validSlugs}>
+          {children}
+        </AppShell>
         {/* Analytics: Google Analytics — to be added in Sprint 6 before launch */}
       </body>
     </html>
