@@ -271,6 +271,6 @@ Sprint 1 is done when ALL of the following are true:
 - [ ] `LICENSE` exists at repo root (AGPL-3.0) and at `/data/LICENSE` (CC-BY-NC-SA-4.0)
 - [ ] `.env.example` documents every required env var
 - [ ] GitHub Actions `bot.yml` exists and passes `workflow_dispatch` manually
-- [ ] Vercel Analytics dashboard shows at least one real page view
+- [x] ~~Vercel Analytics dashboard shows at least one real page view~~ — **SUPERSEDED:** Using Google Analytics instead. GA to be added in Sprint 6 before launch. `@vercel/analytics` and `@vercel/speed-insights` removed.
 - [ ] Three themes (light/dark/blue) render correctly with no flash on load — verified in the Vercel preview deployment
 - [ ] Google OAuth credentials created in Google Cloud Console and enabled in Supabase dashboard
