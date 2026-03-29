@@ -10,9 +10,9 @@
 
 ---
 
-## S1-1: Initialize Next.js 15 app with TypeScript, shadcn/ui, and Tailwind v4
+## S1-1: Initialize Next.js 16 app with TypeScript, shadcn/ui, and Tailwind v4
 
-**Goal:** Bootstrap the complete project foundation — Next.js 15, strict TypeScript, shadcn/ui, Tailwind v4 CSS-based config, Prettier — in a single buildable and lint-clean state.
+**Goal:** Bootstrap the complete project foundation — Next.js 16, strict TypeScript, shadcn/ui, Tailwind v4 CSS-based config, Prettier — in a single buildable and lint-clean state.
 
 **Acceptance Criteria:**
 - Run `npx create-next-app@latest openpropfirm --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"` — Next.js version in `package.json` must be `15.x`
@@ -95,7 +95,7 @@
 - `/data/LICENSE` contains the full CC-BY-NC-SA-4.0 license text (created in S1-2; this ticket verifies it and adds the README references)
 - `README.md` exists at repo root with:
   - One-paragraph project description matching the origin story from `docs/project-brief.md`
-  - Tech stack list: Next.js 15, TypeScript, shadcn/ui, Tailwind CSS v4, Supabase Auth, Vercel Analytics, GitHub Actions
+  - Tech stack list: Next.js 16, TypeScript, shadcn/ui, Tailwind CSS v4, Supabase Auth, Vercel Analytics, GitHub Actions
   - Dual-license summary: "`/src` code is AGPL-3.0. `/data` content is CC-BY-NC-SA-4.0. Commercial use of either requires a separate license — contact `commercial@openpropfirm.com`"
   - "How to run locally" section: clone → `npm install` → copy `.env.example` to `.env.local` → `npm run dev`
   - License badges (shields.io format) for AGPL-3.0 and CC-BY-NC-SA-4.0

@@ -3,8 +3,7 @@
    ───────────────────────────────────────── */
 
 :root {
-  --radius: 6px;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-geist-sans);
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }
 

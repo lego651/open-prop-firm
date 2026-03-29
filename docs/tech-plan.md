@@ -37,11 +37,11 @@
 
 Before anything gets built, these issues need to be called out explicitly. Some are blockers if unaddressed.
 
-### 1.1 "Next.js 14+" vs "Next.js 15" — Pick One and Mean It
+### 1.1 "Next.js 14+" vs "Next.js 16" — Pick One and Mean It
 
-The project-brief.md says "Next.js + TypeScript." The v1-scope.md says "Next.js 15 + TypeScript." The UI guide targets "Next.js 15." The key technical constraints in this prompt say "Next.js 14+ App Router."
+The project-brief.md says "Next.js + TypeScript." The v1-scope.md says "Next.js 16 + TypeScript." The UI guide targets "Next.js 16." The key technical constraints in this prompt say "Next.js 14+ App Router."
 
-**Decision: Next.js 15 with the App Router.** This matters because Next.js 15 made `cookies()` and `headers()` async, and the `params` prop in page components is now a Promise. The boilerplate generation command and all route/layout code must be written against Next.js 15 semantics. Do not mix in any Page Router patterns.
+**Decision: Next.js 16 with the App Router.** This matters because Next.js 16 made `cookies()` and `headers()` async, and the `params` prop in page components is now a Promise. The boilerplate generation command and all route/layout code must be written against Next.js 16 semantics. Do not mix in any Page Router patterns.
 
 ### 1.2 The Markdown Pipeline as Described Has a Hidden Problem
 
@@ -125,7 +125,7 @@ The v1-scope.md describes the file tree rendering but never specifies how the tr
 │                         GitHub Repository                                │
 │                                                                          │
 │  /src                           /data                                    │
-│  Next.js 15 App                 Markdown content (AGPL-3.0)  (CC-BY-NC) │
+│  Next.js 16 App                 Markdown content (AGPL-3.0)  (CC-BY-NC) │
 │                                                                          │
 │  /scripts                       .github/workflows/                       │
 │  build-search-index.ts          bot.yml (daily scrape + PR)              │
@@ -245,7 +245,7 @@ The v1-scope.md describes the file tree rendering but never specifies how the tr
 
 ### 3.1 Framework and Deployment
 
-**Decision: Next.js 15.x, App Router, TypeScript strict mode, deployed on Vercel.**
+**Decision: Next.js 16.x, App Router, TypeScript strict mode, deployed on Vercel.**
 
 Rationale: Non-negotiable per project constraints. All pages are statically generated at build time (no `revalidate`, no ISR) because the only content source is the git repo. When content changes (via merged PR), Vercel auto-rebuilds on the push to main. This is standard Vercel + GitHub integration — no configuration needed beyond connecting the repo.
 
@@ -1078,10 +1078,10 @@ Technical risks not already covered in the PM document's risk register.
 | **Graph layout is non-deterministic** — D3 force simulation starts from random initial positions, meaning the graph looks different on every render. | Medium | Low | Pass a fixed `seed` to the force simulation in `react-force-graph-2d` via `d3ForceLink`, `d3ForceManyBody` configuration, or use a deterministic layout algorithm (e.g., hierarchical layout based on firm category → firm → content type). At 20-30 nodes, either approach is acceptable. The random layout is fine for v1 — it is Obsidian behavior and users expect it. No action required for v1. |
 | **`localStorage` is not available in SSR** — any component that reads localStorage during initial render will throw a "localStorage is not defined" error during server-side rendering. | High | Medium | All `localStorage` reads must be inside `useEffect` hooks or guarded with `typeof window !== "undefined"`. This is a systematic discipline requirement — enforce with a code review checklist item. |
 | **Monitoring bot's GitHub Actions cron does not run if the repo has zero commits in 60 days** — GitHub disables scheduled workflows in inactive repos. | Low | Medium | The founder must maintain at least one commit per 60 days (content updates will naturally satisfy this). Document this in the bot health check issue as a "known limitation." |
-| **Next.js 15 `params` is a Promise** — forgetting to `await params` in dynamic routes will cause a runtime error in Next.js 15. This is a common mistake when migrating from Next.js 14. | High | Medium | Add an ESLint rule or a linting script that checks `app/firms/[...slug]/page.tsx` for `await params` usage. Include in the PR review checklist. |
+| **Next.js 16 `params` is a Promise** — forgetting to `await params` in dynamic routes will cause a runtime error in Next.js 16. This is a common mistake when migrating from Next.js 14. | High | Medium | Add an ESLint rule or a linting script that checks `app/firms/[...slug]/page.tsx` for `await params` usage. Include in the PR review checklist. |
 | **Google OAuth redirect URI mismatch** — if the Supabase project's OAuth callback URL does not match exactly what is configured in Google Cloud Console, the sign-in flow silently fails and the user is redirected to an error page. This is the most common OAuth setup mistake. | High | Medium | Document the exact callback URL format (`https://<project-ref>.supabase.co/auth/v1/callback`) in the setup instructions. Add a QA step in the Sprint 2 auth task: sign in through the full OAuth flow on the Vercel preview URL before considering the task done. Test on both the Vercel preview URL and the production domain separately (each requires its own authorized redirect URI in Google Cloud Console). |
 | **Auth scope creep in v1** — introducing Supabase Auth creates pressure to add more auth-gated features incrementally (e.g., saved comparisons, user profiles, admin protection). Each addition extends Sprint 2 scope and delays launch. | Medium | Medium | Auth in v1 gates exactly one UI feature: the stacked comparison panel. No other v1 feature requires auth. Any auth-adjacent feature request that arrives before launch is automatically deferred to v2. The `<CompareAuthGate>` and `AppShell` `user` state are the only auth-touching code in v1. Do not add auth middleware, protected routes, or server-side session validation in v1 — the client-side `user` check in `AppShell` is sufficient and intentional. |
-| **`useSearchParams()` requires `<Suspense>` boundary in Next.js 15** — any component calling `useSearchParams()` will cause the build to fail or the page to de-opt to client-side rendering without a Suspense boundary wrapping it. `<ContentPanelRight>` uses `useSearchParams()` to read `?right=`. | High | Medium | Wrap `<ContentPanelRight>` in a `<Suspense fallback={<ContentPanelSkeleton />}>` in `<GraphPanel>`. This is mandatory per Next.js 15 docs. Include as an explicit acceptance criterion in task 3.11. |
+| **`useSearchParams()` requires `<Suspense>` boundary in Next.js 16** — any component calling `useSearchParams()` will cause the build to fail or the page to de-opt to client-side rendering without a Suspense boundary wrapping it. `<ContentPanelRight>` uses `useSearchParams()` to read `?right=`. | High | Medium | Wrap `<ContentPanelRight>` in a `<Suspense fallback={<ContentPanelSkeleton />}>` in `<GraphPanel>`. This is mandatory per Next.js 16 docs. Include as an explicit acceptance criterion in task 3.11. |
 | **`?right=` URL state desync on browser back/forward** — when a user navigates back in their browser history, the `?right=` param may change or disappear while the left panel slug changes too, causing both panels to flash to unexpected content. | Medium | Low | The `?right=` state is managed via `router.replace` (not `router.push`), so it does not add to the browser history stack for right-panel-only navigation. This is intentional: the user's history reflects left-panel navigation; the right panel is a comparison overlay, not a navigation destination. The risk is low because Panel 3 compares is secondary UI. |
 | **LLM classification returns invalid JSON** — Claude claude-haiku-4-5 is instructed to return JSON only, but the response may include preamble text or malformed JSON, especially on unexpected input. | Medium | Low | Wrap the `json.loads()` call in a try/except. On parse failure, log the raw response to `bot_usage_log.error` and default to `meaningful: true` (conservative — prefer false positive PR over missed content change). Add `--output json` or system-prompt enforcement ("respond with JSON only, no other text") to reduce parse failures. |
 | **LLM cost spike if bot runs too frequently or diffs are unexpectedly large** — if the bot is accidentally triggered many times (e.g., via `workflow_dispatch` spam) or a firm's page returns a very large HTML response, token costs could exceed expectations. | Low | Low | Token cost at current pricing is ~$0.003/day normal operation. Even 100x the expected usage is ~$0.30/day — still negligible. The real guard is the `difflib` pre-filter (only call the LLM when the diff ratio is < 0.99) which eliminates LLM calls for unchanged pages. Add a hard `max_tokens=256` cap on the response (already in the spec). Monitor the `bot_usage_log.tokens_in` column for anomalies. |
@@ -1103,7 +1103,7 @@ These are the exact commands to bootstrap the project from zero. Run them in ord
 - Vercel CLI installed: `npm install -g vercel`
 - GitHub CLI installed: `brew install gh` then `gh auth login`
 
-### Step 1 — Initialize Next.js 15 Project
+### Step 1 — Initialize Next.js 16 Project
 
 ```bash
 # Create the project (run from the directory where you want the repo to live)

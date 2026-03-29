@@ -28,7 +28,7 @@ function validateFile(filePath: string): ValidationError[] {
   try {
     const content = fs.readFileSync(filePath, 'utf-8')
     parsed = matter(content)
-  } catch (e) {
+  } catch {
     return [{ file: relativePath, field: 'frontmatter', message: 'Failed to parse YAML frontmatter' }]
   }
 
