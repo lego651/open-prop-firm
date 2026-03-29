@@ -169,5 +169,7 @@ export async function getContentTree(): Promise<ContentTreeResult> {
 
 export async function getStaticParams(): Promise<Array<{ slug: string[] }>> {
   const { validSlugs } = await getContentTree()
-  return validSlugs.map((slug) => ({ slug: slug.split('/') }))
+  // validSlugs start with "firms/" but the route is at app/firms/[...slug]/
+  // so we strip the leading "firms/" segment to avoid doubling the prefix
+  return validSlugs.map((slug) => ({ slug: slug.split('/').slice(1) }))
 }
