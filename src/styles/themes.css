@@ -64,6 +64,9 @@
   --graph-bg:               #FAFAFA;
   --graph-edge-color:       #BBBBBB;
   --graph-node-stroke:      rgba(0, 0, 0, 0.15);
+
+  /* File type colors */
+  --file-type-promo:        #16A34A;
 }
 
 /* ─────────────────────────────────────────
@@ -123,6 +126,9 @@
   --graph-bg:               #181825;
   --graph-edge-color:       #45475A;
   --graph-node-stroke:      rgba(255, 255, 255, 0.1);
+
+  /* File type colors */
+  --file-type-promo:        #A6E3A1;
 }
 
 /* ─────────────────────────────────────────
@@ -182,4 +188,7 @@
   --graph-bg:               #090D12;
   --graph-edge-color:       #21262D;
   --graph-node-stroke:      rgba(255, 255, 255, 0.08);
+
+  /* File type colors */
+  --file-type-promo:        #3FB950;
 }
