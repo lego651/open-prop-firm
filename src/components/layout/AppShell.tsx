@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useViewport } from '@/hooks/useViewport'
@@ -12,6 +12,7 @@ import ResizeHandle from '@/components/layout/ResizeHandle'
 import ContentPanel from '@/components/content/ContentPanel'
 import NavPanel from '@/components/nav/NavPanel'
 import GraphPanel from '@/components/graph/GraphPanel'
+import SearchModal from '@/components/search/SearchModal'
 
 type AppShellProps = {
   treeData: TreeNode[]
@@ -41,6 +42,18 @@ export default function AppShell({ treeData, children }: AppShellProps) {
 
   const [panel3Visible, setPanel3Visible] = useState(false)
   const [panel1OverlayOpen, setPanel1OverlayOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   const panel3IsOverlay =
     panel3Visible && viewportWidth < BREAKPOINTS.PANEL3_OVERLAY
@@ -100,13 +113,13 @@ export default function AppShell({ treeData, children }: AppShellProps) {
           activeSlug={activeSlug}
           onTabClick={(slug) => router.push('/' + slug)}
           onTabClose={closeTab}
-          onNewTab={() => {}}
           onTogglePanel3={() => setPanel3Visible((v) => !v)}
           onHamburger={
             viewportWidth < BREAKPOINTS.MOBILE
               ? () => setPanel1OverlayOpen(true)
               : undefined
           }
+          onSearchOpen={() => setIsSearchOpen(true)}
         >
           {children}
         </ContentPanel>
@@ -138,11 +151,19 @@ export default function AppShell({ treeData, children }: AppShellProps) {
           <GraphPanel
             mode={panel3Mode}
             user={user}
+            activeSlug={activeSlug}
+            treeData={treeData}
             onModeToggle={handleModeToggle}
             onDismissGate={() => setPanel3Mode('graph')}
+            onNodeClick={(slug) => router.push('/' + slug)}
           />
         </div>
       )}
+
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </div>
   )
 }

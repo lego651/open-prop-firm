@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Build artifacts — generated at prebuild, not committed
+/public/search-index.json
+/public/graph-data.json

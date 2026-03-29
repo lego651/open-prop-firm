@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu, X, Plus, PanelRight } from 'lucide-react'
+import { Menu, X, PanelRight, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Tooltip,
@@ -14,9 +14,9 @@ type TabBarProps = {
   activeSlug: string
   onTabClick: (slug: string) => void
   onTabClose: (slug: string) => void
-  onNewTab: () => void
   onTogglePanel3: () => void
   onHamburger?: () => void
+  onSearchOpen?: () => void
 }
 
 export default function TabBar({
@@ -24,9 +24,9 @@ export default function TabBar({
   activeSlug,
   onTabClick,
   onTabClose,
-  onNewTab,
   onTogglePanel3,
   onHamburger,
+  onSearchOpen,
 }: TabBarProps) {
   return (
     <div className="flex h-9 items-center overflow-hidden border-b border-[var(--border)] bg-[var(--sidebar-bg)]">
@@ -86,15 +86,18 @@ export default function TabBar({
         })}
       </div>
 
-      {/* New tab button */}
-      <button
-        type="button"
-        onClick={onNewTab}
-        className="flex h-9 w-9 shrink-0 items-center justify-center hover:bg-[var(--muted)]"
-        aria-label="New tab"
-      >
-        <Plus size={16} />
-      </button>
+      {/* Search button */}
+      {onSearchOpen && (
+        <button
+          type="button"
+          onClick={onSearchOpen}
+          className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+          aria-label="Search (Cmd+K)"
+          title="Search (⌘K)"
+        >
+          <Search size={14} />
+        </button>
+      )}
 
       {/* Panel 3 visibility toggle */}
       <Tooltip>

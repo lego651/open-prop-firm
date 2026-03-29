@@ -1,11 +1,26 @@
 import { getStaticParams } from '@/lib/content/getContentTree'
-// getContentTree is server-only safe in generateStaticParams — this runs at build time, not in client context
+import { getPageContent } from '@/lib/content/getPageContent'
+import VerifiedBadge from '@/components/content/VerifiedBadge'
+import MarkdownRenderer from '@/components/content/MarkdownRenderer'
+import SourceFootnotes from '@/components/content/SourceFootnotes'
 
 export const dynamic = 'force-static'
-// ^ Safety net: prevents dynamic fallback even if generateStaticParams misses a slug
 
 export async function generateStaticParams() {
   return getStaticParams()
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>
+}) {
+  const { slug } = await params
+  const { frontmatter } = await getPageContent(slug.join('/'))
+  return {
+    title: frontmatter.title + ' — OpenPropFirm',
+    description: `${frontmatter.firm} — ${frontmatter.type}`,
+  }
 }
 
 export default async function FirmPage({
@@ -15,9 +30,29 @@ export default async function FirmPage({
 }) {
   const { slug } = await params
   const slugPath = slug.join('/')
+
+  let content: Awaited<ReturnType<typeof getPageContent>> | null = null
+  try {
+    content = await getPageContent(slugPath)
+  } catch (err) {
+    console.error('[FirmPage] failed to load content for', slugPath, err)
+    return (
+      <div className="p-8 text-sm text-[var(--muted-foreground)]">
+        Unable to load content for this page.
+      </div>
+    )
+  }
+
+  const { frontmatter, htmlContent } = content
+
   return (
-    <div className="p-8 text-sm text-[var(--muted-foreground)]">
-      Content for <code>{slugPath}</code> — rendering coming in Sprint 3
-    </div>
+    <article className="mx-auto max-w-3xl px-6 py-8">
+      <VerifiedBadge
+        lastVerified={frontmatter.last_verified}
+        status={frontmatter.status}
+      />
+      <MarkdownRenderer htmlContent={htmlContent} slug={slugPath} />
+      <SourceFootnotes sources={frontmatter.sources} />
+    </article>
   )
 }

@@ -1,27 +1,37 @@
 'use client'
 
 import type { User } from '@supabase/supabase-js'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Network, Columns2 } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Skeleton } from '@/components/ui/skeleton'
 import CompareAuthGate from '@/components/auth/CompareAuthGate'
+import GraphViewLoader from '@/components/graph/GraphViewLoader'
+import ContentPanelRight from '@/components/content/ContentPanelRight'
+import type { TreeNode } from '@/types/content'
 
 type GraphPanelProps = {
   mode: 'graph' | 'compare'
   user: User | null
+  activeSlug: string
+  treeData: TreeNode[]
   onModeToggle: () => void
   onDismissGate: () => void
+  onNodeClick: (slug: string) => void
 }
 
 export default function GraphPanel({
   mode,
   user,
+  activeSlug,
+  treeData,
   onModeToggle,
   onDismissGate,
+  onNodeClick,
 }: GraphPanelProps) {
   const [pendingCompare, setPendingCompare] = useState(false)
 
@@ -77,13 +87,13 @@ export default function GraphPanel({
             }}
           />
         ) : mode === 'compare' ? (
-          <div className="flex h-full items-center justify-center text-sm text-[var(--muted-foreground)]">
-            Compare panel — coming in Sprint 5
-          </div>
+          <Suspense fallback={<Skeleton className="h-full w-full" />}>
+            <ContentPanelRight treeData={treeData} />
+          </Suspense>
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-[var(--muted-foreground)]">
-            Graph view — coming in Sprint 5
-          </div>
+          <Suspense fallback={<Skeleton className="h-full w-full" />}>
+            <GraphViewLoader activeSlug={activeSlug} onNodeClick={onNodeClick} />
+          </Suspense>
         )}
       </div>
     </div>
