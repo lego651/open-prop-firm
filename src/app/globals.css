@@ -126,3 +126,8 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  .tab-scroll::-webkit-scrollbar { display: none; }
+  .tab-scroll { scrollbar-width: none; }
+}
