@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase/client";
 import type { TreeNode, TabEntry } from "@/types/content";
 import ResizeHandle from "@/components/layout/ResizeHandle";
 import ContentPanel from "@/components/content/ContentPanel";
+import NavPanel from "@/components/nav/NavPanel";
+import GraphPanel from "@/components/graph/GraphPanel";
 
 type AppShellProps = {
   treeData: TreeNode[];
@@ -132,8 +134,12 @@ export default function AppShell({
         style={{ width: panel1Collapsed ? 48 : 260, transition: "width 200ms ease" }}
         className="shrink-0 bg-[var(--sidebar-bg)] border-r border-[var(--border)] overflow-hidden"
       >
-        {/* NavPanel goes here — placeholder until S2-6 */}
-        <div className="p-2 text-xs text-[var(--muted-foreground)]">Nav panel</div>
+        <NavPanel
+          treeData={treeData}
+          activeSlug={activeSlug}
+          collapsed={panel1Collapsed}
+          onToggleCollapse={() => setPanel1Collapsed(v => !v)}
+        />
       </div>
 
       {/* Panel 2 */}
@@ -158,8 +164,12 @@ export default function AppShell({
           style={{ width: panel3Width }}
           className="shrink-0 border-l border-[var(--border)] bg-[var(--sidebar-bg)] overflow-hidden flex flex-col"
         >
-          {/* GraphPanel goes here — placeholder until S2-11 */}
-          <div className="p-4 text-xs text-[var(--muted-foreground)]">Panel 3</div>
+          <GraphPanel
+            mode={panel3Mode}
+            user={user}
+            onModeToggle={() => setPanel3Mode(m => m === 'graph' ? 'compare' : 'graph')}
+            onDismissGate={() => setPanel3Mode('graph')}
+          />
         </div>
       )}
     </div>
