@@ -1,0 +1,262 @@
+# OpenPropFirm — v1 Scope Document
+
+**Document Owner**: PM
+**Date**: 2026-03-28
+**Status**: Active — Founder overrides applied 2026-03-28
+**Drives**: Q2 2026 OKRs — Gate 1 evaluation at 60 days post-launch
+
+---
+
+## PM Scope Challenge Notes
+
+Before the plan, here is the critical lens I applied. These are the decisions I made and why.
+
+**The three-panel layout is ambitious but justified.** The Obsidian-clone UI is the entire brand identity — it is not a nice-to-have. Stripping it to a basic content site would undermine the differentiation claim on day one. The UI guide is already written and detailed. A fast AI-assisted builder can execute it.
+
+**Stacked comparison panels are IN v1 — founder override, 2026-03-28.** The PM originally cut the stacked/split panel (Panel 3 split-content mode) to reduce React state complexity. The founder has reversed this decision. It is a deliberate feature gate: the right panel defaults to graph view for all users; logged-in users can switch Panel 3 to a second content panel and compare two pages side by side. Users who are not logged in see a prompt in Panel 3 to sign in and unlock comparison mode. This creates a meaningful incentive to register.
+
+**Auth (Supabase) is IN v1 — founder override, 2026-03-28.** Auth was explicitly cut from the original PM scope. The founder has reversed this decision. Auth is required to gate the stacked panel feature. No payment is involved — free signup only. Supabase authentication (email/password plus magic link) is sufficient. The auth surface is narrow: sign up, sign in, sign out, session persistence. No user settings, profile pages, or paid tiers in v1.
+
+**The monitoring bot is a launch dependency, not a v2 feature.** The CEO doc is correct: if the bot fails silently and data goes stale, the trust brand is broken before it is built. The v1 bot uses structured HTML diffing as its primary method. LLM-assisted parsing is also approved for v1 where structured parsing fails or produces ambiguous results — the founder has confirmed budget. LLM API usage must be tracked in an admin page (usage volume and cost estimate per run). LLM is not used everywhere — only as a fallback when structured parsing cannot confidently determine whether a change occurred.
+
+**Obsidian Cmd+K search is in v1.** The CEO lists search as a non-negotiable launch requirement. Fuse.js is sufficient at the 4-firm / ~25-file scale and ships in hours, not days.
+
+**CONTRIBUTING.md and GitHub workflow are in v1.** The CEO document correctly identifies community contribution velocity as the long-term moat. Documenting the contribution workflow before launch enables day-one community PRs. This is a text document, not an engineering task — it has near-zero cost.
+
+**Analytics instrumentation is cut from the explicit brief but added here.** Without it, we cannot measure Gate 1 (500 visitors, bounce rate, affiliate clicks). This is not optional — I am adding lightweight analytics (Plausible or Vercel Analytics, no cookie consent required at this scale) as a Sprint 1 task. If the founder does not track it, the kill/maintain decision at Day 60 is made blind.
+
+**The Settings modal is a v2 placeholder.** The UI guide notes it as v2 scope. The icon appears in the bottom bar but clicks through to nothing in v1. This is the right call and I am confirming it.
+
+**License files are a Sprint 1 task, not an afterthought.** The CEO has already made the license decision (AGPL-3.0 for /src, CC-BY-NC-SA-4.0 for /data). Adding LICENSE files and the COMMERCIAL LICENSE contact email is a 30-minute task that must happen before any content is contributed by the community.
+
+**Content creation (all four firms) is the single highest-risk item.** Everything else in this plan is engineering. Writing accurate, sourced, verified content for 4 firms × 5 content types = ~20 markdown files is founder work. If this slips, nothing ships. I am making it a dedicated sprint with a clear acceptance criterion: zero pages launch without a source URL and last_verified timestamp.
+
+---
+
+## v1 Vision
+
+A single-sentence north star: Ship a trustworthy, Obsidian-style reference hub for prop firm traders — covering four firms with complete, sourced, and auto-monitored content — that earns 500 unique visitors within 30 days of launch.
+
+---
+
+## What's In / What's Out
+
+| Feature | Status | Rationale |
+|---|---|---|
+| Three-panel Obsidian-style layout (Panel 1 nav, Panel 2 content, Panel 3 graph) | IN | Core brand identity. Already fully specified in UI guide. Non-negotiable. |
+| Collapsible left nav with file tree | IN | Standard navigation requirement. Low complexity. |
+| Markdown rendering with wikilinks | IN | Content is the product. Wikilink navigation is central to the Obsidian UX. |
+| `last_verified` badge on every page | IN | CEO lists as non-negotiable. Trust signal. |
+| Source footnotes rendered from frontmatter | IN | Core content integrity feature. Low engineering effort. |
+| Global search (Fuse.js, Cmd+K modal) | IN | CEO lists as non-negotiable. Fuse.js is sufficient at launch scale. |
+| Light / Dark / Blue themes, localStorage persistence | IN | CEO lists as non-negotiable. Already fully specified. |
+| Graph view (react-force-graph-2d, Panel 3) | IN | Visual differentiator. Spec is complete. Keep it — but make it the last engineering task before launch. |
+| Content: 4 firms × 5 types (index, challenges, rules, promos, changelog) | IN | CEO non-negotiable. All 4 firms must be complete and verified at launch. |
+| Affiliate promo codes displayed on promos pages with UTM links | IN | Only v1 revenue mechanism. CEO requirement. |
+| Monitoring bot (GitHub Actions, scrape + PR on change) | IN | CEO non-negotiable. v1 bot uses structured HTML diffing as primary method. LLM fallback approved for ambiguous/unparseable cases — see LLM usage monitoring below. |
+| Bot health check (daily GitHub Actions log to issue) | IN | CEO explicitly requires this. Simple to implement. |
+| LLM usage monitoring (admin page: API call volume, cost estimate per run) | IN | Founder override, 2026-03-28. Required because LLM is approved in the bot. Admin page must show per-run usage volume and estimated API cost. Sprint 5/6 task. |
+| Terms of Service page + site-wide disclaimer | IN | Legal requirement before launch. |
+| CONTRIBUTING.md with PR workflow | IN | Community moat. Near-zero cost. Required before launch. |
+| LICENSE files (/src AGPL-3.0, /data CC-BY-NC-SA-4.0) | IN | CEO decision already made. 30-minute task. |
+| Analytics (Vercel Analytics or Plausible) | IN | Required to measure Gate 1. Without it, kill/maintain decision is blind. Not in brief but a PM addition. |
+| Responsive degradation (no breakage below 1024px) | IN | CEO requirement. Not a full mobile build — graceful degradation only. |
+| Tab bar (multiple open tabs, close tab) | IN | Part of Obsidian UX. Specified in UI guide. Moderate complexity — keep scoped. |
+| Breadcrumb + back/forward navigation | IN | Standard UX. Low complexity. |
+| Skeleton loading states | IN | Already specified. Low complexity. Improves perceived performance. |
+| Panel 3 stacked comparison mode (second content panel, logged-in only) | IN | Founder override, 2026-03-28. Default Panel 3 is graph view. Logged-in users can switch to stacked mode to compare two content pages side by side. Non-logged-in users see a sign-in prompt in Panel 3. Deliberate feature gate to incentivize signup. |
+| Auth / Supabase login (free signup only) | IN | Founder override, 2026-03-28. Required to gate the stacked panel. Email/password and magic link via Supabase. No payment, no paid tiers. Session persistence. Sign up / sign in / sign out only. |
+| Stripe / payments | OUT | Explicitly out of v1. v2 only. |
+| LLM chatbot | OUT | Explicitly out of v1. |
+| Email alerts | OUT | v2 feature per CEO roadmap. |
+| Pro tier / paywalled features | OUT | v2 only. |
+| Firm verified badge (B2B) | OUT | v2.1+ per CEO roadmap. |
+| More than four firms at launch | OUT | CEO: quality over quantity at launch. |
+| LLM-powered monitoring bot (full replacement) | OUT | v1 uses LLM only as a fallback where structured parsing fails. LLM-first or LLM-only bot architecture is v2. |
+| Settings modal (functional) | OUT | UI guide marks it as v2 placeholder. Show icon, no functionality. |
+| Line numbers in code blocks | OUT | UI guide marks as v2 feature. |
+| Code block syntax highlighting | DEFERRED | Not specified as required. Nice to have. Add if trivial during Sprint 3. |
+| Obsidian canvas / whiteboard view | OUT | Not mentioned as a feature — do not introduce. |
+| Dark mode auto-detect from OS preference | DEFERRED | Not in spec. Add as a one-liner after themes are built if time allows. |
+
+---
+
+## User Stories
+
+### Navigation & Layout
+
+- As a trader, I want to browse firms organized by type (CFD / Futures) in a left sidebar, so that I can quickly find the firm I am researching.
+- As a trader, I want to click a firm in the sidebar and see its content in the center panel, so that I can read information without leaving the page.
+- As a trader, I want to collapse the left sidebar to gain more reading space, so that I can focus on content when I do not need the file tree.
+- As a trader, I want a tab bar that remembers pages I have open, so that I can switch between two firms without losing my place.
+- As a trader, I want breadcrumb navigation showing where I am in the content hierarchy, so that I always know the context of what I am reading.
+- As a trader, I want back and forward navigation buttons, so that I can retrace my steps through linked content without using the browser back button.
+
+### Content & Information
+
+- As a trader, I want to see a `last_verified` timestamp on every page, so that I know how fresh the information is before I act on it.
+- As a trader, I want to see source links on every page, so that I can verify the information against the official firm website.
+- As a trader, I want to click a `[[wikilink]]` in the content and navigate to the linked page, so that I can explore related information without breaking my reading flow.
+- As a trader, I want to see a clear disclaimer on every page stating that information is sourced from public data and I must verify before trading, so that I understand the limits of the content.
+- As a trader, I want to view challenge tiers (price, profit target, drawdown rules, payout rules) in a structured table, so that I can quickly evaluate whether a challenge fits my risk tolerance.
+- As a trader, I want to see current promo codes with expiry dates on a firm's promos page, so that I can use the best available discount when purchasing a challenge.
+- As a trader, I want to view the changelog for a firm, so that I can see when rules or pricing changed and understand what is different from what I may have read previously.
+
+### Search
+
+- As a trader, I want to open a search modal with Cmd+K, so that I can find content across all firms without navigating the file tree.
+- As a trader, I want search results to show a snippet of matching content with the keyword highlighted, so that I can quickly assess whether a result is relevant.
+- As a trader, I want to press Enter on a search result to navigate directly to that page, so that the search-to-content flow is fast.
+
+### Graph View
+
+- As a curious trader or contributor, I want to see a force-directed graph of all content files and their wikilink connections, so that I can visually understand how information is related across firms.
+- As a user, I want to click a node in the graph to open that content page in the center panel, so that the graph is a functional navigation tool, not just a visual decoration.
+- As a user, I want to filter the graph by content type (challenge, rules, promo, etc.) so that I can focus the view on the content category I care about.
+
+### Stacked Comparison Mode (Auth-Gated)
+
+- As a logged-in trader, I want to switch Panel 3 from graph view to a second content panel, so that I can read two firms' challenge pages side by side without losing my place in either.
+- As a logged-in trader, I want to open a second page in Panel 3 by clicking a link while holding a modifier key (or via a context menu), so that the comparison action is intentional and discoverable.
+- As a visitor who is not logged in, I want to see a prompt in Panel 3 explaining that stacked comparison mode is available to registered users, so that I understand the value of signing up before I commit.
+
+### Authentication
+
+- As a new visitor, I want to create a free account using my email address, so that I can unlock comparison mode without providing payment information.
+- As a returning user, I want to sign in with a magic link sent to my email, so that I do not need to remember a password.
+- As a logged-in user, I want my session to persist across page reloads, so that I do not have to sign in every time I visit.
+- As a logged-in user, I want a clearly visible sign-out option, so that I can end my session on a shared device.
+
+### Themes
+
+- As a user, I want to toggle between Light, Dark, and Blue themes, so that I can use the site comfortably in my preferred visual environment.
+- As a user, I want my theme preference remembered across sessions, so that I do not have to re-set it every time I visit.
+
+### Community & Contribution
+
+- As a developer or trader who wants to contribute, I want a clear CONTRIBUTING.md that explains how to submit a PR to update firm data, so that I can contribute without needing to ask the founder how.
+- As a developer, I want to clone the /data folder into my own Obsidian vault and have it render identically to the website, so that I can use the data in my personal research workflow.
+
+### Affiliate & Monetization
+
+- As a trader clicking a promo code link, I want the link to include a UTM parameter, so that the founder can track affiliate referrals through the affiliate program dashboard.
+- As a trader, I want to see a transparent note near affiliate codes indicating that using the code supports the project, so that I understand the relationship without feeling misled.
+
+### Monitoring & Operations
+
+- As the founder, I want the monitoring bot to open a GitHub PR automatically when it detects a change in a firm's challenge, rules, or promo data, so that I can review and merge updates without manually checking firm websites daily.
+- As the founder, I want the bot to log a health check to a GitHub issue every time it runs, so that I immediately know if it stops working.
+
+### Legal
+
+- As a new visitor, I want to see a site-wide disclaimer about data accuracy and my responsibility to verify before trading, so that I understand the site's limitations upfront.
+- As a visitor, I want access to a Terms of Service page, so that I understand the terms of using the site's content.
+
+---
+
+## Sprint Plan
+
+All sprints are sequential. No fixed calendar duration — the founder ships when criteria are met. Given the 60-day Gate 1 window and today's date of 2026-03-28, the target public launch window is no later than late April 2026 to have a full 30 days of data before a meaningful Gate 1 review.
+
+Recommended pace: 1–2 weeks per sprint for a solo founder using AI assistance. Total build window: 6–10 weeks. Target launch: end of April / early May 2026.
+
+---
+
+**Sprint plan note (updated 2026-03-28):** The founder has added auth (Supabase), stacked comparison panels, and LLM usage monitoring to v1 scope. These are meaningful additions. To stay within the 6-sprint ceiling, the original Sprint 5 (Graph + Bot + Legal) is split: Sprint 5 now covers Graph View + Auth + Stacked Panels, and Sprint 6 absorbs the Bot + Legal work alongside Polish, LLM admin, and Launch. Sprint 6 is the heaviest sprint in the plan — the founder should budget 2 weeks for it rather than 1.
+
+| Sprint | Goal | Features / User Stories | Acceptance Criteria | Dependencies |
+|---|---|---|---|---|
+| **Sprint 1: Foundation** | Project skeleton, repo structure, license, and infrastructure are in place. Nothing is visible to users yet, but everything is buildable. | Repo init with Next.js 15 + TypeScript + shadcn/ui. /data folder structure scaffolded (all 4 firms, all 5 content types, empty markdown files with correct frontmatter schema). LICENSE files in /src root (AGPL-3.0) and /data root (CC-BY-NC-SA-4.0). COMMERCIAL LICENSE contact email in README. Vercel project created and connected. Preview deployments working on PRs. GitHub Actions workflow skeleton created (bot job, empty but triggered). Vercel Analytics (or Plausible) added — tracking unique visitors, page views, bounce rate. Environment variables documented in .env.example (no secrets in repo). Supabase project created; SUPABASE_URL and SUPABASE_ANON_KEY added to .env.example (values are placeholder strings — no auth UI yet). .gitignore, prettier, eslint configs set. README with project description, tech stack, and license summary. | Vercel preview URL is live and shows a blank Next.js app. /data folder structure matches the content model spec exactly. LICENSE file exists in both /src and /data roots with correct license text. Analytics script is present in layout.tsx and receiving data in the analytics dashboard. .env.example documents every required env var including Supabase keys. PR preview deployments work (push a branch, get a preview URL). GitHub Actions workflow file exists and runs without error (even if the job body is empty). | None — this is the foundation sprint. |
+| **Sprint 2: Shell & Navigation** | The three-panel Obsidian-style shell is functional. A user can navigate the file tree, open files, use tabs, and switch themes. Content does not need to be real yet — use placeholder markdown. | AppShell component with three-panel layout (Panel 1 fixed 260px, Panel 2 flex-1, Panel 3 360px default). Left nav panel: collapsible file tree, firm categories (CFD / Futures), firm folders, file items with correct icons and colors. Tree state persisted to localStorage. Collapse to 48px icon rail. Tab bar: open tabs, close tabs, tab state persisted to localStorage. Breadcrumb navigation with back/forward history stack. Panel 3: graph panel container (graph component stubbed — renders a placeholder until Sprint 5). Panel 3 mode toggle button scaffolded (graph vs stacked — stacked shows a "sign in to unlock" placeholder until Sprint 5). Panel 3 toggleable (hidden below 1100px viewport by default). Drag resize handle between Panel 2 and Panel 3 (clamp 280–600px, persist to localStorage). Theme toggle (light/dark/blue): CSS custom properties from ui-guide.md Section 6, data-theme on html element, localStorage persistence, no flash on load (inline script in head). Bottom bar with theme toggle and settings icon (settings icon is a non-functional placeholder in v1). Responsive degradation: below 1024px Panel 3 hides, below 768px hamburger nav and full-width content. | All three panels render at >= 1280px viewport. Panel 1 collapses to 48px rail and expands back. Drag resize works: grab the handle, drag, Panel 3 width updates, width persists on reload. Tabs open and close. Navigating to a file via the tree opens it in Panel 2 and adds a tab. Breadcrumb reflects the correct hierarchy. Back and forward buttons work as an in-app history stack (not browser history). Theme cycles light → dark → blue → light. Theme persists on page reload. No theme flash on load. Below 1024px: Panel 3 is hidden. Below 768px: content fills full width, nav is behind a hamburger. File tree state (which folders are open) persists on reload. Panel 3 mode toggle button is visible; stacked mode shows a static "sign in to unlock" placeholder (not wired to auth yet). | Sprint 1 complete. |
+| **Sprint 3: Content Rendering** | Markdown files render correctly in Panel 2. Wikilinks work. The `last_verified` badge and source footnotes appear on every page. Search is functional. | Markdown pipeline: parse frontmatter (gray-matter or similar), render markdown to HTML (react-markdown or remark/rehype pipeline). Custom .prose CSS class matching ui-guide.md Section 3.5 spec exactly (headings, paragraphs, tables, blockquotes, lists, code, hr). WikiLink renderer: parse [[wikilinks]], render as internal nav links (valid targets = dotted purple underline; missing targets = muted red, click opens search modal pre-filled). External link renderer: opens in new tab, ExternalLink icon. VerifiedBadge component: reads last_verified + verified_by + sources from frontmatter, renders badge per ui-guide.md Section 3.4 spec. SourceFootnotes component: renders frontmatter sources array as numbered list at page bottom. Skeleton loading state (shadcn Skeleton) while markdown is being parsed. Global search: Fuse.js index built from all /data markdown files at app startup (or Next.js build time). SearchModal (shadcn Command component): Cmd+K trigger, result groups by category, keyword highlighting in snippets, Enter to navigate, Esc to close, Cmd+Enter to open in Panel 3 (stubbed for now). Clicking a missing wikilink opens SearchModal pre-filled with the link text. | Open any of the 4 firm content files. Markdown renders correctly with all element types styled per spec. H1 has bottom border. Tables have striped rows. Code is styled. Blockquotes have left accent border. WikiLinks to existing files navigate correctly. WikiLinks to missing files open the search modal. External links open in new tab with icon. VerifiedBadge shows correct date, verified_by, and source links. Sources section renders at page bottom. Cmd+K opens search modal. Typing a query returns results. Keyword is highlighted in snippets. Enter on a result opens the file. Esc closes the modal. Skeleton appears while content loads. | Sprint 2 complete. At least placeholder markdown files must be in /data (Sprint 1 deliverable). |
+| **Sprint 4: Content Creation** | All four firms have complete, verified, sourced markdown content in /data. This is primarily a writing and research sprint, not an engineering sprint. | Write and publish all content files for all four firms: Funded Next (CFD), Funding Pips (CFD), Apex Funding (Futures), Lucid Funding (Futures). Per firm: index.md (overview, website, founding, contacts), challenges/ (one .md per tier with price, profit target, drawdown rules, payout rules, source URL), rules.md (current active rules with source URLs), promos.md (current promo codes, discount description, expiry if known, UTM affiliate links, "using this code supports the project" note), changelog.md (history of changes with timestamps). Every file has correct YAML frontmatter: title, firm, type, last_verified (set to today), verified_by: manual, sources array with at least one URL. All wikilinks between files are valid (no red missing-link state on any published content). Apply to affiliate programs for all four launch firms. | 4/4 firms have all five content file types present. Zero pages in /data have an empty sources array. Zero pages have a missing last_verified field. Zero wikilinks in the content point to files that do not exist. Promos pages have at least one affiliate UTM link per firm (or a placeholder "no affiliate program" note if approval is pending). The /data folder can be cloned into Obsidian and all wikilinks resolve correctly (spot-check by founder). Affiliate applications have been submitted for all four firms. | Sprint 3 complete (content renders correctly before content is written). |
+| **Sprint 5: Graph View + Auth + Stacked Panels** | The graph view renders real content. Auth is live. Logged-in users can use stacked comparison mode. The feature gate is fully functional. | Graph view: react-force-graph-2d rendering all /data markdown files as nodes. Node size scales with inbound wikilink count. Node colors by fileType per ui-guide.md Section 4.3. Edge rendering (low-opacity lines between wikilinked files). Hover tooltip (GraphTooltip component). Click node → open file in Panel 2. Mini controls overlay: zoom in, zoom out, fit, filter dropdown by fileType. Graph legend overlay (bottom-left). Build the graph data structure at build time (scan /data, extract all wikilinks, output nodes + edges JSON). Auth (Supabase): sign-up page (email/password), sign-in page (email/password + magic link option), sign-out action, session persistence via Supabase client. Supabase project configured with email provider enabled. Auth state surfaced in AppShell header (avatar or "Sign in" link). No profile page, no account settings — auth surface is minimal. Stacked comparison panel: Panel 3 mode toggle is now fully wired. For logged-in users: switching to stacked mode loads a second content panel in Panel 3; clicking a wikilink while holding a modifier key (or via a "Open in Panel 3" context menu item) loads that page in Panel 3. For logged-out users: Panel 3 in stacked mode shows a persistent prompt — "Create a free account to compare two pages side by side" — with a sign-up CTA. Graph view remains the default Panel 3 for all users regardless of auth state. | Graph renders all ~20+ nodes from /data. Node sizes vary by inbound link count. Clicking a node opens the correct file in Panel 2. Hover tooltip shows file title and link count. Filter dropdown hides/shows node types. Zoom controls work. Legend is visible. Panel 3 mode toggle button is present and functional. Unauthenticated user: toggle to stacked mode → sees sign-in prompt with CTA; graph view is unaffected. Authenticated user: toggle to stacked mode → second content panel loads; opening a page via modifier-click or context menu loads it in Panel 3. Sign-up flow: user enters email + password → receives confirmation email (if Supabase email confirm is on) → lands back on the site in a logged-in state. Sign-in flow: email/password works; magic link email is sent and logs in the user on click. Sign-out clears session and Panel 3 stacked mode reverts to sign-in prompt. Auth state persists on page reload. No page shows a broken auth UI or unhandled loading state. | Sprint 4 complete (real content required for graph to be meaningful). Supabase project configured. SUPABASE_URL and SUPABASE_ANON_KEY set in Vercel environment variables. |
+| **Sprint 6: Bot + Legal + LLM Admin + Polish + Launch** | The monitoring bot is live. Legal pages are published. LLM usage is tracked in an admin page. The site is production-ready and launched publicly. Note: this is the largest sprint in the plan. Budget two weeks. | Monitoring bot (GitHub Actions): runs daily at UTC 06:00. Scrapes official pages for each of the 4 firms (challenge prices, rules, promo codes). Primary method: structured HTML text diff. LLM fallback: if structured parsing cannot confidently determine whether a change occurred (ambiguous diff, unexpected HTML structure), invoke LLM API to interpret the scraped text and produce a change summary. LLM is not called on every run — only when structured parsing fails or is ambiguous. Log each LLM call: timestamp, firm, tokens used, estimated cost. If change detected: opens a GitHub PR with the diff (and LLM summary if LLM was invoked). Every run (change or no change): posts a timestamped comment to a dedicated GitHub issue (e.g. "Bot health log"). Workflow uses GitHub Actions secrets for all API tokens (no secrets in repo). LLM usage admin page (/admin/llm-usage, access restricted to authenticated founder account): table showing each bot run that triggered an LLM call, with columns for date, firm, model, token count, and estimated API cost. Running totals for the current month (total calls, total tokens, total estimated cost). Admin page is server-rendered from a simple persistent log (JSON file in /data or a Supabase table — whichever is simpler). ToS page: Terms of Service with appropriate disclaimers. Site-wide disclaimer: persistent footer or top banner on every page. SEO: dynamic `<title>` and `<meta description>` for every page (pulled from frontmatter title + first paragraph). OpenGraph tags for social sharing. Sitemap generated at build time (/sitemap.xml). robots.txt. Canonical URLs. CONTRIBUTING.md: how to fork, how to edit markdown, frontmatter schema reference, PR checklist, content standards (every claim needs a source), how to run locally. Footer: site-wide disclaimer, link to ToS, link to CONTRIBUTING.md, affiliate disclosure statement, license badges, GitHub repo link. Accessibility pass: all interactive elements have aria-labels, keyboard navigation works. Final cross-browser test: Chrome, Firefox, Safari. Performance check: LCP < 2.5s, no layout shift on theme load. Launch: flip DNS, announce, submit sitemap to Google Search Console. | Monitoring bot workflow runs manually (workflow_dispatch) without error. Bot posts to the designated GitHub health-check issue. Bot opens a test PR against a sandbox branch when a simulated change is injected. LLM fallback is triggered by a simulated ambiguous scrape result and produces a coherent change summary in the PR description. LLM usage admin page is accessible at /admin/llm-usage when signed in as the founder account. Admin page shows at least one logged LLM call from the test run (date, firm, tokens, estimated cost). Admin page shows a monthly total. Admin page returns 403 or redirects to sign-in for unauthenticated requests. ToS page is reachable from the footer. Site-wide disclaimer is visible on every content page. All pages have correct `<title>` and `<meta description>` (spot-check 5 pages). Sitemap exists at /sitemap.xml. CONTRIBUTING.md is live on GitHub and linked from footer. Lighthouse accessibility score >= 90. No console errors in production build. Vercel production deployment is live on the public domain. Google Search Console connected and sitemap submitted. At least one launch post published. Analytics dashboard receiving data. | Sprint 5 complete. Domain purchased and DNS configured. LLM API key (e.g. OPENAI_API_KEY or equivalent) added to GitHub Actions secrets and .env.example. Affiliate disclosures reviewed. |
+
+---
+
+## Risk Register
+
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| Content creation stalls — founder does not complete all 4 firms' content before Sprint 4 ends | High | Critical | Make Sprint 4 purely a content sprint with no engineering work. Set a hard "done" definition: zero pages without a source URL. If content takes longer than 2 weeks, cut challenge tiers — ship 1-2 tiers per firm and add the rest post-launch. Do not launch with incomplete or unsourced content. |
+| Affiliate applications are rejected or unanswered by launch | Medium | High | Submit applications before Sprint 4 begins (as soon as Sprint 3 ships and the site is visible at a preview URL). If a firm rejects, display the promo code page without UTM links and add a note: "We are applying for an affiliate program. Use the official site." This maintains content integrity and positions the site as neutral. |
+| Monitoring bot scrapes a page that changes structure, breaking the diff | Medium | Medium | Build the bot defensively: if a scrape returns an empty body or HTTP error, do NOT overwrite content — post a failure comment to the health check issue instead. Treat silent success as suspicious. The bot opening zero PRs in 30 days should trigger a founder investigation, not confidence. |
+| Graph view performance is poor with react-force-graph-2d at launch node count | Low | Low | At ~25 nodes, canvas-based react-force-graph-2d is trivially fast. Risk only materializes at 200+ nodes (v2 territory). Non-issue for v1. Revisit when firm count reaches 15. |
+| Launch traffic is lower than 500 in 30 days, triggering Gate 1 kill | High | High | The Gate 1 metric requires an active launch push — it will not happen from SEO alone in 30 days. The founder must personally post to at least 3 communities and reach out to 2–3 prop trading influencers or newsletter writers before declaring launch. The CONTRIBUTING.md and GitHub repo also need a launch announcement on the repo itself (GitHub Discussions or a pinned issue) to attract developer-adjacent traders. |
+| Stale data is discovered by a trader who lost money — reputational damage | Low | Very High | The last_verified badge and site-wide disclaimer are the primary shields. The bot health check issue ensures the founder sees any bot failure within 24 hours. No mitigation fully eliminates this risk — it is inherent to the model. A prominent "always verify on the official site before purchasing" CTA on challenge and rules pages adds a second layer. |
+| A firm sends a DMCA or takedown notice | Low | Medium | All content is factual, publicly sourced, and cited. The site does not reproduce copyrighted creative content. Legal exposure is low. The ToS page and disclaimer further reduce risk. If a takedown arrives, treat it as a PR event — "neutral information hub receives takedown from firm with something to hide" — and respond publicly and transparently. Retain the content unless legally compelled to remove it. |
+| The founder's bandwidth is lower than assumed — part-time engagement | High | High | The sprint plan above assumes roughly 4–6 focused hours per day. If the founder is part-time (< 20 hours/week), the 6-sprint plan extends to 12+ weeks and may miss the Q2 Gate 1 window. The founder must answer Open Question 8 (bandwidth) before Sprint 1 begins so the plan can be calibrated. |
+| Community contribution velocity is near zero post-launch | High | Medium | This is expected for the first 60 days and is acceptable. The moat from community contribution compounds over time — it is a Q3 2026 OKR, not a Q2 metric. The CONTRIBUTING.md and bot-generated PRs reduce the friction. A Discord server (even low-activity) gives contributors a place to ask questions. Do not optimize for contributor velocity at the expense of launch speed. |
+| Fuse.js search index becomes too slow or imprecise as content grows | Low | Low | Fuse.js handles ~25 files trivially. If the site scales to 200+ files in Q3, migrate to Pagefind (static build-time index, zero runtime cost). This is a one-sprint migration, not a rewrite. No action needed in v1. |
+| Auth (Supabase) adds session state complexity to an otherwise stateless UI | Medium | Medium | Auth is added to v1 by founder decision (2026-03-28). Scope is deliberately minimal: sign up, sign in, sign out, session persistence. No profile page, no settings, no role system. The only auth-gated surface is the stacked comparison panel in Panel 3. Mitigation: implement auth as a thin wrapper around Supabase's client SDK; keep auth state in a single React context that the AppShell reads. Do not scatter auth checks across components — a single `useAuth()` hook is sufficient. If Supabase email confirmation causes friction during testing, disable it in the Supabase project settings for development and re-enable for production. |
+| Auth email deliverability issues prevent users from completing sign-up | Low | Medium | Supabase's built-in email service has low daily send limits on the free tier. If the site gains meaningful signup volume quickly, configure a custom SMTP provider (e.g. Resend — already in the boilerplate stack) before hitting Supabase's default limits. Monitor Supabase Auth logs for failed email sends in the first week post-launch. |
+| LLM API costs exceed acceptable threshold as bot runs accumulate | Low | Medium | LLM is only invoked as a fallback, not on every run. Structured HTML diffing handles the majority of cases. The admin usage page (Sprint 6) gives the founder visibility into cost per run. Set a hard monthly budget cap in the LLM provider dashboard (most providers support spend alerts). If costs spike, the circuit breaker is simple: set an environment variable `LLM_FALLBACK_ENABLED=false` to disable LLM calls until the cause is investigated. |
+
+---
+
+## Open Questions Requiring Founder Decision
+
+These are blocking or near-blocking decisions. Each has a recommended answer from the PM, but the founder must decide and commit before the relevant sprint begins.
+
+**OQ-1 — Affiliate conflict policy (blocking Sprint 4)**
+Will you list firms with no affiliate program with equal prominence alongside affiliate firms? The CEO doc says yes. The project brief does not address it.
+PM recommendation: Yes, list all firms equally. Add a footer disclosure: "Some firm links on this site include affiliate codes. We also list firms with no affiliate relationship. Our editorial policy does not discriminate by affiliate status." This is the only policy that protects the neutrality brand long-term. If you cannot commit to this, reconsider whether this is the right business model.
+
+**OQ-2 — Founder identity (blocking Sprint 6 launch)**
+Is the founder named on the site, or is this an anonymous project? A named founder with a trading background significantly increases trust and press coverage potential. An anonymous project looks like a content farm.
+PM recommendation: Name yourself. Add a brief "About" blurb in the footer or a minimal /about page. You do not need a full bio — "Built by a prop trader who got frustrated with stale information" is enough. The origin story in the brief is compelling. Use it.
+
+**OQ-3 — Discord / community channel (before launch, not a blocker)**
+Where do you want community conversations to happen? GitHub Discussions, Discord, or Reddit?
+PM recommendation: Create a Discord server before launch. It signals the project is alive. Even 5 people in a Discord is better than no community channel. Link it from the README, CONTRIBUTING.md, and site footer. You can create it in 10 minutes. This is not a development task.
+
+**OQ-4 — Monitoring bot LLM budget (RESOLVED — founder decision, 2026-03-28)**
+The founder has approved LLM for v1 as a fallback where structured parsing fails or is ambiguous. The founder has confirmed budget. Action items before Sprint 6 begins: (1) select an LLM provider and add the API key to GitHub Actions secrets and .env.example; (2) set a monthly spend alert in the provider dashboard; (3) confirm the log storage mechanism for the admin usage page (JSON file in /data or a Supabase table). The PM's original recommendation to keep LLM out of v1 is overridden. The constraint that LLM is only used as a fallback — not on every bot run — is retained and is not negotiable.
+
+**OQ-5 — Legal review of ToS (before Sprint 6 launch)**
+The CEO doc asks whether a lawyer has reviewed the ToS. Has one? Prop trading involves real money. A standard boilerplate disclaimer may not be sufficient.
+PM recommendation: At minimum, use a reputable ToS generator (Termly, Iubenda) and customize it. Paying a lawyer for a 1-hour ToS review (typically $200–$500) before launching a site that advises traders on financial products is worth it. This is not a PM decision — it is a founder decision that must be made before Sprint 6.
+
+**OQ-6 — Defunct/shutdown firm policy (before content is written, Sprint 4)**
+If a firm in /data shuts down between launch and Q3, what is the policy? Archive the page? Add a "SHUT DOWN" banner? Delete?
+PM recommendation: Add a frontmatter field `status: active | inactive | shutdown` and render a prominent banner on any page where `status != active`. Do not delete content — pages about defunct firms often rank well for "is [firm] legit" and "what happened to [firm]" queries. This is an SEO and editorial decision that should be baked into the content model in Sprint 1, not retrofitted later.
+
+**OQ-7 — Launch date commitment (before Sprint 1)**
+The CEO kill gate gives 60 days from public launch to hit 500 unique visitors. Today is 2026-03-28. To have a meaningful 30-day traffic signal before the Gate 1 review, the site should launch no later than late April 2026.
+PM recommendation: Set a launch date range now. Suggested: April 28 – May 5, 2026. This gives approximately 4–5 weeks to execute the 6 sprints. It is achievable for a founder shipping fast with AI. If the founder is part-time, the window extends and the Gate 1 review at 60 days may catch less data — adjust the kill threshold expectation accordingly.
+
+**OQ-8 — Firm `status` field in frontmatter schema (blocking Sprint 1)**
+The current frontmatter schema in the brief does not include a `status` field. Given OQ-6 above, this should be added to the schema before any content is written. Adding it later requires editing all ~20 files.
+PM recommendation: Add `status: active` to the frontmatter schema in Sprint 1. It costs nothing now and is painful to retrofit. This resolves OQ-6 technically — answer OQ-6 first (policy), then Sprint 1 can bake it in.
+
+---
+
+## Gate 1 Readiness Checklist
+
+This checklist must be fully checked before the site goes live. It maps directly to the CEO's v1 non-negotiables.
+
+- [ ] 4/4 firms have complete content (index, challenges all tiers, rules, promos, changelog)
+- [ ] Every page has last_verified timestamp and at least one source URL
+- [ ] Monitoring bot is live and running daily
+- [ ] Bot posts to health check GitHub issue on every run
+- [ ] Search is functional (full-text, keyword highlight, Cmd+K)
+- [ ] Affiliate promo codes displayed with expiry dates and UTM links
+- [ ] ToS page and site-wide disclaimer are live
+- [ ] CONTRIBUTING.md is published and linked from footer
+- [ ] Analytics are tracking unique visitors and bounce rate
+- [ ] Site is responsive (no breakage below 1024px)
+- [ ] Light / Dark / Blue themes work and persist
+- [ ] Graph view renders and is navigable
+- [ ] Auth is live: sign-up, sign-in, sign-out, session persistence all functional
+- [ ] Stacked comparison panel is gated correctly: logged-out users see sign-in prompt; logged-in users can load a second content page in Panel 3
+- [ ] LLM usage admin page is live at /admin/llm-usage and restricted to authenticated founder account
+- [ ] LICENSE files in /src and /data roots
+- [ ] Footer includes affiliate disclosure
+- [ ] Google Search Console connected and sitemap submitted
+- [ ] Affiliate applications submitted to all 4 firms
+- [ ] At least one community launch post published
+
+---
+
+*This document is owned by the PM and should be reviewed with the founder before Sprint 1 begins. All open questions should be answered and logged before the relevant sprint starts. Sprint acceptance criteria are the source of truth for "done."*
