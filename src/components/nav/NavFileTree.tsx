@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookOpen, ChevronRight, History, Info, Tag, Trophy } from 'lucide-react'
+import {
+  BookOpen,
+  ChevronRight,
+  History,
+  Info,
+  Tag,
+  Trophy,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 import type { TreeNode } from '@/types/content'
 
 type NavFileTreeProps = {
@@ -10,7 +18,11 @@ type NavFileTreeProps = {
   activeSlug: string
 }
 
-function findAncestorIds(nodes: TreeNode[], targetId: string, path: string[] = []): string[] | null {
+function findAncestorIds(
+  nodes: TreeNode[],
+  targetId: string,
+  path: string[] = [],
+): string[] | null {
   for (const node of nodes) {
     if (node.id === targetId) return path
     if (node.children) {
@@ -21,12 +33,34 @@ function findAncestorIds(nodes: TreeNode[], targetId: string, path: string[] = [
   return null
 }
 
-function FileTypeIcon({ fileType, size }: { fileType: string | undefined; size: number }) {
-  if (fileType === 'basic-info') return <Info size={size} className="text-[var(--muted-foreground)] shrink-0" />
-  if (fileType === 'challenge') return <Trophy size={size} className="text-[var(--accent)] shrink-0" />
-  if (fileType === 'rules') return <BookOpen size={size} className="text-[var(--foreground)] shrink-0" />
-  if (fileType === 'promo') return <Tag size={size} className="text-[var(--file-type-promo)] shrink-0" />
-  if (fileType === 'changelog') return <History size={size} className="text-[var(--muted-foreground)] shrink-0" />
+function FileTypeIcon({
+  fileType,
+  size,
+}: {
+  fileType: string | undefined
+  size: number
+}) {
+  if (fileType === 'basic-info')
+    return (
+      <Info size={size} className="shrink-0 text-[var(--muted-foreground)]" />
+    )
+  if (fileType === 'challenge')
+    return <Trophy size={size} className="shrink-0 text-[var(--accent)]" />
+  if (fileType === 'rules')
+    return (
+      <BookOpen size={size} className="shrink-0 text-[var(--foreground)]" />
+    )
+  if (fileType === 'promo')
+    return (
+      <Tag size={size} className="shrink-0 text-[var(--file-type-promo)]" />
+    )
+  if (fileType === 'changelog')
+    return (
+      <History
+        size={size}
+        className="shrink-0 text-[var(--muted-foreground)]"
+      />
+    )
   return null
 }
 
@@ -51,7 +85,7 @@ function TreeNodeList({
         if (node.nodeRole === 'category') {
           return (
             <div key={node.id}>
-              <div className="text-[10px] uppercase font-semibold text-[var(--muted-foreground)] mt-4 mb-2 px-3">
+              <div className="mt-4 mb-2 px-3 text-[10px] font-semibold text-[var(--muted-foreground)] uppercase">
                 {node.label}
               </div>
               {node.children && (
@@ -70,28 +104,47 @@ function TreeNodeList({
 
         if (node.nodeRole === 'firm') {
           return (
-            <div key={node.id}>
+            <div
+              key={node.id}
+              role="treeitem"
+              aria-expanded={expanded[node.id] ?? false}
+              aria-selected={false}
+            >
               <div
-                className="flex items-center gap-1.5 px-3 cursor-pointer hover:bg-[var(--muted)]/60 rounded-sm"
+                role="button"
+                tabIndex={0}
+                className="flex cursor-pointer items-center gap-1.5 rounded-sm px-3 hover:bg-[var(--muted)]/60"
                 style={{ height: 28 }}
                 onClick={() => onToggleFolder(node.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onToggleFolder(node.id)
+                  }
+                }}
               >
                 <ChevronRight
                   size={14}
                   className="shrink-0 transition-transform duration-200"
-                  style={{ transform: expanded[node.id] ? 'rotate(90deg)' : '' }}
+                  style={{
+                    transform: expanded[node.id] ? 'rotate(90deg)' : '',
+                  }}
                 />
-                <span className="text-[13px] font-medium text-[var(--foreground)] truncate">{node.label}</span>
+                <span className="truncate text-[13px] font-medium text-[var(--foreground)]">
+                  {node.label}
+                </span>
               </div>
               {expanded[node.id] && node.children && (
-                <TreeNodeList
-                  nodes={node.children}
-                  expanded={expanded}
-                  activeSlug={activeSlug}
-                  onToggleFolder={onToggleFolder}
-                  onFileClick={onFileClick}
-                  depth={depth + 1}
-                />
+                <div role="group">
+                  <TreeNodeList
+                    nodes={node.children}
+                    expanded={expanded}
+                    activeSlug={activeSlug}
+                    onToggleFolder={onToggleFolder}
+                    onFileClick={onFileClick}
+                    depth={depth + 1}
+                  />
+                </div>
               )}
             </div>
           )
@@ -99,28 +152,47 @@ function TreeNodeList({
 
         if (node.nodeRole === 'challenges-folder') {
           return (
-            <div key={node.id}>
+            <div
+              key={node.id}
+              role="treeitem"
+              aria-expanded={expanded[node.id] ?? false}
+              aria-selected={false}
+            >
               <div
-                className="flex items-center gap-1.5 pl-6 px-3 cursor-pointer hover:bg-[var(--muted)]/60 rounded-sm"
+                role="button"
+                tabIndex={0}
+                className="flex cursor-pointer items-center gap-1.5 rounded-sm px-3 pl-6 hover:bg-[var(--muted)]/60"
                 style={{ height: 28 }}
                 onClick={() => onToggleFolder(node.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onToggleFolder(node.id)
+                  }
+                }}
               >
                 <ChevronRight
                   size={14}
                   className="shrink-0 transition-transform duration-200"
-                  style={{ transform: expanded[node.id] ? 'rotate(90deg)' : '' }}
+                  style={{
+                    transform: expanded[node.id] ? 'rotate(90deg)' : '',
+                  }}
                 />
-                <span className="text-[13px] font-medium text-[var(--foreground)] truncate">{node.label}</span>
+                <span className="truncate text-[13px] font-medium text-[var(--foreground)]">
+                  {node.label}
+                </span>
               </div>
               {expanded[node.id] && node.children && (
-                <TreeNodeList
-                  nodes={node.children}
-                  expanded={expanded}
-                  activeSlug={activeSlug}
-                  onToggleFolder={onToggleFolder}
-                  onFileClick={onFileClick}
-                  depth={depth + 1}
-                />
+                <div role="group">
+                  <TreeNodeList
+                    nodes={node.children}
+                    expanded={expanded}
+                    activeSlug={activeSlug}
+                    onToggleFolder={onToggleFolder}
+                    onFileClick={onFileClick}
+                    depth={depth + 1}
+                  />
+                </div>
               )}
             </div>
           )
@@ -133,18 +205,29 @@ function TreeNodeList({
           return (
             <div
               key={node.id}
-              className={[
-                'flex items-center gap-1.5 cursor-pointer rounded-sm',
+              role="treeitem"
+              tabIndex={0}
+              aria-selected={isActive}
+              className={cn(
+                'flex cursor-pointer items-center gap-1.5 rounded-sm',
                 indentClass,
                 isActive
-                  ? 'bg-[var(--nav-active-bg)] text-[var(--nav-active-fg)] font-medium'
+                  ? 'bg-[var(--nav-active-bg)] font-medium text-[var(--nav-active-fg)]'
                   : 'hover:bg-[var(--muted)]/60',
-              ].join(' ')}
+              )}
               style={{ height: 26 }}
               onClick={() => onFileClick(node.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onFileClick(node.id)
+                }
+              }}
             >
               <FileTypeIcon fileType={node.fileType} size={14} />
-              <span className="text-[13px] text-[var(--foreground)] truncate">{node.label}</span>
+              <span className="truncate text-[13px] text-[var(--foreground)]">
+                {node.label}
+              </span>
             </div>
           )
         }
@@ -155,20 +238,31 @@ function TreeNodeList({
   )
 }
 
-export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) {
+export default function NavFileTree({
+  treeData,
+  activeSlug,
+}: NavFileTreeProps) {
   const router = useRouter()
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('navTreeState') ?? '{}')
-    } catch {
-      return {}
-    }
+    // SSR-safe: always start with empty state, load from localStorage on mount
+    return {}
   })
+
+  // Load expanded state from localStorage on mount (hydration — SSR-safe localStorage sync)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('navTreeState')
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (stored) setExpanded(JSON.parse(stored))
+    } catch {}
+  }, [])
 
   useEffect(() => {
     const ancestors = findAncestorIds(treeData, activeSlug)
     if (!ancestors || ancestors.length === 0) return
+    // Expanding ancestors to reveal active file — setState in response to route change.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExpanded((prev) => {
       const next = { ...prev }
       let changed = false
@@ -181,23 +275,17 @@ export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) 
       if (!changed) return prev
       try {
         localStorage.setItem('navTreeState', JSON.stringify(next))
-      } catch {
-        // ignore
-      }
+      } catch {}
       return next
     })
-  // Run only when activeSlug changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSlug])
+  }, [activeSlug, treeData])
 
   function handleToggleFolder(id: string) {
     setExpanded((prev) => {
       const next = { ...prev, [id]: !prev[id] }
       try {
         localStorage.setItem('navTreeState', JSON.stringify(next))
-      } catch {
-        // ignore
-      }
+      } catch {}
       return next
     })
   }
@@ -207,7 +295,7 @@ export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) 
   }
 
   return (
-    <div className="py-1 px-1">
+    <div role="tree" className="px-1 py-1">
       <TreeNodeList
         nodes={treeData}
         expanded={expanded}

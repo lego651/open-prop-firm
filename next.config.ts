@@ -1,9 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   redirects: async () => [
-    { source: "/", destination: "/firms/cfd/funded-next", permanent: false },
+    { source: '/', destination: '/firms/cfd/funded-next', permanent: false },
   ],
-};
+}
 
-export default nextConfig;
+export default nextConfig

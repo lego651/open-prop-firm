@@ -1,4 +1,9 @@
-export type FileType = 'basic-info' | 'challenge' | 'rules' | 'promo' | 'changelog'
+export type FileType =
+  | 'basic-info'
+  | 'challenge'
+  | 'rules'
+  | 'promo'
+  | 'changelog'
 
 export type NodeRole = 'category' | 'firm' | 'challenges-folder' | 'file'
 

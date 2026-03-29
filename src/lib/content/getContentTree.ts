@@ -1,12 +1,17 @@
 import 'server-only'
-import fs from 'fs'
+import { readFile, readdir, access } from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
 import type { ContentTreeResult, FileType, TreeNode } from '@/types/content'
 
 const FIRMS_DIR = path.join(process.cwd(), 'data', 'firms')
 const CATEGORY_ORDER = ['cfd', 'futures'] as const
-const FILE_TYPE_ORDER: FileType[] = ['basic-info', 'rules', 'promo', 'changelog']
+const FILE_TYPE_ORDER: FileType[] = [
+  'basic-info',
+  'rules',
+  'promo',
+  'changelog',
+]
 
 function kebabToTitle(s: string): string {
   return s
@@ -15,9 +20,12 @@ function kebabToTitle(s: string): string {
     .join(' ')
 }
 
-function readFrontmatter(filePath: string): Record<string, unknown> {
+async function readFrontmatter(
+  filePath: string,
+): Promise<Record<string, unknown>> {
   try {
-    return matter(fs.readFileSync(filePath, 'utf-8')).data
+    const content = await readFile(filePath, 'utf-8')
+    return matter(content).data
   } catch {
     return {}
   }
@@ -33,10 +41,8 @@ function collectTreeSlugs(
   if (node.type === 'file') {
     validSlugs.push(node.id)
     if (node.id === firmPrefix) {
-      // basic-info (index.md): key is firmSlug only
       slugToPathMap[firmSlug] = node.id
     } else {
-      // Other files: key is firmSlug/relPath
       const relPath = node.id.slice(firmPrefix.length + 1)
       slugToPathMap[`${firmSlug}/${relPath}`] = node.id
     }
@@ -48,21 +54,26 @@ function collectTreeSlugs(
   }
 }
 
-function buildFirmNode(category: string, firmSlug: string): TreeNode {
+async function buildFirmNode(
+  category: string,
+  firmSlug: string,
+): Promise<TreeNode> {
   const firmDir = path.join(FIRMS_DIR, category, firmSlug)
   const firmId = `firms/${category}/${firmSlug}`
   const fileNodes: TreeNode[] = []
   const challengeNodes: TreeNode[] = []
 
-  const entries = fs.readdirSync(firmDir, { withFileTypes: true })
+  const entries = await readdir(firmDir, { withFileTypes: true })
 
   for (const entry of entries) {
     if (entry.name.startsWith('_')) continue
 
     if (entry.isFile() && entry.name.endsWith('.md')) {
-      const fm = readFrontmatter(path.join(firmDir, entry.name))
+      const fm = await readFrontmatter(path.join(firmDir, entry.name))
       const isIndex = entry.name === 'index.md'
-      const slug = isIndex ? firmId : `${firmId}/${entry.name.replace('.md', '')}`
+      const slug = isIndex
+        ? firmId
+        : `${firmId}/${entry.name.replace('.md', '')}`
       const nameWithoutExt = entry.name.replace('.md', '')
       const label =
         typeof fm.title === 'string'
@@ -78,16 +89,17 @@ function buildFirmNode(category: string, firmSlug: string): TreeNode {
       })
     } else if (entry.isDirectory() && entry.name === 'challenges') {
       const challengesDir = path.join(firmDir, 'challenges')
-      const challengeFiles = fs
-        .readdirSync(challengesDir)
+      const challengeFiles = (await readdir(challengesDir))
         .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
         .sort()
 
       for (const cf of challengeFiles) {
-        const fm = readFrontmatter(path.join(challengesDir, cf))
+        const fm = await readFrontmatter(path.join(challengesDir, cf))
         const slug = `${firmId}/challenges/${cf.replace('.md', '')}`
         const label =
-          typeof fm.title === 'string' ? fm.title : kebabToTitle(cf.replace('.md', ''))
+          typeof fm.title === 'string'
+            ? fm.title
+            : kebabToTitle(cf.replace('.md', ''))
 
         challengeNodes.push({
           id: slug,
@@ -100,7 +112,6 @@ function buildFirmNode(category: string, firmSlug: string): TreeNode {
     }
   }
 
-  // Sort flat files by defined type order
   fileNodes.sort((a, b) => {
     const ai = a.fileType ? FILE_TYPE_ORDER.indexOf(a.fileType) : 99
     const bi = b.fileType ? FILE_TYPE_ORDER.indexOf(b.fileType) : 99
@@ -127,24 +138,32 @@ function buildFirmNode(category: string, firmSlug: string): TreeNode {
   }
 }
 
+// Module-level cache — invalidated in development so file changes are picked up
+let cached: ContentTreeResult | null = null
+
 export async function getContentTree(): Promise<ContentTreeResult> {
+  if (cached && process.env.NODE_ENV !== 'development') return cached
+
   const treeData: TreeNode[] = []
   const validSlugs: string[] = []
   const slugToPathMap: Record<string, string> = {}
 
   for (const category of CATEGORY_ORDER) {
     const categoryDir = path.join(FIRMS_DIR, category)
-    if (!fs.existsSync(categoryDir)) continue
+    try {
+      await access(categoryDir)
+    } catch {
+      continue
+    }
 
-    const firms = fs
-      .readdirSync(categoryDir, { withFileTypes: true })
+    const firms = (await readdir(categoryDir, { withFileTypes: true }))
       .filter((d) => d.isDirectory() && !d.name.startsWith('_'))
       .map((d) => d.name)
       .sort()
 
     const firmNodes: TreeNode[] = []
     for (const firmSlug of firms) {
-      const firmNode = buildFirmNode(category, firmSlug)
+      const firmNode = await buildFirmNode(category, firmSlug)
       firmNodes.push(firmNode)
       collectTreeSlugs(
         firmNode,
@@ -164,12 +183,12 @@ export async function getContentTree(): Promise<ContentTreeResult> {
     })
   }
 
-  return { treeData, validSlugs, slugToPathMap }
+  const result = { treeData, validSlugs, slugToPathMap }
+  cached = result
+  return result
 }
 
 export async function getStaticParams(): Promise<Array<{ slug: string[] }>> {
   const { validSlugs } = await getContentTree()
-  // validSlugs start with "firms/" but the route is at app/firms/[...slug]/
-  // so we strip the leading "firms/" segment to avoid doubling the prefix
   return validSlugs.map((slug) => ({ slug: slug.split('/').slice(1) }))
 }

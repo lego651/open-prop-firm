@@ -9,12 +9,12 @@
 
 ## Severity Legend
 
-| Level | Meaning |
-|---|---|
-| **P0 — Critical** | Will cause bugs or crashes in production. Fix before S3 starts. |
-| **P1 — High** | Degrades UX, violates web standards, or creates maintenance traps. Fix in early S3. |
-| **P2 — Medium** | Code quality, performance, or consistency issues. Schedule within S3. |
-| **P3 — Low** | Style nits, minor improvements, nice-to-haves. Can be deferred. |
+| Level             | Meaning                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| **P0 — Critical** | Will cause bugs or crashes in production. Fix before S3 starts.                     |
+| **P1 — High**     | Degrades UX, violates web standards, or creates maintenance traps. Fix in early S3. |
+| **P2 — Medium**   | Code quality, performance, or consistency issues. Schedule within S3.               |
+| **P3 — Low**      | Style nits, minor improvements, nice-to-haves. Can be deferred.                     |
 
 ---
 
@@ -27,11 +27,11 @@
 ```typescript
 const [panel1Collapsed, setPanel1Collapsed] = useState<boolean>(() => {
   try {
-    return JSON.parse(localStorage.getItem("panel1Collapsed") ?? "false");
+    return JSON.parse(localStorage.getItem('panel1Collapsed') ?? 'false')
   } catch {
-    return false;
+    return false
   }
-});
+})
 ```
 
 Next.js App Router SSR-renders `'use client'` components on the server. During SSR, `localStorage` is undefined — the `catch` block returns the default. During client hydration, React re-executes the component function, the initializer reads from `localStorage` and returns the stored value. If the stored value differs from the default, the server HTML and client VDOM diverge → **hydration mismatch**.
@@ -41,11 +41,13 @@ Affected state: `panel1Collapsed`, `panel3Width`, `panel3Mode`, `openTabs` (AppS
 **Why it matters:** React logs warnings in dev, but in production it silently patches the DOM. This can cause visual glitches — e.g., Panel 1 flashing between collapsed/expanded, tabs appearing/disappearing, or the wrong Panel 3 width on first paint. For a static site with `force-static`, this is especially visible because the server HTML is cached and served to every visitor.
 
 **Fix:**
+
 1. Initialize all localStorage-backed state with static defaults (matching SSR output).
 2. Add a single `useEffect` that reads all localStorage values on mount and batch-updates state.
 3. Optionally: gate rendering behind a `mounted` ref to avoid the flash (show a skeleton or nothing until hydration completes).
 
 **Acceptance:**
+
 - `npm run build && npm run start` — open in browser, zero hydration warnings in console.
 - Stored preferences (collapsed panel, open tabs, panel width) still restore correctly after refresh.
 - No visible flash of default state → stored state transition.
@@ -60,8 +62,8 @@ Affected state: `panel1Collapsed`, `panel3Width`, `panel3Mode`, `openTabs` (AppS
 
 ```typescript
 const [viewportWidth, setViewportWidth] = useState<number>(
-  typeof window !== "undefined" ? window.innerWidth : 1280,
-);
+  typeof window !== 'undefined' ? window.innerWidth : 1280,
+)
 ```
 
 During SSR: evaluates to `1280`. During client hydration: evaluates to the actual viewport width. If the browser is not exactly 1280px wide, the server and client render different layouts (different panel visibility, different responsive behavior) → hydration mismatch.
@@ -69,6 +71,7 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 **Fix:** Initialize with a constant (e.g., `0` or `1280`) and correct in the existing resize `useEffect`. Since the viewport correction `useEffect` (line 85–90) already runs on mount, move the initial viewport read there too.
 
 **Acceptance:**
+
 - Zero hydration warnings at any viewport width.
 
 ---
@@ -82,7 +85,12 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 ```tsx
 <button onClick={() => onTabClick(tab.slug)} className="...">
   <span>{tab.title}</span>
-  <button onClick={(e) => { e.stopPropagation(); onTabClose(tab.slug) }}>
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      onTabClose(tab.slug)
+    }}
+  >
     <X size={11} />
   </button>
 </button>
@@ -91,6 +99,7 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 **Fix:** Change the outer element from `<button>` to `<div role="tab" tabIndex={0} onKeyDown={...}>` and keep the inner close `<button>`. Or change the inner close to a `<span role="button">`.
 
 **Acceptance:**
+
 - HTML validator reports zero errors for the tab bar region.
 - Keyboard: pressing Enter on a tab activates it; pressing Delete or clicking X closes it.
 - Screen reader announces each tab correctly.
@@ -104,15 +113,19 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 **Problem:** S2-12 specifies that at < 768px a hamburger icon should appear in the ContentPanel/TabBar header to open the mobile nav overlay. The overlay infrastructure exists (backdrop + fixed panel at lines 167–184), but there is no trigger button to open it — only a TODO comment. At < 768px, the user has no way to access navigation.
 
 ```tsx
-{/* TODO S2-12: pass onHamburger to ContentPanel when viewportWidth < 768 — requires ContentPanel prop update */}
+{
+  /* TODO S2-12: pass onHamburger to ContentPanel when viewportWidth < 768 — requires ContentPanel prop update */
+}
 ```
 
 **Fix:**
+
 1. Add an `onHamburger?: () => void` prop to `ContentPanel` and `TabBar`.
 2. When `onHamburger` is provided, render a `Menu` icon button at the left edge of the TabBar.
 3. In AppShell, pass `onHamburger={() => setPanel1OverlayOpen(true)}` when `viewportWidth < 768`.
 
 **Acceptance:**
+
 - At < 768px: hamburger icon visible in tab bar. Tapping opens the nav overlay.
 - Tapping backdrop or navigating to a file closes the overlay.
 - At >= 768px: hamburger icon is not rendered.
@@ -128,6 +141,7 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 **Fix:** The overlay should always pass `collapsed={false}` since it's a full-width (260px) sliding panel.
 
 **Acceptance:**
+
 - At < 768px: opening the nav overlay always shows the full expanded file tree, regardless of `panel1Collapsed` state.
 
 ---
@@ -141,6 +155,7 @@ During SSR: evaluates to `1280`. During client hydration: evaluates to the actua
 **Fix:** Remove the `min-w-[400px]` entirely, or make it responsive: `min-w-0 md:min-w-[400px]`.
 
 **Acceptance:**
+
 - At 375px (iPhone SE): no horizontal scrollbar, content fills full width.
 - At desktop widths: Panel 2 still has reasonable minimum sizing.
 
@@ -157,6 +172,7 @@ NavPanel and TabBar correctly set `type="button"`, but BreadcrumbBar, GraphPanel
 **Fix:** Add `type="button"` to every `<button>` that is not a form submit button.
 
 **Acceptance:**
+
 - Every `<button>` in S2 components has an explicit `type` attribute.
 
 ---
@@ -174,12 +190,14 @@ NavPanel and TabBar correctly set `type="button"`, but BreadcrumbBar, GraphPanel
 These elements are invisible to keyboard users and screen readers. The entire file tree is inaccessible without a mouse.
 
 **Fix:**
+
 1. Add `role="treeitem"` to file nodes, `role="group"` to folder containers.
 2. Add `tabIndex={0}` to clickable items.
 3. Add `onKeyDown` handlers for Enter (activate), Space (toggle), ArrowUp/Down (navigate).
 4. Consider using a `role="tree"` on the root container per WAI-ARIA tree view pattern.
 
 **Acceptance:**
+
 - Tab key focuses file tree items.
 - Enter opens a file; Space or Enter toggles a folder.
 - Screen reader announces the tree structure.
@@ -196,20 +214,21 @@ These elements are invisible to keyboard users and screen readers. The entire fi
 
 ```typescript
 useEffect(() => {
-  let raf: number;
+  let raf: number
   const handler = () => {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => setViewportWidth(window.innerWidth));
-  };
-  window.addEventListener("resize", handler);
+    cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(() => setViewportWidth(window.innerWidth))
+  }
+  window.addEventListener('resize', handler)
   return () => {
-    window.removeEventListener("resize", handler);
-    cancelAnimationFrame(raf);
-  };
-}, []);
+    window.removeEventListener('resize', handler)
+    cancelAnimationFrame(raf)
+  }
+}, [])
 ```
 
 **Acceptance:**
+
 - Resizing the browser window does not cause jank or excessive re-renders.
 - Open React DevTools profiler → resize → re-render count stays under 10 per resize gesture.
 
@@ -224,7 +243,7 @@ useEffect(() => {
 **Fix:** Use a local ref to track the width during drag. Only commit to AppShell state on `pointerUp` (end of drag). During drag, apply width directly to the DOM via a ref to avoid React re-renders:
 
 ```typescript
-const panel3Ref = useRef<HTMLDivElement>(null);
+const panel3Ref = useRef<HTMLDivElement>(null)
 // During drag: panel3Ref.current.style.width = clamped + 'px'
 // On pointerUp: onResize(finalWidth)
 ```
@@ -232,6 +251,7 @@ const panel3Ref = useRef<HTMLDivElement>(null);
 Alternatively, if the smooth live preview is desired, wrap the resize handler in `requestAnimationFrame` and consider `React.memo` on child components.
 
 **Acceptance:**
+
 - Drag resizing is smooth at 60fps without dropped frames.
 - React DevTools profiler shows minimal re-renders during drag.
 
@@ -257,12 +277,14 @@ useEffect — persist openTabs
 This makes the component hard to reason about, test, and debug. The effect ordering and dependency interactions are non-obvious.
 
 **Fix:**
+
 1. Extract a `useLocalStorage<T>(key, defaultValue)` custom hook that handles read-on-mount + write-on-change in a single hook. Replaces 8 lines of state+effect per localStorage key with one line.
 2. Extract a `useViewport()` hook that returns `viewportWidth` and handles the resize listener + debounce.
 3. Extract a `useSupabaseUser()` hook that returns `user` state and handles the auth listener.
 4. Extract a `useTabManager(treeData, pathname, router)` hook that encapsulates tab reconciliation, open/close logic, and persistence.
 
 **Acceptance:**
+
 - AppShell is under 120 lines.
 - Each custom hook is independently testable.
 - Zero behavior change — same UX as before.
@@ -278,6 +300,7 @@ This makes the component hard to reason about, test, and debug. The effect order
 **Fix:** Remove `validSlugs` from the `AppShellProps` interface and stop passing it from layout. If it's needed in the future (e.g., Sprint 3 for link validation), add it back then.
 
 **Acceptance:**
+
 - `validSlugs` is not in the AppShell props or the layout render.
 - No unused variables in `npx tsc --noEmit` or ESLint output.
 
@@ -293,20 +316,23 @@ This makes the component hard to reason about, test, and debug. The effect order
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+)
 ```
 
 Issues:
+
 1. The `!` non-null assertion silently passes `undefined` if env vars are missing (the assertion is only a compile-time hint — at runtime `undefined` is passed to `createClient`, which may throw a confusing error deep inside the SDK).
 2. The client is created eagerly when the module is imported, even if auth features are never used on that page.
 3. If this module is accidentally imported in a server context (e.g., via a shared util), it creates a client-side Supabase instance on the server — a subtle bug.
 
 **Fix:**
+
 1. Replace `!` with runtime validation: `if (!supabaseUrl) throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL')`.
 2. Use a lazy singleton pattern: `let client: SupabaseClient | null = null; export function getSupabase() { if (!client) client = createClient(...); return client; }`.
 3. Add a `'use client'`-only guard or keep the import chain strictly client-side.
 
 **Acceptance:**
+
 - Missing env vars produce a clear error message mentioning the variable name.
 - Supabase client is not created until first use.
 
@@ -330,6 +356,7 @@ The project has `cn()` (clsx + tailwind-merge) installed and used by all shadcn 
 **Fix:** Replace `.join(' ')` with `cn()` from `@/lib/utils` in all S2 components.
 
 **Acceptance:**
+
 - Zero occurrences of `.join(' ')` for className construction in S2 components.
 - All conditional classNames use `cn()`.
 
@@ -342,6 +369,7 @@ The project has `cn()` (clsx + tailwind-merge) installed and used by all shadcn 
 **Problem:** The S2-9 ticket mentions `<BreadcrumbLink>` and `<BreadcrumbPage>`, and the project has `@/components/ui/breadcrumb.tsx` installed. But BreadcrumbBar builds its own breadcrumb from raw `<span>` and `<button>` elements, ignoring the pre-built accessible components.
 
 The shadcn `Breadcrumb` components include:
+
 - Correct `aria-label="breadcrumb"` on the `<nav>`
 - `role="link"` and `aria-disabled` on page items
 - `role="presentation"` and `aria-hidden` on separators
@@ -352,6 +380,7 @@ The custom implementation has none of this.
 **Fix:** Refactor BreadcrumbBar to compose shadcn `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, and `BreadcrumbSeparator` components. Keep the back/forward buttons and slug-to-breadcrumb logic.
 
 **Acceptance:**
+
 - Breadcrumb renders as `<nav aria-label="breadcrumb"><ol>...</ol></nav>`.
 - Separators are `aria-hidden`.
 - Screen reader announces breadcrumb navigation correctly.
@@ -364,18 +393,18 @@ The custom implementation has none of this.
 
 **Problem:** Layout dimensions and breakpoints are hardcoded as magic numbers across at least 6 files:
 
-| Value | Used in | Meaning |
-|---|---|---|
-| `260` | AppShell, overlay | Panel 1 expanded width |
-| `48` | AppShell | Panel 1 collapsed width |
-| `400` | AppShell | Panel 2 min-width |
-| `360` | AppShell | Panel 3 default width |
-| `280` | ResizeHandle | Panel 3 min width |
-| `600` | ResizeHandle | Panel 3 max width |
-| `768` | AppShell | Mobile breakpoint |
-| `1024` | AppShell | Tablet breakpoint |
-| `1100` | AppShell | Panel 3 auto-hide breakpoint |
-| `1280` | AppShell | Panel 3 overlay breakpoint |
+| Value  | Used in           | Meaning                      |
+| ------ | ----------------- | ---------------------------- |
+| `260`  | AppShell, overlay | Panel 1 expanded width       |
+| `48`   | AppShell          | Panel 1 collapsed width      |
+| `400`  | AppShell          | Panel 2 min-width            |
+| `360`  | AppShell          | Panel 3 default width        |
+| `280`  | ResizeHandle      | Panel 3 min width            |
+| `600`  | ResizeHandle      | Panel 3 max width            |
+| `768`  | AppShell          | Mobile breakpoint            |
+| `1024` | AppShell          | Tablet breakpoint            |
+| `1100` | AppShell          | Panel 3 auto-hide breakpoint |
+| `1280` | AppShell          | Panel 3 overlay breakpoint   |
 
 If any of these need to change, you'd have to grep across the entire codebase and hope you found them all.
 
@@ -389,17 +418,18 @@ export const LAYOUT = {
   PANEL3_DEFAULT_WIDTH: 360,
   PANEL3_MIN_WIDTH: 280,
   PANEL3_MAX_WIDTH: 600,
-} as const;
+} as const
 
 export const BREAKPOINTS = {
   MOBILE: 768,
   TABLET: 1024,
   PANEL3_AUTO_HIDE: 1100,
   PANEL3_OVERLAY: 1280,
-} as const;
+} as const
 ```
 
 **Acceptance:**
+
 - Zero raw numeric layout/breakpoint values in component files.
 - All dimensions reference constants from `src/lib/constants.ts`.
 
@@ -412,10 +442,12 @@ export const BREAKPOINTS = {
 **Problem:** `getContentTree()` is declared `async` but uses only synchronous `fs.readFileSync` and `fs.readdirSync` calls internally. The returned Promise resolves immediately. This is misleading — callers `await` it expecting potential async work, but there is none.
 
 **Fix:** Either:
+
 - (a) Remove `async` and return the result directly. Callers can still `await` a non-Promise value.
 - (b) Convert to truly async with `fs.promises.readFile` and `fs.promises.readdir` — this is the better long-term choice as it won't block the event loop during build with many files.
 
 **Acceptance:**
+
 - If option (a): function signature has no `async`, returns `ContentTreeResult` directly.
 - If option (b): uses `fs/promises` throughout, no `readFileSync` or `readdirSync` calls.
 
@@ -434,11 +466,13 @@ export const BREAKPOINTS = {
 3. **NavFileTree ancestor expansion** (line 169–191): Missing `treeData` in deps. If tree data changes, ancestor lookup uses stale data.
 
 **Fix:**
+
 1. For AppShell: wrap the check in a functional update or use `useRef` for `openTabs`.
 2. For GraphPanel: stabilize `onModeToggle` with `useCallback` in AppShell, or use a ref for the callback.
 3. For NavFileTree: add `treeData` to deps (it's stable in practice since it comes from a server-rendered layout).
 
 **Acceptance:**
+
 - Zero `eslint-disable` comments for `react-hooks/exhaustive-deps` in S2 files.
 
 ---
@@ -452,6 +486,7 @@ export const BREAKPOINTS = {
 **Fix:** Cap the stacks at a reasonable limit (e.g., 100 entries). When pushing to a full stack, shift the oldest entry.
 
 **Acceptance:**
+
 - After 200 navigations, `backStack.current.length <= 100`.
 
 ---
@@ -465,6 +500,7 @@ export const BREAKPOINTS = {
 **Fix:** Run `npm run format` and verify `npm run format:check` passes. Consider adding a pre-commit hook (even a simple `npx prettier --write --staged` script) to prevent drift.
 
 **Acceptance:**
+
 - `npm run format:check` exits 0.
 - All `.tsx` and `.ts` files in `src/` use the same quote style.
 
@@ -488,6 +524,7 @@ Sprint 3 will add search modal, markdown rendering, and wikilink navigation — 
 **Fix (for Sprint 3):** Create an `AppShellContext` with `useAppShell()` hook. Move shared state (`activeSlug`, `openTabs`, `panel3Visible`, `viewportWidth`, navigation callbacks) into the context. Components consume what they need directly without prop threading.
 
 **Acceptance:**
+
 - `ContentPanel` and `TabBar` no longer receive `activeSlug`, `openTabs`, etc. as props — they use `useAppShell()`.
 - AppShell component is under 80 lines (just the provider + layout).
 - Zero behavior change.
@@ -505,6 +542,7 @@ The S2-8 ticket specifies a tooltip on the Panel 3 toggle ("Toggle sidebar") and
 **Fix:** Add a single `<TooltipProvider>` in `layout.tsx` (wrapping `<AppShell>`) or at the top of `AppShell`. Remove per-component `<TooltipProvider>` wrappers. Replace `title` attributes with proper shadcn `Tooltip` components.
 
 **Acceptance:**
+
 - One `<TooltipProvider>` in the app, at or near the root.
 - All interactive icons that have `title` attributes use proper shadcn `Tooltip` instead.
 
@@ -521,18 +559,19 @@ For 26 files this is negligible, but if the content grows to hundreds of firms/f
 **Fix (low priority):** Add in-memory caching to `getContentTree()` with a simple module-level variable:
 
 ```typescript
-let cached: ContentTreeResult | null = null;
+let cached: ContentTreeResult | null = null
 export async function getContentTree() {
-  if (cached) return cached;
+  if (cached) return cached
   // ... build tree ...
-  cached = result;
-  return result;
+  cached = result
+  return result
 }
 ```
 
 For dev mode, invalidate on file changes via a timestamp check or skip caching entirely.
 
 **Acceptance:**
+
 - In `next dev`, navigating between 10 pages does not re-read the filesystem 10 times.
 - `npm run build` still generates correct static pages.
 
@@ -542,40 +581,40 @@ For dev mode, invalidate on file changes via a timestamp check or skip caching e
 
 Before starting Sprint 3 feature work, resolve these tickets:
 
-| Ticket | Severity | Effort | Description |
-|---|---|---|---|
-| R2-01 | P0 | Medium | Hydration: localStorage useState initializers |
-| R2-02 | P0 | Small | Hydration: typeof window in useState |
-| R2-03 | P0 | Small | Invalid nested buttons in TabBar |
-| R2-04 | P1 | Small | Wire hamburger menu trigger |
-| R2-05 | P1 | Trivial | Fix overlay NavPanel collapsed prop |
-| R2-06 | P1 | Trivial | Remove min-w-[400px] on mobile |
-| R2-07 | P1 | Small | Add type="button" to all buttons |
-| R2-08 | P1 | Medium | Keyboard accessibility for file tree |
+| Ticket | Severity | Effort  | Description                                   |
+| ------ | -------- | ------- | --------------------------------------------- |
+| R2-01  | P0       | Medium  | Hydration: localStorage useState initializers |
+| R2-02  | P0       | Small   | Hydration: typeof window in useState          |
+| R2-03  | P0       | Small   | Invalid nested buttons in TabBar              |
+| R2-04  | P1       | Small   | Wire hamburger menu trigger                   |
+| R2-05  | P1       | Trivial | Fix overlay NavPanel collapsed prop           |
+| R2-06  | P1       | Trivial | Remove min-w-[400px] on mobile                |
+| R2-07  | P1       | Small   | Add type="button" to all buttons              |
+| R2-08  | P1       | Medium  | Keyboard accessibility for file tree          |
 
 **Estimated total effort for P0+P1:** ~1 developer-day
 
 Schedule within Sprint 3:
 
-| Ticket | Severity | Effort | Description |
-|---|---|---|---|
-| R2-09 | P2 | Small | Debounce resize listener |
-| R2-10 | P2 | Medium | Optimize drag resize performance |
-| R2-11 | P2 | Medium | Extract custom hooks from AppShell |
-| R2-12 | P2 | Trivial | Remove unused validSlugs prop |
-| R2-13 | P2 | Small | Lazy Supabase client with validation |
-| R2-14 | P2 | Small | Replace .join(' ') with cn() |
-| R2-15 | P2 | Medium | Use shadcn Breadcrumb components |
-| R2-16 | P2 | Small | Extract layout constants |
-| R2-18 | P2 | Medium | Fix useEffect dependency issues |
+| Ticket | Severity | Effort  | Description                          |
+| ------ | -------- | ------- | ------------------------------------ |
+| R2-09  | P2       | Small   | Debounce resize listener             |
+| R2-10  | P2       | Medium  | Optimize drag resize performance     |
+| R2-11  | P2       | Medium  | Extract custom hooks from AppShell   |
+| R2-12  | P2       | Trivial | Remove unused validSlugs prop        |
+| R2-13  | P2       | Small   | Lazy Supabase client with validation |
+| R2-14  | P2       | Small   | Replace .join(' ') with cn()         |
+| R2-15  | P2       | Medium  | Use shadcn Breadcrumb components     |
+| R2-16  | P2       | Small   | Extract layout constants             |
+| R2-18  | P2       | Medium  | Fix useEffect dependency issues      |
 
 Defer to Sprint 4+:
 
-| Ticket | Severity | Effort | Description |
-|---|---|---|---|
-| R2-17 | P3 | Small | Make getContentTree truly async |
-| R2-19 | P3 | Trivial | Cap history stack size |
-| R2-20 | P3 | Trivial | Run formatter for consistent quotes |
-| R2-21 | P3 | Medium | AppShellContext for prop drilling |
-| R2-22 | P3 | Small | Root-level TooltipProvider |
-| R2-23 | P3 | Small | Cache getContentTree in dev |
+| Ticket | Severity | Effort  | Description                         |
+| ------ | -------- | ------- | ----------------------------------- |
+| R2-17  | P3       | Small   | Make getContentTree truly async     |
+| R2-19  | P3       | Trivial | Cap history stack size              |
+| R2-20  | P3       | Trivial | Run formatter for consistent quotes |
+| R2-21  | P3       | Medium  | AppShellContext for prop drilling   |
+| R2-22  | P3       | Small   | Root-level TooltipProvider          |
+| R2-23  | P3       | Small   | Cache getContentTree in dev         |

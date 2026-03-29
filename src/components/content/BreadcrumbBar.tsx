@@ -3,11 +3,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 type BreadcrumbBarProps = {
   activeSlug: string
 }
 
+const MAX_HISTORY = 100
 const CATEGORY_SEGMENTS = new Set(['cfd', 'futures'])
 
 function formatSegment(segment: string): string {
@@ -16,7 +25,7 @@ function formatSegment(segment: string): string {
   if (segment === 'challenges') return 'Challenges'
   return segment
     .split('-')
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
 }
 
@@ -30,6 +39,9 @@ export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
 
   useEffect(() => {
     if (prevSlug.current && prevSlug.current !== activeSlug) {
+      if (backStack.current.length >= MAX_HISTORY) {
+        backStack.current.shift()
+      }
       backStack.current.push(prevSlug.current)
       forwardStack.current = []
       setCanGoBack(backStack.current.length > 0)
@@ -56,85 +68,85 @@ export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
     router.push('/' + slug)
   }
 
-  // Strip leading "firms/" prefix, then split into segments
   const withoutPrefix = activeSlug.startsWith('firms/')
     ? activeSlug.slice('firms/'.length)
     : activeSlug
   const rawSegments = withoutPrefix.split('/')
   const labels = rawSegments.map(formatSegment)
 
-  // Build cumulative paths relative to firms/ for link segments
-  // e.g. segments [cfd, funded-next, challenges, 50k]
-  // cumulative: firms/cfd, firms/cfd/funded-next, firms/cfd/funded-next/challenges
-
   return (
-    <div className="flex items-center h-9 px-6 border-b border-[var(--border)] gap-1">
+    <div className="flex h-9 items-center gap-1 border-b border-[var(--border)] px-6">
       {/* Back button */}
       <button
+        type="button"
         onClick={handleBack}
         disabled={!canGoBack}
         aria-label="Go back"
-        className={`flex items-center justify-center rounded p-0.5 ${
+        className={cn(
+          'flex items-center justify-center rounded p-0.5',
           !canGoBack
-            ? 'opacity-30 cursor-not-allowed'
-            : 'hover:text-[var(--foreground)] cursor-pointer'
-        }`}
+            ? 'cursor-not-allowed opacity-30'
+            : 'cursor-pointer hover:text-[var(--foreground)]',
+        )}
       >
         <ChevronLeft size={16} />
       </button>
 
       {/* Forward button */}
       <button
+        type="button"
         onClick={handleForward}
         disabled={!canGoForward}
         aria-label="Go forward"
-        className={`flex items-center justify-center rounded p-0.5 ${
+        className={cn(
+          'flex items-center justify-center rounded p-0.5',
           !canGoForward
-            ? 'opacity-30 cursor-not-allowed'
-            : 'hover:text-[var(--foreground)] cursor-pointer'
-        }`}
+            ? 'cursor-not-allowed opacity-30'
+            : 'cursor-pointer hover:text-[var(--foreground)]',
+        )}
       >
         <ChevronRight size={16} />
       </button>
 
       <span className="mx-2 text-[var(--muted-foreground)]">/</span>
 
-      {labels.map((label, index) => {
-        const isLast = index === labels.length - 1
-        const rawSegment = rawSegments[index]
-        const isCategory = CATEGORY_SEGMENTS.has(rawSegment)
+      <Breadcrumb>
+        <BreadcrumbList className="flex-nowrap gap-1">
+          {labels.map((label, index) => {
+            const isLast = index === labels.length - 1
+            const rawSegment = rawSegments[index]
+            const isCategory = CATEGORY_SEGMENTS.has(rawSegment)
+            const cumulativePath =
+              'firms/' + rawSegments.slice(0, index + 1).join('/')
 
-        // Build the cumulative firms/ path up to and including this segment
-        const cumulativePath = 'firms/' + rawSegments.slice(0, index + 1).join('/')
-
-        return (
-          <span key={cumulativePath} className="flex items-center gap-1">
-            {index > 0 && (
-              <ChevronRight
-                size={12}
-                className="text-[var(--muted-foreground)]"
-              />
-            )}
-
-            {isLast ? (
-              <span className="text-[13px] text-[var(--foreground)]">
-                {label}
-              </span>
-            ) : isCategory ? (
-              <span className="text-[13px] text-[var(--muted-foreground)]">
-                {label}
-              </span>
-            ) : (
-              <button
-                onClick={() => router.push('/' + cumulativePath)}
-                className="text-[13px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer"
-              >
-                {label}
-              </button>
-            )}
-          </span>
-        )
-      })}
+            return (
+              <BreadcrumbItem key={cumulativePath} className="gap-1">
+                {index > 0 && <BreadcrumbSeparator />}
+                {isLast || isCategory ? (
+                  <BreadcrumbPage
+                    className={cn(
+                      'text-[13px]',
+                      isLast
+                        ? 'text-[var(--foreground)]'
+                        : 'text-[var(--muted-foreground)]',
+                    )}
+                  >
+                    {label}
+                  </BreadcrumbPage>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/' + cumulativePath)}
+                    className="cursor-pointer text-[13px] text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+                  >
+                    {label}
+                  </button>
+                )}
+              </BreadcrumbItem>
+            )
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
     </div>
   )
 }

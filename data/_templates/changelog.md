@@ -1,14 +1,14 @@
 ---
-title: "[Firm Name] — Changelog"
+title: '[Firm Name] — Changelog'
 firm: firm-slug
 category: cfd
 type: changelog
 status: active
-last_verified: "YYYY-MM-DDTHH:MM:SSZ"
+last_verified: 'YYYY-MM-DDTHH:MM:SSZ'
 verified_by: manual
 sources:
-  - url: "https://firmwebsite.com"
-    label: "Official Website"
+  - url: 'https://firmwebsite.com'
+    label: 'Official Website'
 tags: [cfd, changelog]
 ---
 

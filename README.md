@@ -19,10 +19,10 @@ An open-source, community-maintained information hub for prop firm traders. Buil
 
 ## Licenses
 
-| Path | License |
-|------|---------|
-| `/src` — application source code | [AGPL-3.0](./LICENSE) |
-| `/data` — prop firm content | [CC-BY-NC-SA-4.0](./data/LICENSE) |
+| Path                             | License                           |
+| -------------------------------- | --------------------------------- |
+| `/src` — application source code | [AGPL-3.0](./LICENSE)             |
+| `/data` — prop firm content      | [CC-BY-NC-SA-4.0](./data/LICENSE) |
 
 **Commercial use of either component requires a separate license.**
 Contact: `commercial@openpropfirm.com`

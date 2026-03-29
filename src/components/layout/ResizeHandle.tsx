@@ -1,44 +1,43 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { useRef } from 'react'
+import { cn } from '@/lib/utils'
+import { LAYOUT } from '@/lib/constants'
 
 type ResizeHandleProps = {
-  onResize: (newWidth: number) => void;
-};
+  onResize: (newWidth: number) => void
+}
 
 export default function ResizeHandle({ onResize }: ResizeHandleProps) {
-  const [isDragging, setIsDragging] = useState(false);
+  const raf = useRef(0)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setIsDragging(true);
-  };
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    // Panel 3 width = distance from pointer to right edge of viewport
-    const newWidth = window.innerWidth - e.clientX;
-    const clamped = Math.min(600, Math.max(280, newWidth));
-    onResize(clamped);
-  };
+    const newWidth = window.innerWidth - e.clientX
+    const clamped = Math.min(
+      LAYOUT.PANEL3_MAX_WIDTH,
+      Math.max(LAYOUT.PANEL3_MIN_WIDTH, newWidth),
+    )
+    cancelAnimationFrame(raf.current)
+    raf.current = requestAnimationFrame(() => onResize(clamped))
+  }
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    setIsDragging(false);
-    // AppShell's useEffect watching panel3Width persists the value to localStorage
-  };
+    e.currentTarget.releasePointerCapture(e.pointerId)
+  }
 
   return (
     <div
-      className={[
-        "w-1 shrink-0 cursor-col-resize transition-colors duration-200",
-        isDragging
-          ? "bg-[var(--accent)]/80"
-          : "bg-transparent hover:bg-[var(--accent)]/40",
-      ].join(" ")}
+      className={cn(
+        'w-1 shrink-0 cursor-col-resize transition-colors duration-200',
+        'bg-transparent hover:bg-[var(--accent)]/40',
+      )}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     />
-  );
+  )
 }

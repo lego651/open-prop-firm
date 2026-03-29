@@ -1,14 +1,14 @@
 ---
-title: "[Firm Name] — Trading Rules"
+title: '[Firm Name] — Trading Rules'
 firm: firm-slug
 category: cfd
 type: rules
 status: active
-last_verified: "YYYY-MM-DDTHH:MM:SSZ"
+last_verified: 'YYYY-MM-DDTHH:MM:SSZ'
 verified_by: manual
 sources:
-  - url: "https://firmwebsite.com/rules"
-    label: "Official Rules Page"
+  - url: 'https://firmwebsite.com/rules'
+    label: 'Official Rules Page'
 tags: [cfd, rules]
 ---
 

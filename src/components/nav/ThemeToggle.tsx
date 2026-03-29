@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { Moon, Palette, Sun } from 'lucide-react'
-
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { getTheme, setTheme, THEMES, type Theme } from '@/lib/theme'
@@ -27,6 +25,8 @@ export function ThemeToggle() {
   const [current, setCurrentTheme] = useState<Theme>('dark')
 
   useEffect(() => {
+    // Hydration read — syncing theme from DOM attribute set by inline script.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentTheme(getTheme())
   }, [])
 
@@ -37,17 +37,15 @@ export function ThemeToggle() {
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          onClick={handleClick}
-          aria-label={THEME_LABELS[current]}
-          className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
-        >
-          <ThemeIcon theme={current} />
-        </TooltipTrigger>
-        <TooltipContent>{THEME_LABELS[current]}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger
+        onClick={handleClick}
+        aria-label={THEME_LABELS[current]}
+        className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+      >
+        <ThemeIcon theme={current} />
+      </TooltipTrigger>
+      <TooltipContent>{THEME_LABELS[current]}</TooltipContent>
+    </Tooltip>
   )
 }

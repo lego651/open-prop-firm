@@ -1,18 +1,19 @@
-"use client";
+'use client'
 
-import type { TabEntry } from "@/types/content";
-import TabBar from "@/components/content/TabBar";
-import { BreadcrumbBar } from "@/components/content/BreadcrumbBar";
+import type { TabEntry } from '@/types/content'
+import TabBar from '@/components/content/TabBar'
+import { BreadcrumbBar } from '@/components/content/BreadcrumbBar'
 
 type ContentPanelProps = {
-  openTabs: TabEntry[];
-  activeSlug: string;
-  onTabClick: (slug: string) => void;
-  onTabClose: (slug: string) => void;
-  onNewTab: () => void;
-  onTogglePanel3: () => void;
-  children: React.ReactNode;
-};
+  openTabs: TabEntry[]
+  activeSlug: string
+  onTabClick: (slug: string) => void
+  onTabClose: (slug: string) => void
+  onNewTab: () => void
+  onTogglePanel3: () => void
+  onHamburger?: () => void
+  children: React.ReactNode
+}
 
 export default function ContentPanel({
   openTabs,
@@ -21,10 +22,11 @@ export default function ContentPanel({
   onTabClose,
   onNewTab,
   onTogglePanel3,
+  onHamburger,
   children,
 }: ContentPanelProps) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <TabBar
         openTabs={openTabs}
         activeSlug={activeSlug}
@@ -32,9 +34,10 @@ export default function ContentPanel({
         onTabClose={onTabClose}
         onNewTab={onNewTab}
         onTogglePanel3={onTogglePanel3}
+        onHamburger={onHamburger}
       />
       <BreadcrumbBar activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto">{children}</div>
     </div>
-  );
+  )
 }

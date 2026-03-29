@@ -15,6 +15,7 @@
 **Goal:** Bootstrap the complete project foundation — Next.js 16, strict TypeScript, shadcn/ui, Tailwind v4 CSS-based config, Prettier — in a single buildable and lint-clean state.
 
 **Acceptance Criteria:**
+
 - Run `npx create-next-app@latest openpropfirm --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"` — Next.js version in `package.json` must be `15.x`
 - `tsconfig.json` has `"strict": true`
 - `globals.css` uses `@import "tailwindcss"` (Tailwind v4 CSS-based config) with an `@theme {}` block — no `tailwind.config.js` file exists
@@ -28,6 +29,7 @@
 - `npm run lint` passes with zero errors
 
 **Notes:**
+
 - Tailwind v4 uses a CSS-first config (`@import "tailwindcss"`, `@theme {}` block) — `create-next-app` may scaffold a v3-style `tailwind.config.js`. Delete it and replace with the v4 CSS-based approach per `docs/tech-plan.md` Section 3.11.
 - The `suppressHydrationWarning` + anti-flash inline script belongs in Sprint 1, not Sprint 2 — every deployment from this sprint forward should be flash-free.
 - `prettier-plugin-tailwindcss` enforces consistent class ordering — install it now or class ordering will be inconsistent for the entire project lifetime.
@@ -41,6 +43,7 @@
 **Goal:** Create the complete canonical `/data` directory with every firm folder, content file, and template — all files have valid, parseable frontmatter ready for the validate-content script.
 
 **Acceptance Criteria:**
+
 - `/data` is at the repo root (not inside `/src`)
 - Exact folder and file structure matches `docs/tech-plan.md` Section 4 canonical spec:
   - `firms/cfd/funded-next/`: `index.md`, `rules.md`, `promos.md`, `changelog.md`, `challenges/10k.md`, `challenges/25k.md`, `challenges/50k.md`, `challenges/100k.md`, `challenges/200k.md`
@@ -56,6 +59,7 @@
 - `/data/LICENSE` contains the full CC-BY-NC-SA-4.0 license text
 
 **Notes:**
+
 - The PM's original ticket had wrong challenge tiers for all four firms — Funding Pips was entirely wrong. Use the tiers listed above (from `docs/tech-plan.md` Section 4). Sprint 4 will verify against official firm websites.
 - `sources: []` is explicitly rejected by the S1-9 validate-content script — use `sources: [{url: "https://[firm-homepage]", label: "Official Website — to be expanded in Sprint 4"}]` as the placeholder.
 - Tier accuracy for Sprint 4: Funded Next — verify 10k/25k/50k/100k/200k tiers exist on official site. Funding Pips — verify 5k/10k/25k/50k/100k. Apex — verify 25k/50k/100k/300k. Lucid — verify 10k/25k/50k.
@@ -69,6 +73,7 @@
 **Goal:** Create the full three-theme CSS variable system and prose CSS skeleton so that every deployment from Sprint 1 forward has correct theming with no flash on load.
 
 **Acceptance Criteria:**
+
 - `src/styles/themes.css` exists and defines all three `[data-theme="light"]`, `[data-theme="dark"]`, `[data-theme="blue"]` blocks with all CSS custom properties from `docs/ui-guide.md` Section 6.2: `--background`, `--foreground`, `--sidebar-bg`, `--border`, `--accent`, `--accent-fg`, `--muted`, `--muted-fg`, `--text-primary`, `--text-secondary`, `--text-muted`
 - `src/styles/prose.css` exists with the `.prose` class defined but rules left empty (skeleton only — rules are populated in Sprint 3)
 - Both files are imported into `src/app/globals.css` via `@import`
@@ -78,6 +83,7 @@
 - `npm run build` passes after these files are added
 
 **Notes:**
+
 - Tailwind v4 does not support `darkMode: ["class"]` from v3. All theme colors come exclusively from CSS custom properties on `[data-theme]` selectors — never from Tailwind's `dark:` prefix utilities.
 - Architecture contract: **Tailwind handles layout, spacing, flex, sizing. CSS variables handle all colors.** This must be respected by every component from Sprint 2 onward.
 - shadcn variable names (`--background`, `--foreground`, etc.) intentionally match the project's variable names — preserve this mapping.
@@ -91,6 +97,7 @@
 **Goal:** Create all required legal and documentation files — root LICENSE (AGPL-3.0), README with dual-license model and commercial contact, license badges.
 
 **Acceptance Criteria:**
+
 - `LICENSE` at repo root contains the full AGPL-3.0 license text (full text, not a summary)
 - `/data/LICENSE` contains the full CC-BY-NC-SA-4.0 license text (created in S1-2; this ticket verifies it and adds the README references)
 - `README.md` exists at repo root with:
@@ -106,6 +113,7 @@
 - The `commercial@openpropfirm.com` address is a placeholder — founder must replace with a real monitored inbox before Sprint 6 launch
 
 **Notes:**
+
 - The root `LICENSE` covers all `/src` code by convention — do not create a separate `/src/LICENSE`. The PM's original draft hedged with "(or /src/LICENSE)" which is incorrect.
 - License badges require no service integration — they are static shields.io image URLs embedded in markdown.
 
@@ -118,6 +126,7 @@
 **Goal:** Connect the GitHub repo to Vercel, verify production and preview deployments work, and document all required environment variables in `.env.example`.
 
 **Acceptance Criteria:**
+
 - Vercel project created in the dashboard, linked to the GitHub repo, root directory set to `/`, framework preset set to Next.js
 - Production branch set to `main`
 - Pushing a commit to `main` triggers an automatic Vercel production build that completes successfully
@@ -135,6 +144,7 @@
 - Preview deployment URL loads the app without a 500 error
 
 **Notes:**
+
 - The PM's original draft listed `NEXT_PUBLIC_VERCEL_ANALYTICS_ID` as an env var to document. This is wrong — Vercel auto-injects it. Do not add it.
 - `SUPABASE_SERVICE_KEY` has full database write access and must never appear in Vercel's environment or `.env.local`. The warning in `.env.example` is critical.
 
@@ -147,6 +157,7 @@
 **Goal:** Add Vercel Analytics and Speed Insights to the app so that Gate 1 traffic metrics are tracked from the first production deployment.
 
 **Acceptance Criteria:**
+
 - `@vercel/analytics` and `@vercel/speed-insights` installed as dependencies (`npm install @vercel/analytics @vercel/speed-insights`)
 - `<Analytics />` from `@vercel/analytics/react` rendered in `src/app/layout.tsx`
 - `<SpeedInsights />` from `@vercel/speed-insights/next` rendered in `src/app/layout.tsx`
@@ -157,6 +168,7 @@
 - In local development, components are present but do not throw errors (they are no-ops locally)
 
 **Notes:**
+
 - Analytics activates automatically when deployed to Vercel — no env var needed. This is why `NEXT_PUBLIC_VERCEL_ANALYTICS_ID` is not in `.env.example`.
 - Depends on S1-5 (requires a live Vercel deployment to verify data receipt).
 - Without this, the Gate 1 kill/maintain decision at Day 60 is made blind.
@@ -170,6 +182,7 @@
 **Goal:** Establish the monitoring bot workflow file so GitHub recognizes it, the manual trigger works, and the scaffold is ready for Sprint 6 implementation without structural changes.
 
 **Acceptance Criteria:**
+
 - `.github/workflows/bot.yml` exists with:
   - `on: schedule` with `cron: "0 6 * * *"` (daily at 06:00 UTC)
   - `on: workflow_dispatch` (manual trigger)
@@ -182,6 +195,7 @@
 - Job name (`monitor`) and step structure are the scaffold Sprint 6 will expand — Sprint 6 replaces the echo step, not the whole structure
 
 **Notes:**
+
 - The PM's original draft included a `push` trigger — this is wrong for a monitoring bot and has been removed.
 - The `actions/checkout@v4` step is intentional even though not needed for the echo — it establishes the pattern Sprint 6 inherits and avoids a structural diff.
 
@@ -194,6 +208,7 @@
 **Goal:** Create the Supabase project and document all keys. Resolve the auth method conflict so Sprint 2's `CompareAuthGate` component can be built without ambiguity.
 
 **Acceptance Criteria:**
+
 - Supabase project created on the free tier (no credit card required at v1 volume)
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` copied into `.env.local` (not committed — already in `.gitignore`)
 - `SUPABASE_SERVICE_KEY` stored as a GitHub Actions secret (not in `.env.local` or Vercel env vars)
@@ -205,6 +220,7 @@
 - No Supabase client code exists in the application yet — keys only
 
 **Notes:**
+
 - Auth method resolved: Google OAuth only (2026-03-29). tech-plan Section 3.8 is canonical.
 - Google OAuth requires a Google Cloud Console project with an OAuth 2.0 Client ID. The Supabase callback URL (`https://[project-id].supabase.co/auth/v1/callback`) must be added as an authorized redirect URI in the Google Console — this is the step that must happen before Sprint 2 Task 2.10.
 - Supabase free tier: 500MB database, 50MB storage. At ~120 bot log rows/month, fine for all of 2026.
@@ -218,6 +234,7 @@
 **Goal:** Create a `prebuild` script that validates frontmatter completeness on every `/data` file so broken content is caught at build time, not at runtime.
 
 **Acceptance Criteria:**
+
 - `scripts/validate-content.ts` exists and performs checks on every `.md` file under `/data/firms/**`:
   - `title` is a non-empty string
   - `firm` is a non-empty kebab-case string
@@ -237,6 +254,7 @@
 - `ts-node` and `gray-matter` installed as `devDependencies` (use `fast-glob` for file walking, not `glob` v10+ which is ESM-only and breaks with `ts-node`)
 
 **Notes:**
+
 - This is tech-plan Task 1.9 — it was missing from the PM's original draft entirely.
 - `gray-matter` may be needed here before Sprint 3 officially installs it — install in `devDependencies` now.
 - Use `fast-glob` (CJS-compatible) rather than `glob@10+` (ESM-only, breaks `ts-node`).
@@ -265,6 +283,7 @@ S1-5 (Vercel setup) ← needs S1-1 to have a buildable app
 ## Sprint 1 Completion Gate
 
 Sprint 1 is done when ALL of the following are true:
+
 - [ ] Vercel preview URL is live and loads without error
 - [ ] `/data` folder structure matches the canonical spec exactly with parseable frontmatter on every file
 - [ ] `npm run build` passes (including `prebuild` validate-content script — zero validation errors)

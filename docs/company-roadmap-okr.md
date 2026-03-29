@@ -50,15 +50,15 @@ The current moat candidates are: (a) being first and SEO-indexed, (b) community 
 
 ## Risks & Mitigations
 
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Monitoring bot fails silently; data goes stale | High | Medium | Require bot to post a daily "health" comment to a GitHub issue; alert if silent > 24 hours |
-| Prop firm changes ToS and sends takedown | Medium | Low | All content is publicly available fact with cited sources; legal exposure is low but retain ToS page and disclaimer |
-| Competitor (or prop firm) forks the repo and runs a paid competitor | High | Medium | License strategy (see below) closes this gap |
-| Affiliate conflict-of-interest perception | High | Medium | Explicit site policy: list all notable firms regardless of affiliate status; disclose affiliate relationships in footer |
-| Low community contribution velocity | Medium | High | Contributing must be easy; invest in CONTRIBUTING.md, bot-generated PRs as scaffolding, and Discord presence early |
-| Four firms at launch is too thin for SEO | Medium | High | Plan to expand to 10+ firms within 60 days of launch; SEO content scales with firm count |
-| v2 paid features fail to convert | Medium | Medium | Gate features that provide clear time savings, not features users already get for free elsewhere |
+| Risk                                                                | Severity | Likelihood | Mitigation                                                                                                              |
+| ------------------------------------------------------------------- | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Monitoring bot fails silently; data goes stale                      | High     | Medium     | Require bot to post a daily "health" comment to a GitHub issue; alert if silent > 24 hours                              |
+| Prop firm changes ToS and sends takedown                            | Medium   | Low        | All content is publicly available fact with cited sources; legal exposure is low but retain ToS page and disclaimer     |
+| Competitor (or prop firm) forks the repo and runs a paid competitor | High     | Medium     | License strategy (see below) closes this gap                                                                            |
+| Affiliate conflict-of-interest perception                           | High     | Medium     | Explicit site policy: list all notable firms regardless of affiliate status; disclose affiliate relationships in footer |
+| Low community contribution velocity                                 | Medium   | High       | Contributing must be easy; invest in CONTRIBUTING.md, bot-generated PRs as scaffolding, and Discord presence early      |
+| Four firms at launch is too thin for SEO                            | Medium   | High       | Plan to expand to 10+ firms within 60 days of launch; SEO content scales with firm count                                |
+| v2 paid features fail to convert                                    | Medium   | Medium     | Gate features that provide clear time savings, not features users already get for free elsewhere                        |
 
 ---
 
@@ -71,11 +71,13 @@ The current moat candidates are: (a) being first and SEO-indexed, (b) community 
 The goal is to protect against two specific threats: (1) someone forking the codebase and running a paid competitor using our code and content, and (2) someone scraping the `/data` folder and monetizing it without contributing back.
 
 AGPL-3.0 for `/src` means:
+
 - Anyone can run the code for free, including self-hosting
 - If they modify and distribute (including running as a hosted service), they must open-source their modifications
 - This is the Ghost/Plausible/Cal.com model — it works in practice as a competitive deterrent because commercial operators do not want to open-source their product extensions
 
 CC-BY-NC-SA-4.0 for `/data` means:
+
 - Community contributors can freely add content
 - Anyone can use and share the content with attribution
 - No commercial use without explicit permission from the project
@@ -92,6 +94,7 @@ CC-BY-NC-SA-4.0 for `/data` means:
 v1 is not a growth phase. v1 is a credibility-building phase. Launch means traders can arrive, trust the information, and use it without friction.
 
 **Non-negotiable at launch:**
+
 1. All four firms (Funded Next, Funding Pips, Apex Funding, Lucid Funding) have complete, verified content — index, challenges (all tiers), rules, promos, and changelog
 2. Every page has a `last_verified` timestamp and at least one source URL
 3. Monitoring bot is live and running daily; at minimum it pings a health check on each run
@@ -104,6 +107,7 @@ v1 is not a growth phase. v1 is a credibility-building phase. Launch means trade
 10. Graph view renders correctly for the initial set of files
 
 **What v1 explicitly does NOT include:**
+
 - Auth / login
 - Stripe / payments
 - Chatbot / LLM assistant
@@ -131,6 +135,7 @@ v2 activates only when v1 hits its kill/maintain threshold (see below). v2 is th
 5. **Firm profile "verified badge" (B2B revenue)** — Firms can pay a flat fee ($500–$2,000/year) to have a "Verified by Firm" badge on their page, meaning the firm itself has confirmed the data accuracy. This is NOT sponsored content — it is a verification service. Strict editorial policy must govern this to prevent it from becoming a pay-to-look-good scheme. This is a v2.1 or v2.2 feature once the brand is established.
 
 **Features that will NOT go behind a paywall (ever):**
+
 - All firm content (rules, challenges, promos, changelogs)
 - Search
 - Graph view
@@ -158,6 +163,7 @@ Paywalling these would betray the open-source mission and destroy community trus
 - No paid sales team in v2 — all conversion is inbound, product-led
 
 ### Revenue Model Risks
+
 - Affiliate programs can be terminated by firms with no notice — do not build the business on one or two affiliate relationships
 - Prop firm industry is volatile — firms shut down (seen with My Forex Funds, etc.) which can instantly kill affiliate income from a key partner
 - Diversification across 15+ firms reduces but does not eliminate this risk
@@ -170,66 +176,66 @@ Review cycle: quarterly. Update "Current" column at start of each review. Status
 
 ### Q2 2026 (April – June) — Launch & Early Traction
 
-| Objective | Key Result | Target | Current | Status |
-|-----------|------------|--------|---------|--------|
-| **O1: Ship a credible v1 that traders trust** | All 4 firms have complete content (index, challenges, rules, promos, changelog) | 4/4 firms | 0/4 | Not Started |
-| | Monitoring bot running daily with health check log | 100% uptime, 30-day run | 0 days | Not Started |
-| | ToS + disclaimer pages live before launch | Yes | No | Not Started |
-| | CONTRIBUTING.md published with PR workflow | Yes | No | Not Started |
-| **O2: Generate first traffic signal** | Unique visitors in first 30 days post-launch | 500 | 0 | Not Started |
-| | Bounce rate in first 30 days | < 60% | — | Not Started |
-| | GitHub repo stars by end of Q2 | 100 | 0 | Not Started |
-| | Mentions in prop trading subreddits or Discords | 3 organic mentions | 0 | Not Started |
-| **O3: Establish affiliate baseline** | Active affiliate programs applied to | 4/4 firms | 0 | Not Started |
-| | Affiliate link clicks tracked (UTM) | 200 clicks | 0 | Not Started |
-| | Confirmed affiliate conversions | 1 | 0 | Not Started |
+| Objective                                     | Key Result                                                                      | Target                  | Current | Status      |
+| --------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------- | ------- | ----------- |
+| **O1: Ship a credible v1 that traders trust** | All 4 firms have complete content (index, challenges, rules, promos, changelog) | 4/4 firms               | 0/4     | Not Started |
+|                                               | Monitoring bot running daily with health check log                              | 100% uptime, 30-day run | 0 days  | Not Started |
+|                                               | ToS + disclaimer pages live before launch                                       | Yes                     | No      | Not Started |
+|                                               | CONTRIBUTING.md published with PR workflow                                      | Yes                     | No      | Not Started |
+| **O2: Generate first traffic signal**         | Unique visitors in first 30 days post-launch                                    | 500                     | 0       | Not Started |
+|                                               | Bounce rate in first 30 days                                                    | < 60%                   | —       | Not Started |
+|                                               | GitHub repo stars by end of Q2                                                  | 100                     | 0       | Not Started |
+|                                               | Mentions in prop trading subreddits or Discords                                 | 3 organic mentions      | 0       | Not Started |
+| **O3: Establish affiliate baseline**          | Active affiliate programs applied to                                            | 4/4 firms               | 0       | Not Started |
+|                                               | Affiliate link clicks tracked (UTM)                                             | 200 clicks              | 0       | Not Started |
+|                                               | Confirmed affiliate conversions                                                 | 1                       | 0       | Not Started |
 
 ---
 
 ### Q3 2026 (July – September) — Growth & Content Expansion
 
-| Objective | Key Result | Target | Current | Status |
-|-----------|------------|--------|---------|--------|
-| **O4: Expand firm coverage to grow SEO surface** | Total firms in `/data` | 10 | — | Not Started |
-| | Organic search impressions (Google Search Console) | 10,000/month | — | Not Started |
-| | Organic search clicks/month | 1,000 | — | Not Started |
-| **O5: Build community contribution flywheel** | External (non-founder) GitHub contributors | 5 | — | Not Started |
-| | Community-submitted PRs merged | 10 | — | Not Started |
-| | GitHub repo stars | 300 | — | Not Started |
-| **O6: Grow affiliate revenue** | Monthly affiliate revenue | $500/month | $0 | Not Started |
-| | Affiliate link click-to-conversion rate | > 2% | — | Not Started |
-| | Number of active affiliate programs | 8 | — | Not Started |
+| Objective                                        | Key Result                                         | Target       | Current | Status      |
+| ------------------------------------------------ | -------------------------------------------------- | ------------ | ------- | ----------- |
+| **O4: Expand firm coverage to grow SEO surface** | Total firms in `/data`                             | 10           | —       | Not Started |
+|                                                  | Organic search impressions (Google Search Console) | 10,000/month | —       | Not Started |
+|                                                  | Organic search clicks/month                        | 1,000        | —       | Not Started |
+| **O5: Build community contribution flywheel**    | External (non-founder) GitHub contributors         | 5            | —       | Not Started |
+|                                                  | Community-submitted PRs merged                     | 10           | —       | Not Started |
+|                                                  | GitHub repo stars                                  | 300          | —       | Not Started |
+| **O6: Grow affiliate revenue**                   | Monthly affiliate revenue                          | $500/month   | $0      | Not Started |
+|                                                  | Affiliate link click-to-conversion rate            | > 2%         | —       | Not Started |
+|                                                  | Number of active affiliate programs                | 8            | —       | Not Started |
 
 ---
 
 ### Q4 2026 (October – December) — v2 Build Decision
 
-| Objective | Key Result | Target | Current | Status |
-|-----------|------------|--------|---------|--------|
-| **O7: Validate paid tier demand before building** | Email waitlist signups for Pro features | 200 | — | Not Started |
-| | Survey response indicating willingness to pay $9/month | > 30% of respondents | — | Not Started |
-| | Monthly unique visitors | 5,000 | — | Not Started |
-| **O8: Build v2 core features** | Chatbot MVP live (free tier, rate-limited) | Yes | — | Not Started |
-| | Email alert feature live | Yes | — | Not Started |
-| | Pro tier stripe integration live | Yes | — | Not Started |
-| **O9: Hit revenue inflection** | Monthly affiliate revenue | $2,000 | — | Not Started |
-| | Pro tier MRR (first month of paid tier) | $500 | — | Not Started |
+| Objective                                         | Key Result                                             | Target               | Current | Status      |
+| ------------------------------------------------- | ------------------------------------------------------ | -------------------- | ------- | ----------- |
+| **O7: Validate paid tier demand before building** | Email waitlist signups for Pro features                | 200                  | —       | Not Started |
+|                                                   | Survey response indicating willingness to pay $9/month | > 30% of respondents | —       | Not Started |
+|                                                   | Monthly unique visitors                                | 5,000                | —       | Not Started |
+| **O8: Build v2 core features**                    | Chatbot MVP live (free tier, rate-limited)             | Yes                  | —       | Not Started |
+|                                                   | Email alert feature live                               | Yes                  | —       | Not Started |
+|                                                   | Pro tier stripe integration live                       | Yes                  | —       | Not Started |
+| **O9: Hit revenue inflection**                    | Monthly affiliate revenue                              | $2,000               | —       | Not Started |
+|                                                   | Pro tier MRR (first month of paid tier)                | $500                 | —       | Not Started |
 
 ---
 
 ### Annual 2027 — Scale
 
-| Objective | Key Result | Target | Current | Status |
-|-----------|------------|--------|---------|--------|
-| **O10: Become the default prop trading resource** | Total firms covered | 25+ | — | Not Started |
-| | Monthly organic unique visitors | 25,000 | — | Not Started |
-| | Domain Rating (Ahrefs) | 40+ | — | Not Started |
-| **O11: Reach sustainable revenue** | Total MRR (affiliate + Pro tier) | $5,000 | — | Not Started |
-| | Pro tier MRR | $2,000 | — | Not Started |
-| | Pro tier paying subscribers | 200+ | — | Not Started |
-| | Monthly churn rate (Pro tier) | < 5% | — | Not Started |
-| **O12: Community is self-sustaining** | % of content updates from community PRs (not founder) | > 40% | — | Not Started |
-| | Active Discord or community members | 500 | — | Not Started |
+| Objective                                         | Key Result                                            | Target | Current | Status      |
+| ------------------------------------------------- | ----------------------------------------------------- | ------ | ------- | ----------- |
+| **O10: Become the default prop trading resource** | Total firms covered                                   | 25+    | —       | Not Started |
+|                                                   | Monthly organic unique visitors                       | 25,000 | —       | Not Started |
+|                                                   | Domain Rating (Ahrefs)                                | 40+    | —       | Not Started |
+| **O11: Reach sustainable revenue**                | Total MRR (affiliate + Pro tier)                      | $5,000 | —       | Not Started |
+|                                                   | Pro tier MRR                                          | $2,000 | —       | Not Started |
+|                                                   | Pro tier paying subscribers                           | 200+   | —       | Not Started |
+|                                                   | Monthly churn rate (Pro tier)                         | < 5%   | —       | Not Started |
+| **O12: Community is self-sustaining**             | % of content updates from community PRs (not founder) | > 40%  | —       | Not Started |
+|                                                   | Active Discord or community members                   | 500    | —       | Not Started |
 
 ---
 
@@ -239,12 +245,12 @@ These are non-negotiable decision gates. If the conditions are not met, we take 
 
 ### Gate 1 — Post-Launch Review (60 days after public launch)
 
-| Metric | Kill Threshold | Maintain Threshold | Action if Kill |
-|--------|---------------|-------------------|----------------|
-| Unique visitors (month 2) | < 200/month | >= 500/month | Shut down active development; move to static archive |
-| Bounce rate | > 80% | < 65% | Indicates content is not matching intent; pause and do user research before continuing |
-| GitHub stars | < 20 | >= 50 | Low community interest signal; do not invest in v2 |
-| Affiliate program approvals | 0/4 | 2/4+ | If zero firms approve us, the revenue model is broken; re-evaluate |
+| Metric                      | Kill Threshold | Maintain Threshold | Action if Kill                                                                         |
+| --------------------------- | -------------- | ------------------ | -------------------------------------------------------------------------------------- |
+| Unique visitors (month 2)   | < 200/month    | >= 500/month       | Shut down active development; move to static archive                                   |
+| Bounce rate                 | > 80%          | < 65%              | Indicates content is not matching intent; pause and do user research before continuing |
+| GitHub stars                | < 20           | >= 50              | Low community interest signal; do not invest in v2                                     |
+| Affiliate program approvals | 0/4            | 2/4+               | If zero firms approve us, the revenue model is broken; re-evaluate                     |
 
 **If Kill Gate 1 is triggered**: Freeze the repo, write a post-mortem, and do not invest in v2 build. The `/data` folder remains public as a community resource. The domain and site can go into maintenance mode (static export, no new development).
 
@@ -252,13 +258,13 @@ These are non-negotiable decision gates. If the conditions are not met, we take 
 
 ### Gate 2 — Pre-v2 Decision Point (end of Q3 2026, approximately 5–6 months post-launch)
 
-| Metric | Kill Threshold | v2 Green Light |
-|--------|---------------|---------------|
-| Monthly unique visitors | < 1,000 | >= 3,000 |
-| Monthly affiliate revenue | < $100 | >= $300 |
-| GitHub stars | < 75 | >= 200 |
-| External contributors (non-founder PRs merged) | 0 | >= 5 |
-| Email waitlist or community opt-ins | < 50 | >= 150 |
+| Metric                                         | Kill Threshold | v2 Green Light |
+| ---------------------------------------------- | -------------- | -------------- |
+| Monthly unique visitors                        | < 1,000        | >= 3,000       |
+| Monthly affiliate revenue                      | < $100         | >= $300        |
+| GitHub stars                                   | < 75           | >= 200         |
+| External contributors (non-founder PRs merged) | 0              | >= 5           |
+| Email waitlist or community opt-ins            | < 50           | >= 150         |
 
 **If Kill Gate 2 is triggered**: Do not build v2. Shift to maintenance mode — bot keeps running, community PRs accepted, but no active feature development. Re-evaluate in 6 months if traffic trends improve organically.
 
@@ -268,11 +274,11 @@ These are non-negotiable decision gates. If the conditions are not met, we take 
 
 ### Gate 3 — Pro Tier Viability (90 days after Pro tier launch)
 
-| Metric | Kill Threshold | Continue |
-|--------|---------------|----------|
-| Pro tier MRR | < $200/month | >= $500/month |
-| Pro tier churn rate | > 15%/month | < 8%/month |
-| Chatbot queries per active user per month | < 3 | >= 10 |
+| Metric                                    | Kill Threshold | Continue      |
+| ----------------------------------------- | -------------- | ------------- |
+| Pro tier MRR                              | < $200/month   | >= $500/month |
+| Pro tier churn rate                       | > 15%/month    | < 8%/month    |
+| Chatbot queries per active user per month | < 3            | >= 10         |
 
 **If Kill Gate 3 is triggered**: Revert Pro tier features to free; do not double down on a monetization model that users are not buying. Consider alternative models (donations, sponsorships, one-time data export fee).
 
@@ -300,4 +306,4 @@ These are decisions that cannot be made from the project brief alone. They requi
 
 ---
 
-*This document is a living artifact. Update the OKR "Current" and "Status" columns at the start of each quarter. Revisit kill/maintain thresholds at Gate 1 and Gate 2 reviews. All strategic decisions in this document are owned by the CEO.*
+_This document is a living artifact. Update the OKR "Current" and "Status" columns at the start of each quarter. Revisit kill/maintain thresholds at Gate 1 and Gate 2 reviews. All strategic decisions in this document are owned by the CEO._

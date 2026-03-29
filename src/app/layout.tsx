@@ -1,30 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { getContentTree } from "@/lib/content/getContentTree";
-import AppShell from "@/components/layout/AppShell";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { getContentTree } from '@/lib/content/getContentTree'
+import AppShell from '@/components/layout/AppShell'
+import './globals.css'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "OpenPropFirm",
-  description: "Open source prop trading firm platform",
-};
+  title: 'OpenPropFirm',
+  description: 'Open source prop trading firm platform',
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-  const { treeData, validSlugs } = await getContentTree();
+  const { treeData } = await getContentTree()
 
   return (
     <html
@@ -41,11 +42,11 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <AppShell treeData={treeData} validSlugs={validSlugs}>
-          {children}
-        </AppShell>
+        <TooltipProvider>
+          <AppShell treeData={treeData}>{children}</AppShell>
+        </TooltipProvider>
         {/* Analytics: Google Analytics — to be added in Sprint 6 before launch */}
       </body>
     </html>
-  );
+  )
 }

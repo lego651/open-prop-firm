@@ -1,15 +1,15 @@
 ---
-title: "[Firm Name] — Promo Codes"
+title: '[Firm Name] — Promo Codes'
 firm: firm-slug
 category: cfd
 type: promo
 status: active
-last_verified: "YYYY-MM-DDTHH:MM:SSZ"
+last_verified: 'YYYY-MM-DDTHH:MM:SSZ'
 verified_by: manual
 affiliate_available: false
 sources:
-  - url: "https://firmwebsite.com"
-    label: "Official Website"
+  - url: 'https://firmwebsite.com'
+    label: 'Official Website'
 tags: [cfd, promo]
 ---
 
@@ -19,9 +19,9 @@ tags: [cfd, promo]
 
 ## Active Promo Codes
 
-| Code | Discount | Expiry | Source |
-|------|----------|--------|--------|
-| CODE | X% off | Unknown | [link] |
+| Code | Discount | Expiry  | Source |
+| ---- | -------- | ------- | ------ |
+| CODE | X% off   | Unknown | [link] |
 
 ## Affiliate Disclosure
 

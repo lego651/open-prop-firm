@@ -1,17 +1,17 @@
 ---
-title: "[Firm Name] — $[SIZE]k Challenge"
+title: '[Firm Name] — $[SIZE]k Challenge'
 firm: firm-slug
-category: cfd  # or futures
+category: cfd # or futures
 type: challenge
 status: active
-last_verified: "YYYY-MM-DDTHH:MM:SSZ"
+last_verified: 'YYYY-MM-DDTHH:MM:SSZ'
 verified_by: manual
-challenge_size: 50000  # account size in USD
-price_usd: 0  # challenge purchase price in USD
+challenge_size: 50000 # account size in USD
+price_usd: 0 # challenge purchase price in USD
 affiliate_available: false
 sources:
-  - url: "https://firmwebsite.com/challenges"
-    label: "Official Challenge Page"
+  - url: 'https://firmwebsite.com/challenges'
+    label: 'Official Challenge Page'
 tags: [cfd, challenge, 50k]
 ---
 
@@ -21,13 +21,13 @@ tags: [cfd, challenge, 50k]
 
 ## Challenge Parameters
 
-| Parameter | Phase 1 | Phase 2 |
-|-----------|---------|---------|
-| Profit Target | % | % |
-| Daily Drawdown | % | % |
-| Max Drawdown | % | % |
-| Min Trading Days | days | days |
-| Time Limit | days | days |
+| Parameter        | Phase 1 | Phase 2 |
+| ---------------- | ------- | ------- |
+| Profit Target    | %       | %       |
+| Daily Drawdown   | %       | %       |
+| Max Drawdown     | %       | %       |
+| Min Trading Days | days    | days    |
+| Time Limit       | days    | days    |
 
 ## Payout Rules
 

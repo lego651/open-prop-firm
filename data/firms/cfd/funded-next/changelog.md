@@ -1,14 +1,14 @@
 ---
-title: "Funded Next — Changelog"
+title: 'Funded Next — Changelog'
 firm: funded-next
 category: cfd
 type: changelog
 status: active
-last_verified: "2026-03-29T00:00:00Z"
+last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 sources:
-  - url: "https://fundednext.com"
-    label: "Official Website — to be expanded in Sprint 4"
+  - url: 'https://fundednext.com'
+    label: 'Official Website — to be expanded in Sprint 4'
 tags: [cfd, changelog]
 ---
 

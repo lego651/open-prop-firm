@@ -37,12 +37,14 @@ The root layout is a full-viewport horizontal flex container. No scrolling at th
 ```
 
 **Shell element (`<AppShell>`):**
+
 - `display: flex`
 - `height: 100vh`
 - `overflow: hidden`
 - Background: `var(--background)`
 
 **Panel 1 — Left Nav:**
+
 - Width: `260px` (fixed, not resizable in v1)
 - Can collapse to `48px` (icon-only rail)
 - Transition: `width 200ms ease`
@@ -50,12 +52,14 @@ The root layout is a full-viewport horizontal flex container. No scrolling at th
 - Right border: `1px solid var(--border)`
 
 **Panel 2 — Content (center):**
+
 - `flex: 1 1 auto`
 - `min-width: 400px`
 - `overflow-y: auto`
 - Background: `var(--background)`
 
 **Panel 3 — Right Panel:**
+
 - Default width: `360px`
 - Draggable range: `280px` to `600px`
 - Left border: `1px solid var(--border)`
@@ -67,6 +71,7 @@ The root layout is a full-viewport horizontal flex container. No scrolling at th
 A `<ResizeHandle>` element sits between Panel 2 and Panel 3. This is a custom component — shadcn does not provide one.
 
 **Behavior:**
+
 - Element: `4px` wide, full height
 - Background: transparent in default state
 - Cursor: `col-resize`
@@ -81,9 +86,9 @@ A `<ResizeHandle>` element sits between Panel 2 and Panel 3. This is a custom co
 
 ```typescript
 const handlePointerDown = (e: React.PointerEvent) => {
-  e.currentTarget.setPointerCapture(e.pointerId);
-  setIsDragging(true);
-};
+  e.currentTarget.setPointerCapture(e.pointerId)
+  setIsDragging(true)
+}
 ```
 
 ### 1.3 Panel 3 Mode Toggle: Graph vs Split Content
@@ -91,10 +96,12 @@ const handlePointerDown = (e: React.PointerEvent) => {
 A toggle button lives in the top-right corner of Panel 3's header bar.
 
 **Two modes:**
+
 - `graph` — renders the `<GraphView>` component (default)
 - `split` — renders a second `<ContentPanel>` instance showing a different file
 
 **Toggle control:**
+
 - Icon-only button, 28x28px
 - Graph mode icon: a network/graph icon (Lucide `Network` or `GitFork`)
 - Split mode icon: Lucide `Columns2` (or `PanelRight`)
@@ -109,12 +116,12 @@ When switching from graph to split, Panel 3 shows the most recently viewed file 
 
 **v1 is desktop-first. Minimum supported viewport: 1024px wide.**
 
-| Viewport | Behavior |
-|---|---|
-| >= 1280px | All 3 panels visible, full layout |
-| 1024px–1279px | Panel 3 hidden by default; toggle button in top-right of Panel 2 header to show it as overlay |
-| < 1024px | Panel 1 collapses to icon rail (48px); Panel 3 hidden; accessible via toggle |
-| < 768px | Not officially supported in v1; graceful degradation: full-width content only, nav behind hamburger |
+| Viewport      | Behavior                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| >= 1280px     | All 3 panels visible, full layout                                                                   |
+| 1024px–1279px | Panel 3 hidden by default; toggle button in top-right of Panel 2 header to show it as overlay       |
+| < 1024px      | Panel 1 collapses to icon rail (48px); Panel 3 hidden; accessible via toggle                        |
+| < 768px       | Not officially supported in v1; graceful degradation: full-width content only, nav behind hamburger |
 
 Mobile is out of scope for v1 but the CSS must not break below 1024px — it degrades gracefully.
 
@@ -168,20 +175,22 @@ Mobile is out of scope for v1 but the CSS must not break below 1024px — it deg
 
 ```typescript
 type TreeNode = {
-  id: string;           // e.g. "funded-next/challenges/10k"
-  label: string;        // display name
-  type: "folder" | "file";
-  fileType?: "basic-info" | "challenge" | "rules" | "promo" | "changelog";
-  children?: TreeNode[];
-  isOpen?: boolean;
-};
+  id: string // e.g. "funded-next/challenges/10k"
+  label: string // display name
+  type: 'folder' | 'file'
+  fileType?: 'basic-info' | 'challenge' | 'rules' | 'promo' | 'changelog'
+  children?: TreeNode[]
+  isOpen?: boolean
+}
 ```
 
 **Top-level groupings** (not collapsible, styled as category headers):
+
 - "CFD" — `10px` uppercase, `font-semibold`, `var(--muted-foreground)`, `16px` top margin, `8px` bottom margin, `12px` left padding
 - "Futures" — same treatment
 
 **Firm folders** (collapsible):
+
 - Height: `28px`
 - Left padding: `12px` + depth indentation (`16px` per level)
 - Chevron (Lucide `ChevronRight`, 14px): rotates `90deg` when open, `200ms ease`
@@ -190,6 +199,7 @@ type TreeNode = {
 - Active (currently contains open file): background `var(--muted)`, text `var(--accent)`
 
 **File items:**
+
 - Height: `26px`
 - Left padding: `12px` + firm indent + `16px` (for file-level indent)
 - File icon (14px): colored by `fileType` (see icon/color map in Section 4.5)
@@ -198,6 +208,7 @@ type TreeNode = {
 - No external link icons — all navigation is internal
 
 **Collapse/Expand behavior:**
+
 - Tree state stored in `localStorage` key `navTreeState` as a JSON object `{ [folderId]: boolean }`
 - Default: all firm folders collapsed, except the currently active file's parent chain which is expanded
 - Clicking a folder toggles its children visibility
@@ -213,6 +224,7 @@ type TreeNode = {
 **Left side:** Settings icon button (Lucide `Settings`, 16px) — opens `<SettingsModal>` (v2 scope, placeholder in v1)
 
 **Right side:** Theme toggle button — cycles through `light → dark → blue → light`. Icon changes:
+
 - Light theme active: Lucide `Sun` (16px)
 - Dark theme active: Lucide `Moon` (16px)
 - Blue theme active: Lucide `Palette` (16px)
@@ -244,6 +256,7 @@ Both are icon-only buttons, `28x28px`, `border-radius: 6px`. Hover: `background:
 Modeled on Obsidian's tab bar. Tabs live in a horizontal scroll container.
 
 **Tab item:**
+
 - Height: `36px`
 - Min-width: `120px`, max-width: `200px`
 - Padding: `0 12px`
@@ -256,6 +269,7 @@ Modeled on Obsidian's tab bar. Tabs live in a horizontal scroll container.
 - Tab state: array of open file IDs stored in `localStorage` key `openTabs`
 
 **Tab bar container:**
+
 - `overflow-x: auto`, scrollbar hidden (`scrollbar-width: none`)
 - `border-bottom: 1px solid var(--border)`
 - `+ new tab` button at far right (Lucide `Plus`, 16px, icon-only, 36x36px) — opens search modal to pick a file
@@ -288,6 +302,7 @@ Shown at the top of every content page, below the breadcrumb bar, above the H1.
 ```
 
 **Styling:**
+
 - Full-width bar or inline block — use full-width bar for consistency
 - Background: `var(--verified-badge-bg)` (subtle green tint in light; dark olive tint in dark)
 - Border: `1px solid var(--verified-badge-border)`
@@ -305,6 +320,7 @@ Shown at the top of every content page, below the breadcrumb bar, above the H1.
 ### 3.5 Markdown Content Area
 
 Container:
+
 - Max-width: `720px` (readable line length)
 - Margin: `0 auto`
 - Padding: `32px 48px` on desktop; `24px 24px` on smaller
@@ -318,28 +334,32 @@ All styles applied via a `.prose` wrapper class (custom, not Tailwind's `@tailwi
 
 **Headings:**
 
-| Element | Size | Weight | Color | Top margin | Bottom margin |
-|---|---|---|---|---|---|
-| H1 | 26px | 700 | `var(--foreground)` | 0 | 16px |
-| H2 | 20px | 600 | `var(--foreground)` | 32px | 12px |
-| H3 | 16px | 600 | `var(--foreground)` | 24px | 8px |
-| H4 | 14px | 600 | `var(--foreground)` | 20px | 6px |
+| Element | Size | Weight | Color               | Top margin | Bottom margin |
+| ------- | ---- | ------ | ------------------- | ---------- | ------------- |
+| H1      | 26px | 700    | `var(--foreground)` | 0          | 16px          |
+| H2      | 20px | 600    | `var(--foreground)` | 32px       | 12px          |
+| H3      | 16px | 600    | `var(--foreground)` | 24px       | 8px           |
+| H4      | 14px | 600    | `var(--foreground)` | 20px       | 6px           |
 
 H1 border-bottom: `1px solid var(--border)`, padding-bottom `12px`.
 H2 border-bottom: `1px solid var(--border)` at 40% opacity, padding-bottom `8px`.
 H3, H4: no border.
 
 **Paragraph:**
+
 - Font: `15px / 1.6`, `var(--foreground)`
 - Margin-bottom: `16px`
 
 **Bold / Strong:**
+
 - `font-weight: 600`, same color as paragraph
 
 **Italic / Em:**
+
 - `font-style: italic`
 
 **Inline code:**
+
 - Font: `var(--font-mono)`, `13px`
 - Background: `var(--code-bg)`
 - Color: `var(--code-fg)`
@@ -348,6 +368,7 @@ H3, H4: no border.
 - Border: `1px solid var(--border)`
 
 **Code blocks (fenced):**
+
 - Background: `var(--code-block-bg)`
 - Border: `1px solid var(--border)`
 - Border-radius: `6px`
@@ -359,6 +380,7 @@ H3, H4: no border.
 - Language label: small badge top-right of block, `10px`, `var(--muted-foreground)`
 
 **Tables:**
+
 - Full width within content area
 - Border-collapse: `collapse`
 - Header row: background `var(--muted)`, `font-weight: 600`, `13px`
@@ -367,6 +389,7 @@ H3, H4: no border.
 - Overflow: wrap in a `div` with `overflow-x: auto` for wide tables
 
 **Blockquotes:**
+
 - Left border: `3px solid var(--accent)`
 - Padding-left: `16px`
 - Margin: `16px 0`
@@ -374,20 +397,24 @@ H3, H4: no border.
 - Font: `15px / 1.6`, italic
 
 **Unordered lists:**
+
 - `list-style: disc`
 - Left margin: `24px`
 - Item gap: `6px`
 - Nested indent: `16px` per level
 
 **Ordered lists:**
+
 - `list-style: decimal`
 - Same spacing as unordered
 
 **Horizontal rule:**
+
 - `border: none; border-top: 1px solid var(--border)`
 - Margin: `32px 0`
 
 **Footnote references (inline `[^1]`):**
+
 - Superscript, `var(--accent)`, cursor pointer
 - On click: smooth scroll to footnote at page bottom
 
@@ -398,6 +425,7 @@ H3, H4: no border.
 **Component:** `<WikiLink>` (custom)
 
 **Visual treatment (must not look like a blue hyperlink):**
+
 - Color: `var(--wikilink-fg)` (slightly brighter than body text, distinct from external links)
 - Text-decoration: `underline` with `text-decoration-style: dotted`, `text-underline-offset: 3px`
 - Underline color: `var(--wikilink-underline)` (muted, not the full text color)
@@ -407,12 +435,14 @@ H3, H4: no border.
 - On click: navigate to the linked file in the current panel (push to history stack)
 
 **Non-existent wikilinks** (target file not found):
+
 - Color: `var(--wikilink-missing-fg)` (muted red/salmon)
 - Dotted underline in same muted red
 - Cursor: `pointer`
 - On click: open the search modal pre-filled with the link text (like Obsidian — invite the user to create the file or search)
 
 **External links** (`[text](url)`):
+
 - Color: `var(--link-fg)` (standard link color, `var(--accent)` works)
 - Underline on hover only
 - Icon: Lucide `ExternalLink`, 11px, displayed inline after the text, slight opacity
@@ -441,6 +471,7 @@ Sources
 ### 3.8 Loading State
 
 While markdown is being fetched/parsed:
+
 - Replace content area with skeleton loaders (shadcn `Skeleton` component)
 - Skeleton layout mimics: H1 (1 block), 3 paragraph lines, a table outline, 2 more paragraph lines
 - Skeleton color: `var(--muted)` animating to `var(--muted)/60`
@@ -465,6 +496,7 @@ Alternative: `@visx/network` if you want SVG-based and more design control, but 
 ### 4.3 Node Design
 
 **Default node:**
+
 - Shape: circle
 - Radius: `5px` base size
 - Size scales with inbound link count: `radius = 5 + (inboundLinks * 1.5)`, capped at `22px`
@@ -473,21 +505,23 @@ Alternative: `@visx/network` if you want SVG-based and more design control, but 
 
 **Node color map by `fileType`:**
 
-| Type | Light theme | Dark theme | Blue theme |
-|---|---|---|---|
-| `basic-info` | `#7C85FF` | `#8B92FF` | `#A0AAFF` |
-| `challenge` | `#4CAF82` | `#56C290` | `#60CCA0` |
-| `rules` | `#F0A050` | `#F5AA60` | `#FFBA70` |
-| `promo` | `#E06080` | `#E87090` | `#F080A0` |
-| `changelog` | `#9B7ED0` | `#A88EDD` | `#B89EED` |
-| `unknown` | `#909090` | `#A0A0A0` | `#B0B0B0` |
+| Type         | Light theme | Dark theme | Blue theme |
+| ------------ | ----------- | ---------- | ---------- |
+| `basic-info` | `#7C85FF`   | `#8B92FF`  | `#A0AAFF`  |
+| `challenge`  | `#4CAF82`   | `#56C290`  | `#60CCA0`  |
+| `rules`      | `#F0A050`   | `#F5AA60`  | `#FFBA70`  |
+| `promo`      | `#E06080`   | `#E87090`  | `#F080A0`  |
+| `changelog`  | `#9B7ED0`   | `#A88EDD`  | `#B89EED`  |
+| `unknown`    | `#909090`   | `#A0A0A0`  | `#B0B0B0`  |
 
 **Selected node:**
+
 - Stroke width: `3px`
 - Stroke color: `var(--accent)` (theme accent color)
 - Animated pulse ring (CSS animation on a second circle, `opacity: 0 → 0.4 → 0`, `1.2s ease infinite`)
 
 **Hovered node:**
+
 - Opacity boost on node fill (multiply alpha by 1.2)
 - Show tooltip (see 4.5)
 
@@ -503,6 +537,7 @@ Alternative: `@visx/network` if you want SVG-based and more design control, but 
 **Component:** `<GraphTooltip>` (custom, positioned absolutely over the canvas)
 
 Contents:
+
 ```
 [colored dot] Funded Next — $50k Challenge
               12 inbound links · challenge
@@ -536,6 +571,7 @@ Overlay on the bottom-right of the graph canvas, inside Panel 3.
 - Filter dropdown: Lucide `SlidersHorizontal` (14px) — opens a small popover with checkboxes per `fileType` to show/hide node types
 
 **Filter popover:**
+
 - Uses shadcn `Popover` component
 - Checkbox list: one row per `fileType`, colored dot + label + shadcn `Checkbox`
 - All checked by default
@@ -585,6 +621,7 @@ Actually: use shadcn's `Command` component (`cmdk` under the hood) for the full 
 ```
 
 **Modal container:**
+
 - Max-width: `600px`, centered vertically at 30% from top (not true center — top-biased like Obsidian and Spotlight)
 - Background: `var(--popover-bg)`
 - Border: `1px solid var(--border)`
@@ -593,6 +630,7 @@ Actually: use shadcn's `Command` component (`cmdk` under the hood) for the full 
 - Backdrop: `rgba(0,0,0,0.5)` blur `4px`
 
 **Input:**
+
 - Height: `48px`
 - Font: `16px`, `var(--foreground)`
 - Placeholder: `var(--muted-foreground)`
@@ -601,24 +639,29 @@ Actually: use shadcn's `Command` component (`cmdk` under the hood) for the full 
 - Search icon: Lucide `Search`, 18px, `var(--muted-foreground)`, left of input
 
 **Result groups:**
+
 - Group label: `11px / uppercase / font-semibold`, `var(--muted-foreground)`, `padding: 6px 12px`, `letter-spacing: 0.06em`
 - Result item: `36px` min-height, `padding: 6px 12px`
 - File icon (13px, colored by `fileType`) + file title (`14px`) on first line
 - Context snippet (`12px`, `var(--muted-foreground)`) on second line if content match
 
 **Keyword highlighting in snippets:**
+
 - `<mark>` element styled: `background: var(--search-highlight-bg)`, `color: var(--search-highlight-fg)`, no border-radius, `padding: 0 1px`
 
 **Keyboard navigation:**
+
 - `ArrowUp` / `ArrowDown`: move selection, auto-scroll selected item into view
 - `Enter`: open the selected file in Panel 2
 - `Cmd+Enter`: open in Panel 3 (split mode)
 - `Esc`: close modal
 
 **Empty state:**
+
 - Centered, `var(--muted-foreground)`, Lucide `FileQuestion` (48px), "No results for `[query]`" in `14px`
 
 **Tech note:** Search index strategy (decide at implementation time):
+
 - `Pagefind` — best for static sites, runs at build time, zero runtime cost, supports keyword highlighting natively
 - `Fuse.js` — simpler, client-side, good enough for a few hundred markdown files
 - For v1 (4 firms, ~20–30 files) Fuse.js is sufficient; migrate to Pagefind if content grows
@@ -634,22 +677,22 @@ Themes are implemented entirely via CSS custom properties on the `:root` (or `[d
 **Theme application:**
 
 ```html
-<html data-theme="dark">
+<html data-theme="dark"></html>
 ```
 
 Theme is set by toggling the `data-theme` attribute on `<html>`. This allows CSS to respond immediately without React re-renders.
 
 ```typescript
 // lib/theme.ts
-export type Theme = "light" | "dark" | "blue";
+export type Theme = 'light' | 'dark' | 'blue'
 
 export function setTheme(theme: Theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme);
+  document.documentElement.setAttribute('data-theme', theme)
+  localStorage.setItem('theme', theme)
 }
 
 export function getStoredTheme(): Theme {
-  return (localStorage.getItem("theme") as Theme) ?? "dark";
+  return (localStorage.getItem('theme') as Theme) ?? 'dark'
 }
 ```
 
@@ -657,10 +700,10 @@ On initial load (in a `<script>` tag in `<head>` before page render, to prevent 
 
 ```html
 <script>
-  (function() {
-    const t = localStorage.getItem("theme") || "dark";
-    document.documentElement.setAttribute("data-theme", t);
-  })();
+  ;(function () {
+    const t = localStorage.getItem('theme') || 'dark'
+    document.documentElement.setAttribute('data-theme', t)
+  })()
 </script>
 ```
 
@@ -675,158 +718,159 @@ Defined in `styles/themes.css`:
 
 :root {
   --radius: 6px;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:
+    'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
 }
 
 /* ─────────────────────────────────────────
    LIGHT THEME
 ───────────────────────────────────────── */
 
-[data-theme="light"] {
+[data-theme='light'] {
   /* Core */
-  --background:           #FFFFFF;
-  --foreground:           #1A1A1A;
-  --muted:                #F0F0F0;
-  --muted-foreground:     #777777;
-  --border:               #E0E0E0;
-  --accent:               #7B61FF;
-  --accent-foreground:    #FFFFFF;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --muted: #f0f0f0;
+  --muted-foreground: #777777;
+  --border: #e0e0e0;
+  --accent: #7b61ff;
+  --accent-foreground: #ffffff;
 
   /* Sidebar / Nav */
-  --sidebar-bg:           #F7F7F7;
-  --nav-active-bg:        #EAE8FF;
-  --nav-active-fg:        #5A48D0;
+  --sidebar-bg: #f7f7f7;
+  --nav-active-bg: #eae8ff;
+  --nav-active-fg: #5a48d0;
 
   /* Popovers / Dropdowns */
-  --popover-bg:           #FFFFFF;
-  --popover-border:       #E0E0E0;
+  --popover-bg: #ffffff;
+  --popover-border: #e0e0e0;
 
   /* Code */
-  --code-bg:              #F0F0F0;
-  --code-block-bg:        #F5F5F5;
-  --code-fg:              #C7254E;
+  --code-bg: #f0f0f0;
+  --code-block-bg: #f5f5f5;
+  --code-fg: #c7254e;
 
   /* Links */
-  --link-fg:              #7B61FF;
-  --wikilink-fg:          #4A4A8A;
-  --wikilink-underline:   #A0A0C0;
-  --wikilink-hover-fg:    #7B61FF;
-  --wikilink-missing-fg:  #C0504A;
+  --link-fg: #7b61ff;
+  --wikilink-fg: #4a4a8a;
+  --wikilink-underline: #a0a0c0;
+  --wikilink-hover-fg: #7b61ff;
+  --wikilink-missing-fg: #c0504a;
 
   /* Verified badge */
-  --verified-badge-bg:    #EFF7F2;
-  --verified-badge-border:#B8DEC8;
-  --verified-badge-fg:    #2D6A4F;
+  --verified-badge-bg: #eff7f2;
+  --verified-badge-border: #b8dec8;
+  --verified-badge-fg: #2d6a4f;
 
   /* Search */
-  --search-highlight-bg:  #FFF380;
-  --search-highlight-fg:  #1A1A1A;
+  --search-highlight-bg: #fff380;
+  --search-highlight-fg: #1a1a1a;
 
   /* Graph */
-  --graph-bg:             #FAFAFA;
-  --graph-edge-color:     #BBBBBB;
-  --graph-node-stroke:    rgba(0,0,0,0.15);
+  --graph-bg: #fafafa;
+  --graph-edge-color: #bbbbbb;
+  --graph-node-stroke: rgba(0, 0, 0, 0.15);
 }
 
 /* ─────────────────────────────────────────
    DARK THEME (default)
 ───────────────────────────────────────── */
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   /* Core */
-  --background:           #1E1E2E;
-  --foreground:           #CDD6F4;
-  --muted:                #2A2A3E;
-  --muted-foreground:     #6C7086;
-  --border:               #313244;
-  --accent:               #CBA6F7;
-  --accent-foreground:    #1E1E2E;
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --muted: #2a2a3e;
+  --muted-foreground: #6c7086;
+  --border: #313244;
+  --accent: #cba6f7;
+  --accent-foreground: #1e1e2e;
 
   /* Sidebar / Nav */
-  --sidebar-bg:           #181825;
-  --nav-active-bg:        #313244;
-  --nav-active-fg:        #CBA6F7;
+  --sidebar-bg: #181825;
+  --nav-active-bg: #313244;
+  --nav-active-fg: #cba6f7;
 
   /* Popovers / Dropdowns */
-  --popover-bg:           #24273A;
-  --popover-border:       #363A52;
+  --popover-bg: #24273a;
+  --popover-border: #363a52;
 
   /* Code */
-  --code-bg:              #2A2A3E;
-  --code-block-bg:        #232336;
-  --code-fg:              #F38BA8;
+  --code-bg: #2a2a3e;
+  --code-block-bg: #232336;
+  --code-fg: #f38ba8;
 
   /* Links */
-  --link-fg:              #89B4FA;
-  --wikilink-fg:          #B4BEFE;
-  --wikilink-underline:   #585B70;
-  --wikilink-hover-fg:    #CBA6F7;
-  --wikilink-missing-fg:  #F38BA8;
+  --link-fg: #89b4fa;
+  --wikilink-fg: #b4befe;
+  --wikilink-underline: #585b70;
+  --wikilink-hover-fg: #cba6f7;
+  --wikilink-missing-fg: #f38ba8;
 
   /* Verified badge */
-  --verified-badge-bg:    #1E2D24;
-  --verified-badge-border:#2D4A38;
-  --verified-badge-fg:    #A6E3A1;
+  --verified-badge-bg: #1e2d24;
+  --verified-badge-border: #2d4a38;
+  --verified-badge-fg: #a6e3a1;
 
   /* Search */
-  --search-highlight-bg:  #F9E2AF;
-  --search-highlight-fg:  #1E1E2E;
+  --search-highlight-bg: #f9e2af;
+  --search-highlight-fg: #1e1e2e;
 
   /* Graph */
-  --graph-bg:             #181825;
-  --graph-edge-color:     #45475A;
-  --graph-node-stroke:    rgba(255,255,255,0.1);
+  --graph-bg: #181825;
+  --graph-edge-color: #45475a;
+  --graph-node-stroke: rgba(255, 255, 255, 0.1);
 }
 
 /* ─────────────────────────────────────────
    BLUE THEME
 ───────────────────────────────────────── */
 
-[data-theme="blue"] {
+[data-theme='blue'] {
   /* Core */
-  --background:           #0D1117;
-  --foreground:           #E6EDF3;
-  --muted:                #161B22;
-  --muted-foreground:     #8B949E;
-  --border:               #30363D;
-  --accent:               #58A6FF;
-  --accent-foreground:    #0D1117;
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --muted: #161b22;
+  --muted-foreground: #8b949e;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --accent-foreground: #0d1117;
 
   /* Sidebar / Nav */
-  --sidebar-bg:           #090D12;
-  --nav-active-bg:        #1F3A5F;
-  --nav-active-fg:        #79C0FF;
+  --sidebar-bg: #090d12;
+  --nav-active-bg: #1f3a5f;
+  --nav-active-fg: #79c0ff;
 
   /* Popovers / Dropdowns */
-  --popover-bg:           #161B22;
-  --popover-border:       #30363D;
+  --popover-bg: #161b22;
+  --popover-border: #30363d;
 
   /* Code */
-  --code-bg:              #161B22;
-  --code-block-bg:        #0D1117;
-  --code-fg:              #FF7B72;
+  --code-bg: #161b22;
+  --code-block-bg: #0d1117;
+  --code-fg: #ff7b72;
 
   /* Links */
-  --link-fg:              #58A6FF;
-  --wikilink-fg:          #79C0FF;
-  --wikilink-underline:   #21262D;
-  --wikilink-hover-fg:    #A5D6FF;
-  --wikilink-missing-fg:  #FF7B72;
+  --link-fg: #58a6ff;
+  --wikilink-fg: #79c0ff;
+  --wikilink-underline: #21262d;
+  --wikilink-hover-fg: #a5d6ff;
+  --wikilink-missing-fg: #ff7b72;
 
   /* Verified badge */
-  --verified-badge-bg:    #0D1F2D;
-  --verified-badge-border:#133D5E;
-  --verified-badge-fg:    #3FB950;
+  --verified-badge-bg: #0d1f2d;
+  --verified-badge-border: #133d5e;
+  --verified-badge-fg: #3fb950;
 
   /* Search */
-  --search-highlight-bg:  #E3B341;
-  --search-highlight-fg:  #0D1117;
+  --search-highlight-bg: #e3b341;
+  --search-highlight-fg: #0d1117;
 
   /* Graph */
-  --graph-bg:             #090D12;
-  --graph-edge-color:     #21262D;
-  --graph-node-stroke:    rgba(255,255,255,0.08);
+  --graph-bg: #090d12;
+  --graph-edge-color: #21262d;
+  --graph-node-stroke: rgba(255, 255, 255, 0.08);
 }
 ```
 
@@ -850,16 +894,24 @@ No other files need to change. The theme system is intentionally isolated to CSS
 **Sans-serif (UI + content body):**
 
 ```css
-font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-             "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+font-family:
+  'Inter',
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  Oxygen,
+  Ubuntu,
+  sans-serif;
 ```
 
 Load Inter via `next/font/google`:
 
 ```typescript
 // app/layout.tsx
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 ```
 
 Use weights: 400 (normal), 500 (medium), 600 (semibold), 700 (bold).
@@ -867,26 +919,27 @@ Use weights: 400 (normal), 500 (medium), 600 (semibold), 700 (bold).
 **Monospace (code):**
 
 ```css
-font-family: "JetBrains Mono", "Fira Code", "Cascadia Code",
-             ui-monospace, "Courier New", monospace;
+font-family:
+  'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New',
+  monospace;
 ```
 
 Load JetBrains Mono from Google Fonts. Use weight 400 only.
 
 ### 7.2 Type Scale
 
-| Token | Size | Line height | Usage |
-|---|---|---|---|
-| `--text-xs` | 10px | 1.4 | Kbd badges, graph legend |
-| `--text-sm` | 12px | 1.5 | Footnotes, metadata, badge text |
-| `--text-base` | 13px | 1.5 | Nav items, tabs, breadcrumbs |
-| `--text-body` | 15px | 1.6 | Markdown paragraph text |
-| `--text-md` | 16px | 1.5 | Search input |
-| `--text-h4` | 14px | 1.4 | H4 headings |
-| `--text-h3` | 16px | 1.4 | H3 headings |
-| `--text-h2` | 20px | 1.3 | H2 headings |
-| `--text-h1` | 26px | 1.2 | H1 headings |
-| `--text-lg` | 18px | 1.4 | Modal titles |
+| Token         | Size | Line height | Usage                           |
+| ------------- | ---- | ----------- | ------------------------------- |
+| `--text-xs`   | 10px | 1.4         | Kbd badges, graph legend        |
+| `--text-sm`   | 12px | 1.5         | Footnotes, metadata, badge text |
+| `--text-base` | 13px | 1.5         | Nav items, tabs, breadcrumbs    |
+| `--text-body` | 15px | 1.6         | Markdown paragraph text         |
+| `--text-md`   | 16px | 1.5         | Search input                    |
+| `--text-h4`   | 14px | 1.4         | H4 headings                     |
+| `--text-h3`   | 16px | 1.4         | H3 headings                     |
+| `--text-h2`   | 20px | 1.3         | H2 headings                     |
+| `--text-h1`   | 26px | 1.2         | H1 headings                     |
+| `--text-lg`   | 18px | 1.4         | Modal titles                    |
 
 ### 7.3 Content Max Width
 
@@ -911,44 +964,44 @@ The markdown content area has a max-width of `720px`. This is the sweet spot for
 
 Install these via `npx shadcn@latest add [component]`:
 
-| Component | Used in | Notes |
-|---|---|---|
-| `button` | Nav bottom bar, graph controls, tab bar, modal close | Use `variant="ghost"` for icon buttons |
-| `breadcrumb` | Content panel header | Standard shadcn breadcrumb |
-| `command` | Search modal | Core of `<SearchModal>` — use `Command`, `CommandInput`, `CommandList`, `CommandGroup`, `CommandItem` |
-| `dialog` | Search modal wrapper | Wrap `Command` inside `DialogContent` |
-| `popover` | Graph filter popover, link previews | Standard |
-| `checkbox` | Graph filter popover | One per `fileType` |
-| `skeleton` | Content loading state | Replace content area during load |
-| `separator` | Source footnotes divider, panel separators | `<Separator />` |
-| `tooltip` | Graph controls hover labels, bottom bar icon labels | Wrap all icon-only buttons |
-| `scroll-area` | Nav file tree, tab bar | Custom scrollbar styling |
-| `badge` | `fileType` labels in search results | Use `variant="secondary"` |
-| `dropdown-menu` | (Optional) right-click context menu on nav items | Low priority for v1 |
+| Component       | Used in                                              | Notes                                                                                                 |
+| --------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `button`        | Nav bottom bar, graph controls, tab bar, modal close | Use `variant="ghost"` for icon buttons                                                                |
+| `breadcrumb`    | Content panel header                                 | Standard shadcn breadcrumb                                                                            |
+| `command`       | Search modal                                         | Core of `<SearchModal>` — use `Command`, `CommandInput`, `CommandList`, `CommandGroup`, `CommandItem` |
+| `dialog`        | Search modal wrapper                                 | Wrap `Command` inside `DialogContent`                                                                 |
+| `popover`       | Graph filter popover, link previews                  | Standard                                                                                              |
+| `checkbox`      | Graph filter popover                                 | One per `fileType`                                                                                    |
+| `skeleton`      | Content loading state                                | Replace content area during load                                                                      |
+| `separator`     | Source footnotes divider, panel separators           | `<Separator />`                                                                                       |
+| `tooltip`       | Graph controls hover labels, bottom bar icon labels  | Wrap all icon-only buttons                                                                            |
+| `scroll-area`   | Nav file tree, tab bar                               | Custom scrollbar styling                                                                              |
+| `badge`         | `fileType` labels in search results                  | Use `variant="secondary"`                                                                             |
+| `dropdown-menu` | (Optional) right-click context menu on nav items     | Low priority for v1                                                                                   |
 
 ### 8.2 Custom Components (not in shadcn)
 
 These must be built from scratch:
 
-| Component | Location | Description |
-|---|---|---|
-| `<AppShell>` | `components/layout/AppShell.tsx` | Root 3-panel flex layout, manages panel widths and Panel 3 mode |
-| `<ResizeHandle>` | `components/layout/ResizeHandle.tsx` | Draggable divider between Panel 2 and Panel 3 |
-| `<NavPanel>` | `components/nav/NavPanel.tsx` | Entire left sidebar including tree, search trigger, bottom bar |
-| `<FileTree>` | `components/nav/FileTree.tsx` | Recursive collapsible tree component |
-| `<FileTreeItem>` | `components/nav/FileTreeItem.tsx` | Single node in the file tree (folder or file) |
-| `<TabBar>` | `components/content/TabBar.tsx` | Horizontal tab strip at top of Panel 2 |
-| `<ContentPanel>` | `components/content/ContentPanel.tsx` | Scrollable content area with breadcrumb, badge, markdown |
-| `<MarkdownRenderer>` | `components/content/MarkdownRenderer.tsx` | Converts parsed markdown AST to React elements with custom renderers |
-| `<WikiLink>` | `components/content/WikiLink.tsx` | Internal link component with navigate-on-click and missing-link state |
-| `<VerifiedBadge>` | `components/content/VerifiedBadge.tsx` | `last_verified` timestamp + source links bar |
-| `<SourceFootnotes>` | `components/content/SourceFootnotes.tsx` | Renders frontmatter `sources` array at page bottom |
-| `<GraphView>` | `components/graph/GraphView.tsx` | Canvas-based force-directed graph via `react-force-graph-2d` |
-| `<GraphTooltip>` | `components/graph/GraphTooltip.tsx` | Absolute-positioned tooltip shown on node hover |
-| `<GraphControls>` | `components/graph/GraphControls.tsx` | Zoom/fit/filter overlay inside graph canvas |
-| `<GraphLegend>` | `components/graph/GraphLegend.tsx` | Node type color legend overlay |
-| `<SearchModal>` | `components/search/SearchModal.tsx` | Full-screen search built on shadcn `Command` |
-| `<ThemeToggle>` | `components/ui/ThemeToggle.tsx` | Cycles light/dark/blue, writes to localStorage and `data-theme` |
+| Component            | Location                                  | Description                                                           |
+| -------------------- | ----------------------------------------- | --------------------------------------------------------------------- |
+| `<AppShell>`         | `components/layout/AppShell.tsx`          | Root 3-panel flex layout, manages panel widths and Panel 3 mode       |
+| `<ResizeHandle>`     | `components/layout/ResizeHandle.tsx`      | Draggable divider between Panel 2 and Panel 3                         |
+| `<NavPanel>`         | `components/nav/NavPanel.tsx`             | Entire left sidebar including tree, search trigger, bottom bar        |
+| `<FileTree>`         | `components/nav/FileTree.tsx`             | Recursive collapsible tree component                                  |
+| `<FileTreeItem>`     | `components/nav/FileTreeItem.tsx`         | Single node in the file tree (folder or file)                         |
+| `<TabBar>`           | `components/content/TabBar.tsx`           | Horizontal tab strip at top of Panel 2                                |
+| `<ContentPanel>`     | `components/content/ContentPanel.tsx`     | Scrollable content area with breadcrumb, badge, markdown              |
+| `<MarkdownRenderer>` | `components/content/MarkdownRenderer.tsx` | Converts parsed markdown AST to React elements with custom renderers  |
+| `<WikiLink>`         | `components/content/WikiLink.tsx`         | Internal link component with navigate-on-click and missing-link state |
+| `<VerifiedBadge>`    | `components/content/VerifiedBadge.tsx`    | `last_verified` timestamp + source links bar                          |
+| `<SourceFootnotes>`  | `components/content/SourceFootnotes.tsx`  | Renders frontmatter `sources` array at page bottom                    |
+| `<GraphView>`        | `components/graph/GraphView.tsx`          | Canvas-based force-directed graph via `react-force-graph-2d`          |
+| `<GraphTooltip>`     | `components/graph/GraphTooltip.tsx`       | Absolute-positioned tooltip shown on node hover                       |
+| `<GraphControls>`    | `components/graph/GraphControls.tsx`      | Zoom/fit/filter overlay inside graph canvas                           |
+| `<GraphLegend>`      | `components/graph/GraphLegend.tsx`        | Node type color legend overlay                                        |
+| `<SearchModal>`      | `components/search/SearchModal.tsx`       | Full-screen search built on shadcn `Command`                          |
+| `<ThemeToggle>`      | `components/ui/ThemeToggle.tsx`           | Cycles light/dark/blue, writes to localStorage and `data-theme`       |
 
 ### 8.3 Markdown Parsing Stack
 
@@ -959,16 +1012,17 @@ remark-parse → remark-gfm (tables, strikethrough) → remark-rehype → rehype
 ```
 
 Custom plugins needed:
+
 - `remark-wikilinks` — parse `[[target]]` and `[[target|display]]` into a custom AST node, then render as `<WikiLink>` in rehype-react
 - Custom rehype-react component map to apply all the styles in Section 3.5
 
 ```typescript
 // lib/markdown.ts
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
-import rehypeReact from "rehype-react";
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkRehype from 'remark-rehype'
+import rehypeReact from 'rehype-react'
 // import remarkWikilinks from "./remark-wikilinks"; // custom plugin
 
 const processor = unified()
@@ -983,8 +1037,8 @@ const processor = unified()
       table: OverflowTable,
       code: CodeBlock,
       // ... etc
-    }
-  });
+    },
+  })
 ```
 
 ---
@@ -993,61 +1047,61 @@ const processor = unified()
 
 ### 9.1 Panel Dimensions
 
-| Panel | Property | Value |
-|---|---|---|
-| Panel 1 (nav) | Width (expanded) | `260px` |
-| Panel 1 (nav) | Width (collapsed) | `48px` |
-| Panel 1 | Transition | `width 200ms ease` |
-| Panel 2 (content) | Min-width | `400px` |
-| Panel 2 | Flex | `1 1 auto` |
-| Panel 3 (right) | Default width | `360px` |
-| Panel 3 | Min-width (drag clamp) | `280px` |
-| Panel 3 | Max-width (drag clamp) | `600px` |
-| ResizeHandle | Width | `4px` |
-| Tab bar | Height | `36px` |
-| Breadcrumb bar | Height | `36px` |
-| Nav header | Height | `48px` |
-| Nav bottom bar | Height | `40px` |
+| Panel             | Property               | Value              |
+| ----------------- | ---------------------- | ------------------ |
+| Panel 1 (nav)     | Width (expanded)       | `260px`            |
+| Panel 1 (nav)     | Width (collapsed)      | `48px`             |
+| Panel 1           | Transition             | `width 200ms ease` |
+| Panel 2 (content) | Min-width              | `400px`            |
+| Panel 2           | Flex                   | `1 1 auto`         |
+| Panel 3 (right)   | Default width          | `360px`            |
+| Panel 3           | Min-width (drag clamp) | `280px`            |
+| Panel 3           | Max-width (drag clamp) | `600px`            |
+| ResizeHandle      | Width                  | `4px`              |
+| Tab bar           | Height                 | `36px`             |
+| Breadcrumb bar    | Height                 | `36px`             |
+| Nav header        | Height                 | `48px`             |
+| Nav bottom bar    | Height                 | `40px`             |
 
 ### 9.2 Content Area Padding
 
-| Context | Top | Right | Bottom | Left |
-|---|---|---|---|---|
-| Content area (normal) | `32px` | `48px` | `48px` | `48px` |
-| Content area (narrow, < 600px panel width) | `24px` | `24px` | `32px` | `24px` |
-| Nav item (file) | `4px` | `12px` | `4px` | `[depth * 16px + 12px]` |
-| Nav item (folder) | `4px` | `12px` | `4px` | `[depth * 16px + 12px]` |
-| Search modal | `0` | `0` | `0` | `0` (managed internally by cmdk) |
-| Graph controls overlay | — | `12px` | `12px` | — (bottom-right) |
-| Graph legend overlay | — | — | `12px` | `12px` (bottom-left) |
+| Context                                    | Top    | Right  | Bottom | Left                             |
+| ------------------------------------------ | ------ | ------ | ------ | -------------------------------- |
+| Content area (normal)                      | `32px` | `48px` | `48px` | `48px`                           |
+| Content area (narrow, < 600px panel width) | `24px` | `24px` | `32px` | `24px`                           |
+| Nav item (file)                            | `4px`  | `12px` | `4px`  | `[depth * 16px + 12px]`          |
+| Nav item (folder)                          | `4px`  | `12px` | `4px`  | `[depth * 16px + 12px]`          |
+| Search modal                               | `0`    | `0`    | `0`    | `0` (managed internally by cmdk) |
+| Graph controls overlay                     | —      | `12px` | `12px` | — (bottom-right)                 |
+| Graph legend overlay                       | —      | —      | `12px` | `12px` (bottom-left)             |
 
 ### 9.3 Spacing Scale Reference
 
 Use these values only (based on a 4px base unit):
 
-| Token | Value | Common use |
-|---|---|---|
-| `space-1` | `4px` | Icon gaps, tight padding |
-| `space-2` | `8px` | Internal padding, row gaps |
-| `space-3` | `12px` | Nav padding, button padding |
-| `space-4` | `16px` | Section spacing, indent width |
-| `space-5` | `20px` | Heading margins |
-| `space-6` | `24px` | Large section gaps |
-| `space-8` | `32px` | Content top padding |
-| `space-10` | `40px` | Bottom bar height, large margins |
+| Token      | Value  | Common use                               |
+| ---------- | ------ | ---------------------------------------- |
+| `space-1`  | `4px`  | Icon gaps, tight padding                 |
+| `space-2`  | `8px`  | Internal padding, row gaps               |
+| `space-3`  | `12px` | Nav padding, button padding              |
+| `space-4`  | `16px` | Section spacing, indent width            |
+| `space-5`  | `20px` | Heading margins                          |
+| `space-6`  | `24px` | Large section gaps                       |
+| `space-8`  | `32px` | Content top padding                      |
+| `space-10` | `40px` | Bottom bar height, large margins         |
 | `space-12` | `48px` | Nav header height equiv, content padding |
 
 ### 9.4 Border Radius
 
-| Context | Value |
-|---|---|
-| Nav items, buttons | `6px` |
+| Context                 | Value           |
+| ----------------------- | --------------- |
+| Nav items, buttons      | `6px`           |
 | Modals, cards, popovers | `8px` or `10px` |
-| Inline code | `4px` |
-| Code blocks, tables | `6px` |
-| Badge / kbd | `4px` |
-| Tooltip | `6px` |
-| Graph controls buttons | `4px` |
+| Inline code             | `4px`           |
+| Code blocks, tables     | `6px`           |
+| Badge / kbd             | `4px`           |
+| Tooltip                 | `6px`           |
+| Graph controls buttons  | `4px`           |
 
 ---
 
@@ -1057,65 +1111,67 @@ Use these values only (based on a 4px base unit):
 
 **File item:**
 
-| State | Background | Text color | Notes |
-|---|---|---|---|
-| Default | transparent | `var(--foreground)` | |
-| Hover | `var(--muted)` | `var(--foreground)` | `transition: background 100ms` |
-| Active (open file) | `var(--nav-active-bg)` | `var(--nav-active-fg)` | `font-weight: 500` |
-| Focus-visible | `var(--muted)` + `outline: 2px solid var(--accent)` | `var(--foreground)` | For keyboard navigation |
+| State              | Background                                          | Text color             | Notes                          |
+| ------------------ | --------------------------------------------------- | ---------------------- | ------------------------------ |
+| Default            | transparent                                         | `var(--foreground)`    |                                |
+| Hover              | `var(--muted)`                                      | `var(--foreground)`    | `transition: background 100ms` |
+| Active (open file) | `var(--nav-active-bg)`                              | `var(--nav-active-fg)` | `font-weight: 500`             |
+| Focus-visible      | `var(--muted)` + `outline: 2px solid var(--accent)` | `var(--foreground)`    | For keyboard navigation        |
 
 **Folder item:**
 
-| State | Background | Chevron | Notes |
-|---|---|---|---|
-| Default | transparent | `var(--muted-foreground)` | |
-| Hover | `var(--muted)` at 60% | `var(--foreground)` | |
-| Open (children visible) | transparent | rotated 90deg | No persistent highlight |
-| Contains active file | transparent | `var(--accent)` | Only the chevron changes color |
+| State                   | Background            | Chevron                   | Notes                          |
+| ----------------------- | --------------------- | ------------------------- | ------------------------------ |
+| Default                 | transparent           | `var(--muted-foreground)` |                                |
+| Hover                   | `var(--muted)` at 60% | `var(--foreground)`       |                                |
+| Open (children visible) | transparent           | rotated 90deg             | No persistent highlight        |
+| Contains active file    | transparent           | `var(--accent)`           | Only the chevron changes color |
 
 ### 10.2 Link States
 
 **Wikilinks:**
 
-| State | Color | Underline |
-|---|---|---|
-| Default | `var(--wikilink-fg)` | Dotted, `var(--wikilink-underline)` |
-| Hover | `var(--wikilink-hover-fg)` | Solid, `var(--wikilink-hover-fg)` |
-| Active (click) | `var(--accent)` at 80% | Solid |
-| Focus-visible | Default color + `outline: 2px solid var(--accent)` | Dotted |
+| State          | Color                                              | Underline                           |
+| -------------- | -------------------------------------------------- | ----------------------------------- |
+| Default        | `var(--wikilink-fg)`                               | Dotted, `var(--wikilink-underline)` |
+| Hover          | `var(--wikilink-hover-fg)`                         | Solid, `var(--wikilink-hover-fg)`   |
+| Active (click) | `var(--accent)` at 80%                             | Solid                               |
+| Focus-visible  | Default color + `outline: 2px solid var(--accent)` | Dotted                              |
 
 **External links:**
 
-| State | Color | Decoration | Icon |
-|---|---|---|---|
-| Default | `var(--link-fg)` | None | Visible at 50% opacity |
-| Hover | `var(--link-fg)` | Underline | Icon at 100% opacity |
-| Visited | `var(--link-fg)` at 70% | None | (no visited styling needed in an app context) |
+| State   | Color                   | Decoration | Icon                                          |
+| ------- | ----------------------- | ---------- | --------------------------------------------- |
+| Default | `var(--link-fg)`        | None       | Visible at 50% opacity                        |
+| Hover   | `var(--link-fg)`        | Underline  | Icon at 100% opacity                          |
+| Visited | `var(--link-fg)` at 70% | None       | (no visited styling needed in an app context) |
 
 **Missing wikilinks:**
 
-| State | Color | Underline |
-|---|---|---|
+| State   | Color                        | Underline          |
+| ------- | ---------------------------- | ------------------ |
 | Default | `var(--wikilink-missing-fg)` | Dotted, same color |
-| Hover | `var(--wikilink-missing-fg)` | Solid |
+| Hover   | `var(--wikilink-missing-fg)` | Solid              |
 
 ### 10.3 Tab States
 
-| State | Background | Bottom border | Text |
-|---|---|---|---|
-| Inactive | `var(--sidebar-bg)` | none | `var(--muted-foreground)` |
-| Active | `var(--background)` | `2px solid var(--accent)` | `var(--foreground)` |
-| Hover (inactive) | `var(--muted)` at 40% | none | `var(--foreground)` |
-| Close button hover | — | — | Close button opacity 1 (was 0) |
+| State              | Background            | Bottom border             | Text                           |
+| ------------------ | --------------------- | ------------------------- | ------------------------------ |
+| Inactive           | `var(--sidebar-bg)`   | none                      | `var(--muted-foreground)`      |
+| Active             | `var(--background)`   | `2px solid var(--accent)` | `var(--foreground)`            |
+| Hover (inactive)   | `var(--muted)` at 40% | none                      | `var(--foreground)`            |
+| Close button hover | —                     | —                         | Close button opacity 1 (was 0) |
 
 ### 10.4 Empty States
 
 **Panel 2 — No file open:**
+
 ```
          [FileText icon, 48px, var(--muted-foreground)]
          Open a file from the sidebar
          or press ⌘K to search
 ```
+
 - Centered vertically and horizontally in Panel 2
 - Icon: `var(--muted-foreground)`, 48px
 - Heading: `16px / font-medium / var(--muted-foreground)`
@@ -1126,13 +1182,16 @@ Use these values only (based on a 4px base unit):
 Same as above but smaller: icon 32px, heading 14px, sub-text 12px.
 
 **Graph view — No data:**
+
 ```
          [Network icon, 48px]
          No graph data available
 ```
+
 Same treatment.
 
 **Search — No results:**
+
 ```
          [Search icon, 36px]
          No results for "[query]"
@@ -1142,6 +1201,7 @@ Same treatment.
 ### 10.5 Loading States
 
 **File content loading:**
+
 - Tab label shows a subtle pulse animation on the text (not a spinner)
 - Content area shows skeleton:
   - Row 1: `280px` wide block, `28px` tall (H1 placeholder)
@@ -1152,11 +1212,13 @@ Same treatment.
 - Animation: shimmer left-to-right, `1.5s ease infinite`
 
 **Graph loading:**
+
 - Show the canvas with background color immediately
 - Overlay a centered `var(--muted-foreground)` text: "Building graph..." in `13px`
 - No spinner — just the text
 
 **Search — searching:**
+
 - `CommandList` shows a `CommandEmpty` with "Searching..." text while async results load
 - If using Fuse.js (synchronous), no loading state needed — results are instant
 
@@ -1172,18 +1234,18 @@ All interactive elements must have visible focus indicators for keyboard accessi
 
 ### 10.7 Transition Reference
 
-| Interaction | Property | Duration | Easing |
-|---|---|---|---|
-| Nav collapse/expand | `width` | `200ms` | `ease` |
-| Chevron rotate | `transform` | `200ms` | `ease` |
-| Nav item hover | `background-color` | `100ms` | `ease` |
-| Tab hover | `background-color` | `100ms` | `ease` |
-| Resize handle hover | `background-color` | `150ms` | `ease` |
-| Theme switch | All CSS variables | `150ms` | `ease` (apply `transition: color 150ms, background 150ms` to shell) |
-| Search modal open | `opacity` + `transform` | `150ms` | `ease-out` (slide down 8px) |
-| Search modal close | `opacity` + `transform` | `100ms` | `ease-in` |
-| Graph node hover | fill opacity | `80ms` | — (canvas, not CSS) |
-| Wikilink hover | `color`, `text-decoration` | `80ms` | `ease` |
+| Interaction         | Property                   | Duration | Easing                                                              |
+| ------------------- | -------------------------- | -------- | ------------------------------------------------------------------- |
+| Nav collapse/expand | `width`                    | `200ms`  | `ease`                                                              |
+| Chevron rotate      | `transform`                | `200ms`  | `ease`                                                              |
+| Nav item hover      | `background-color`         | `100ms`  | `ease`                                                              |
+| Tab hover           | `background-color`         | `100ms`  | `ease`                                                              |
+| Resize handle hover | `background-color`         | `150ms`  | `ease`                                                              |
+| Theme switch        | All CSS variables          | `150ms`  | `ease` (apply `transition: color 150ms, background 150ms` to shell) |
+| Search modal open   | `opacity` + `transform`    | `150ms`  | `ease-out` (slide down 8px)                                         |
+| Search modal close  | `opacity` + `transform`    | `100ms`  | `ease-in`                                                           |
+| Graph node hover    | fill opacity               | `80ms`   | — (canvas, not CSS)                                                 |
+| Wikilink hover      | `color`, `text-decoration` | `80ms`   | `ease`                                                              |
 
 ---
 
@@ -1270,23 +1332,23 @@ Before any PR merging UI code, verify:
 
 ## Appendix C: Obsidian Feature Parity Checklist
 
-| Obsidian Feature | OpenPropFirm v1 | Notes |
-|---|---|---|
-| 3-panel layout | Yes | |
-| File tree (left nav) | Yes | |
-| Tabs | Yes | |
-| Back/forward navigation | Yes | |
-| `[[wikilinks]]` | Yes | |
-| Force-directed graph | Yes | |
-| Split editor (side-by-side) | Yes (Panel 3 toggle) | |
-| Drag resize panels | Yes (P2/P3 only) | |
-| Global search (Cmd+K) | Yes | |
-| Keyword highlighting in search | Yes | |
-| YAML frontmatter rendering | Partial (shown in badge, not rendered in content) | |
-| Theme system | Yes (Light/Dark/Blue) | |
-| Collapsible headings | No (v2) | |
-| Outline panel (heading nav) | No (v2) | |
-| Tag pane | No (v2) | |
-| Backlinks panel | No (v2) | |
-| Hover preview on wikilinks | No (v2) | |
-| Mobile support | No (v1 desktop only) | |
+| Obsidian Feature               | OpenPropFirm v1                                   | Notes |
+| ------------------------------ | ------------------------------------------------- | ----- |
+| 3-panel layout                 | Yes                                               |       |
+| File tree (left nav)           | Yes                                               |       |
+| Tabs                           | Yes                                               |       |
+| Back/forward navigation        | Yes                                               |       |
+| `[[wikilinks]]`                | Yes                                               |       |
+| Force-directed graph           | Yes                                               |       |
+| Split editor (side-by-side)    | Yes (Panel 3 toggle)                              |       |
+| Drag resize panels             | Yes (P2/P3 only)                                  |       |
+| Global search (Cmd+K)          | Yes                                               |       |
+| Keyword highlighting in search | Yes                                               |       |
+| YAML frontmatter rendering     | Partial (shown in badge, not rendered in content) |       |
+| Theme system                   | Yes (Light/Dark/Blue)                             |       |
+| Collapsible headings           | No (v2)                                           |       |
+| Outline panel (heading nav)    | No (v2)                                           |       |
+| Tag pane                       | No (v2)                                           |       |
+| Backlinks panel                | No (v2)                                           |       |
+| Hover preview on wikilinks     | No (v2)                                           |       |
+| Mobile support                 | No (v1 desktop only)                              |       |

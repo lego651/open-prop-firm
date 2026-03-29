@@ -10,19 +10,19 @@
 
 ## Key Decisions Made in Challenge Session
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Root redirect location | `next.config.ts` redirect | tech-plan Section 3.5 canonical; no RSC overhead |
-| `TreeNode.id` vs `TreeNode.path` | `id` only (full URL slug) | Redundant fields removed |
-| `@supabase/supabase-js` install timing | S2-2 (not S2-11) | Type `User \| null` correctly from S2-4 onward |
-| Supabase client file path | `src/lib/supabase/client.ts` | Matches `"lib": "@/lib"` alias in components.json |
-| Panel 3 visibility toggle | ContentPanel header — icon `PanelRight` | Distinct from mode toggle |
-| Panel 3 mode toggle | GraphPanel header — icon `Network` / `Columns2` | Different concern, different icon |
-| Promo file-type color | New CSS variable `--file-type-promo` in themes.css | Avoids magic hex values in components |
-| BreadcrumbBar category crumbs (CFD, Futures) | Non-links — display only | `/firms/cfd` is not a valid route |
-| Tab-close navigation logic | Lives in AppShell handler | TabBar is purely presentational |
-| `dark:` variant | Covers dark AND blue themes | shadcn components work in all three themes |
-| History stack SSR | `useRef` — only in client effects | No window access during SSR |
+| Decision                                     | Choice                                             | Rationale                                         |
+| -------------------------------------------- | -------------------------------------------------- | ------------------------------------------------- |
+| Root redirect location                       | `next.config.ts` redirect                          | tech-plan Section 3.5 canonical; no RSC overhead  |
+| `TreeNode.id` vs `TreeNode.path`             | `id` only (full URL slug)                          | Redundant fields removed                          |
+| `@supabase/supabase-js` install timing       | S2-2 (not S2-11)                                   | Type `User \| null` correctly from S2-4 onward    |
+| Supabase client file path                    | `src/lib/supabase/client.ts`                       | Matches `"lib": "@/lib"` alias in components.json |
+| Panel 3 visibility toggle                    | ContentPanel header — icon `PanelRight`            | Distinct from mode toggle                         |
+| Panel 3 mode toggle                          | GraphPanel header — icon `Network` / `Columns2`    | Different concern, different icon                 |
+| Promo file-type color                        | New CSS variable `--file-type-promo` in themes.css | Avoids magic hex values in components             |
+| BreadcrumbBar category crumbs (CFD, Futures) | Non-links — display only                           | `/firms/cfd` is not a valid route                 |
+| Tab-close navigation logic                   | Lives in AppShell handler                          | TabBar is purely presentational                   |
+| `dark:` variant                              | Covers dark AND blue themes                        | shadcn components work in all three themes        |
+| History stack SSR                            | `useRef` — only in client effects                  | No window access during SSR                       |
 
 ---
 
@@ -57,6 +57,7 @@ S2-11 and S2-12 can be developed in parallel after S2-10 merges.
 **Acceptance Criteria:**
 
 **`@variant dark` fix (R-02, partial):**
+
 - `src/app/globals.css` line 7 updated so the dark variant covers both dark and blue themes:
   ```css
   @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, [data-theme="blue"], [data-theme="blue"] *));
@@ -64,23 +65,27 @@ S2-11 and S2-12 can be developed in parallel after S2-10 merges.
 - Visually verify in all three themes: `<Button>`, shadcn `<Badge>`, shadcn `<Input>`, shadcn `<Checkbox>` render correctly with no style regression
 
 **CSS `@layer base` cleanup (R-01):**
+
 - Remove all circular self-references from the `@layer base :root` block in `globals.css`:
   - Delete: `--background: var(--background)`, `--foreground: var(--foreground)`, `--border: var(--border)`, `--muted: var(--muted)`, `--muted-foreground: var(--muted-foreground)`, `--accent: var(--accent)`, `--accent-foreground: var(--accent-foreground)`
   - Keep (these are non-circular remaps that shadcn components require): `--input: var(--border)`, `--ring: var(--accent)`, `--primary: var(--accent)`, `--primary-foreground: var(--accent-foreground)`, `--secondary: var(--muted)`, `--secondary-foreground: var(--muted-foreground)`, `--card: var(--background)`, `--card-foreground: var(--foreground)`, `--popover: var(--sidebar-bg)`, `--popover-foreground: var(--foreground)`, `--destructive: #ef4444`, `--destructive-foreground: #ffffff`
 - Add a comment above the block: `/* Non-circular shadcn variable remaps — these bridge shadcn component tokens to project theme variables */`
 
 **Promo file-type color (new requirement surfaced in challenge session):**
+
 - Add `--file-type-promo` CSS variable to all three `[data-theme]` blocks in `src/styles/themes.css`:
   - Light: `--file-type-promo: #2A9D4E`
   - Dark: `--file-type-promo: #3FB950`
   - Blue: `--file-type-promo: #4ADE80`
 
 **`.gitignore` fix (R-03):**
+
 - Replace `.env*` pattern with: `.env.local`, `.env.*.local`
 - Verify: after the change, `git status` shows `.env.example` as tracked (not ignored)
 - Verify: `git status` confirms `.env.local` is still ignored (create a temp `.env.local` file, run `git status`, confirm it appears untracked, then delete it)
 
 **Prettier scripts (R-08):**
+
 - Add to `package.json` scripts:
   ```json
   "format": "prettier --write .",
@@ -90,10 +95,12 @@ S2-11 and S2-12 can be developed in parallel after S2-10 merges.
 - `npm run format:check` exits 0 after running `npm run format`
 
 **Lint warning (R-09):**
+
 - Check `scripts/validate-content.ts` for `catch (e)` binding — if still present, change to `catch` (no binding); if already fixed, skip this step
 - `npm run lint` exits with zero warnings and zero errors
 
 **Boilerplate cleanup (R-04):**
+
 - Replace `src/app/page.tsx` content with a bare minimum:
   ```tsx
   export default function Home() {
@@ -104,10 +111,12 @@ S2-11 and S2-12 can be developed in parallel after S2-10 merges.
 - Remove default Next.js assets from `public/`: `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`
 
 **Final verification:**
+
 - `npm run build` passes with zero errors
 - `npm run lint` passes with zero warnings or errors
 
 **Notes:**
+
 - Do NOT install husky/lint-staged — adds complexity for a solo AI-assisted workflow
 - Do NOT change `tsconfig.json` target (R-11) — deferred to Sprint 3 (low severity, no Sprint 2 impact)
 - `shadcn` is already in `devDependencies` — R-07 is already resolved, skip it
@@ -124,19 +133,26 @@ S2-11 and S2-12 can be developed in parallel after S2-10 merges.
 **Acceptance Criteria:**
 
 **Package installs:**
+
 - `npm install gray-matter` — promotes from devDependencies to dependencies (used in the Next.js app, not just scripts)
 - `npm install server-only` — enforces server-only import boundary on `getContentTree.ts`
 - `npm install @supabase/supabase-js` — installed now so `User | null` types are correct in AppShell from S2-4 onward
 
 **TypeScript types (`src/types/content.ts`):**
+
 ```typescript
-export type FileType = 'basic-info' | 'challenge' | 'rules' | 'promo' | 'changelog'
+export type FileType =
+  | 'basic-info'
+  | 'challenge'
+  | 'rules'
+  | 'promo'
+  | 'changelog'
 
 export type NodeRole = 'category' | 'firm' | 'challenges-folder' | 'file'
 
 export type TreeNode = {
-  id: string         // full URL slug, e.g. "firms/cfd/funded-next/challenges/50k"
-  label: string      // display name — from frontmatter.title, or capitalized slug segment
+  id: string // full URL slug, e.g. "firms/cfd/funded-next/challenges/50k"
+  label: string // display name — from frontmatter.title, or capitalized slug segment
   type: 'folder' | 'file'
   nodeRole: NodeRole // used to distinguish rendering: category header vs firm folder vs challenges sub-folder vs file
   fileType?: FileType // only for file nodes
@@ -144,20 +160,21 @@ export type TreeNode = {
 }
 
 export type ContentTreeResult = {
-  treeData: TreeNode[]       // top-level: two TreeNode[nodeRole='category'] — CFD and Futures
-  validSlugs: string[]       // all full slugs, e.g. ["firms/cfd/funded-next/challenges/50k", ...]
-  slugToPathMap: Record<string, string>  // firm-relative slug → full URL path
-                                         // e.g. "funded-next/rules" → "firms/cfd/funded-next/rules"
-                                         // Used by Sprint 3's wikilink resolver
+  treeData: TreeNode[] // top-level: two TreeNode[nodeRole='category'] — CFD and Futures
+  validSlugs: string[] // all full slugs, e.g. ["firms/cfd/funded-next/challenges/50k", ...]
+  slugToPathMap: Record<string, string> // firm-relative slug → full URL path
+  // e.g. "funded-next/rules" → "firms/cfd/funded-next/rules"
+  // Used by Sprint 3's wikilink resolver
 }
 
 export type TabEntry = {
-  slug: string   // full URL slug, e.g. "firms/cfd/funded-next/challenges/50k"
-  title: string  // display label from frontmatter or slug-derived
+  slug: string // full URL slug, e.g. "firms/cfd/funded-next/challenges/50k"
+  title: string // display label from frontmatter or slug-derived
 }
 ```
 
 **`src/lib/content/getContentTree.ts`:**
+
 - First line: `import 'server-only'`
 - Uses Node.js `fs` module (server-only) to walk `/data/firms/**/*.md` recursively
 - Reads only YAML frontmatter per file via `gray-matter` (does NOT process markdown content)
@@ -175,6 +192,7 @@ export type TabEntry = {
 - Exports `getStaticParams(): Array<{ slug: string[] }>` — returns all file slugs split into arrays for `generateStaticParams`. Example output: `[{ slug: ['firms', 'cfd', 'funded-next', 'challenges', '50k'] }, ...]`
 
 **Root layout wiring (`src/app/layout.tsx`):**
+
 - `layout.tsx` is a React Server Component (no `'use client'`)
 - Calls `const { treeData, validSlugs } = await getContentTree()` at the top
 - Renders `<AppShell treeData={treeData} validSlugs={validSlugs}>{children}</AppShell>`
@@ -182,6 +200,7 @@ export type TabEntry = {
 - The import path for `getContentTree` is `@/lib/content/getContentTree`
 
 **Verification:**
+
 - Create a temporary test: run `node -e "const { getContentTree } = require('./src/lib/content/getContentTree'); getContentTree().then(r => console.log(r.validSlugs.length))"` — should print 26 (or however many `.md` files are in `/data/firms/**`)
   - Actually: use `tsx src/lib/content/getContentTree.ts` with a quick `console.log` test at the bottom, then remove the test code
 - `getStaticParams()` returns the correct number of entries (one per content file)
@@ -189,6 +208,7 @@ export type TabEntry = {
 - Attempting to import `getContentTree` in a file with `'use client'` at the top causes a Next.js build error — verify this guard works
 
 **Notes:**
+
 - `gray-matter` moves from `devDependencies` to `dependencies` — also update `package.json` by hand if `npm install` doesn't auto-move it (run `npm uninstall gray-matter && npm install gray-matter` if needed)
 - The `slugToPathMap` key format ("funded-next/rules") matches how wikilinks are written in the `/data` markdown files (as confirmed in `data/firms/cfd/funded-next/index.md` which uses `[[funded-next/rules|Trading Rules]]`)
 - `server-only` is an ESM package. Next.js App Router handles this correctly. No additional config needed.
@@ -204,17 +224,20 @@ export type TabEntry = {
 **Acceptance Criteria:**
 
 **Root redirect (`next.config.ts`):**
+
 - Add a redirect in `next.config.ts`:
   ```typescript
   redirects: async () => [
-    { source: '/', destination: '/firms/cfd/funded-next', permanent: false }
+    { source: '/', destination: '/firms/cfd/funded-next', permanent: false },
   ]
   ```
 - `src/app/page.tsx` is deleted entirely (the `next.config.ts` redirect means it's never reached)
 - Visiting `http://localhost:3000/` during `npm run dev` redirects to `/firms/cfd/funded-next`
 
 **Catch-all route (`src/app/firms/[...slug]/page.tsx`):**
+
 - File exists with:
+
   ```typescript
   import { getStaticParams } from '@/lib/content/getContentTree'
   // getContentTree is server-only safe in generateStaticParams — this runs at build time, not in client context
@@ -240,11 +263,13 @@ export type TabEntry = {
     )
   }
   ```
+
 - `await params` is required — Next.js 16 async params API (not `params.slug` directly)
 - `npm run build` generates static HTML for all content pages. Run `npm run build` and verify the build output shows 26+ static pages under `/firms/`
 - Zero TypeScript errors
 
 **Notes:**
+
 - The placeholder `<div>` content renders inside Panel 2's content area via ContentPanel's `{children}` prop (wired in S2-10). It is replaced entirely in Sprint 3's `getPageContent()` wiring.
 - `dynamic = 'force-static'` comment explains the purpose — do not remove the comment.
 - `getStaticParams` from `getContentTree.ts` is marked `server-only` but is safe to import in `generateStaticParams` (runs at build time on the server, not in client bundle).
@@ -263,6 +288,7 @@ export type TabEntry = {
 **File:** `src/components/layout/AppShell.tsx` with `'use client'` directive
 
 **Props interface:**
+
 ```typescript
 type AppShellProps = {
   treeData: TreeNode[]
@@ -273,16 +299,17 @@ type AppShellProps = {
 
 **State (all persisted to localStorage with `try/catch` guards for SSR safety):**
 
-| State | Type | localStorage key | Initial value |
-|---|---|---|---|
-| `panel1Collapsed` | `boolean` | `panel1Collapsed` | `false` |
-| `panel3Width` | `number` | `panel3Width` | `360` |
-| `panel3Visible` | `boolean` | none (derived from viewport) | `false` (corrected in useEffect) |
-| `panel3Mode` | `'graph' \| 'compare'` | `panel3Mode` | `'graph'` |
-| `openTabs` | `TabEntry[]` | `openTabs` | `[]` |
-| `user` | `User \| null` | none (from Supabase) | `null` |
+| State             | Type                   | localStorage key             | Initial value                    |
+| ----------------- | ---------------------- | ---------------------------- | -------------------------------- |
+| `panel1Collapsed` | `boolean`              | `panel1Collapsed`            | `false`                          |
+| `panel3Width`     | `number`               | `panel3Width`                | `360`                            |
+| `panel3Visible`   | `boolean`              | none (derived from viewport) | `false` (corrected in useEffect) |
+| `panel3Mode`      | `'graph' \| 'compare'` | `panel3Mode`                 | `'graph'`                        |
+| `openTabs`        | `TabEntry[]`           | `openTabs`                   | `[]`                             |
+| `user`            | `User \| null`         | none (from Supabase)         | `null`                           |
 
 **localStorage initialization pattern:**
+
 ```typescript
 const [panel1Collapsed, setPanel1Collapsed] = useState<boolean>(() => {
   try {
@@ -292,14 +319,17 @@ const [panel1Collapsed, setPanel1Collapsed] = useState<boolean>(() => {
   }
 })
 ```
+
 Use the same lazy initializer pattern for all localStorage-backed state.
 
 **Panel 3 initial visibility (SSR-safe):**
+
 - Initial state: `false` (static — avoids hydration mismatch)
 - `useEffect(() => { setPanel3Visible(window.innerWidth >= 1100) }, [])` — corrects on mount
 - The layout shift from `false` → `true` on desktop is acceptable in Sprint 2 (Sprint 3 can address with a CSS-only fallback if needed)
 
 **Tab reconciliation (uses `usePathname`):**
+
 - `const pathname = usePathname()` — import from `next/navigation`
 - Derive `activeSlug` from pathname: strip leading `/` → e.g. `firms/cfd/funded-next/challenges/50k`
 - `useEffect` watching `pathname`:
@@ -307,20 +337,22 @@ Use the same lazy initializer pattern for all localStorage-backed state.
   useEffect(() => {
     const slug = pathname.replace(/^\//, '')
     if (!slug.startsWith('firms/')) return
-    const exists = openTabs.some(t => t.slug === slug)
+    const exists = openTabs.some((t) => t.slug === slug)
     if (!exists) {
-      const label = findLabelInTree(treeData, slug) ?? slug.split('/').pop() ?? slug
-      setOpenTabs(prev => [...prev, { slug, title: label }])
+      const label =
+        findLabelInTree(treeData, slug) ?? slug.split('/').pop() ?? slug
+      setOpenTabs((prev) => [...prev, { slug, title: label }])
     }
   }, [pathname])
   ```
 - `findLabelInTree(treeData, slug): string | null` — helper function (in the same file): walks `treeData` recursively to find the node with `id === slug` and returns its `label`. Returns `null` if not found.
 
 **Tab close handler (logic lives here, not in TabBar):**
+
 ```typescript
 const handleTabClose = (slug: string) => {
-  const idx = openTabs.findIndex(t => t.slug === slug)
-  const newTabs = openTabs.filter(t => t.slug !== slug)
+  const idx = openTabs.findIndex((t) => t.slug === slug)
+  const newTabs = openTabs.filter((t) => t.slug !== slug)
   setOpenTabs(newTabs)
   if (activeSlug === slug) {
     const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
@@ -329,53 +361,63 @@ const handleTabClose = (slug: string) => {
   }
 }
 ```
+
 - `const router = useRouter()` — import from `next/navigation`
 
 **localStorage persistence (for all state that should persist):**
+
 - `useEffect` watching each state var: `localStorage.setItem('panel1Collapsed', JSON.stringify(panel1Collapsed))`
 - Same pattern for `panel3Width`, `panel3Mode`, `openTabs`
 - `panel3Visible` is NOT persisted — always derived from viewport on mount
 
 **Supabase session:**
+
 ```typescript
 const [user, setUser] = useState<User | null>(null)
 useEffect(() => {
-  supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
+  supabase.auth
+    .getSession()
+    .then(({ data }) => setUser(data.session?.user ?? null))
   const { data } = supabase.auth.onAuthStateChange((_, session) => {
     setUser(session?.user ?? null)
   })
   return () => data.subscription.unsubscribe()
 }, [])
 ```
+
 - `User` type imported from `@supabase/supabase-js`
 - `supabase` client imported from `@/lib/supabase/client` (created in S2-11 — stub the import for now with `const supabase = null as any` until S2-11 merges, or create the client.ts file in this ticket as a two-liner)
 
 **Layout structure:**
+
 ```tsx
 <div className="flex h-screen overflow-hidden bg-[var(--background)]">
   {/* Panel 1 */}
   <div
-    style={{ width: panel1Collapsed ? 48 : 260, transition: 'width 200ms ease' }}
-    className="shrink-0 bg-[var(--sidebar-bg)] border-r border-[var(--border)] overflow-hidden"
+    style={{
+      width: panel1Collapsed ? 48 : 260,
+      transition: 'width 200ms ease',
+    }}
+    className="shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--sidebar-bg)]"
   >
     {/* NavPanel goes here — placeholder until S2-6 */}
     <div className="p-2 text-xs text-[var(--muted-foreground)]">Nav panel</div>
   </div>
 
   {/* Panel 2 */}
-  <div className="flex-1 min-w-[400px] overflow-hidden flex flex-col">
+  <div className="flex min-w-[400px] flex-1 flex-col overflow-hidden">
     {/* ContentPanel goes here — placeholder until S2-10 */}
     {children}
   </div>
 
   {/* ResizeHandle — placeholder 4px div until S2-5 */}
-  <div className="w-1 shrink-0 cursor-col-resize bg-transparent hover:bg-[var(--accent)]/40 transition-colors" />
+  <div className="w-1 shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-[var(--accent)]/40" />
 
   {/* Panel 3 */}
   {panel3Visible && (
     <div
       style={{ width: panel3Width }}
-      className="shrink-0 border-l border-[var(--border)] bg-[var(--sidebar-bg)] overflow-hidden flex flex-col"
+      className="flex shrink-0 flex-col overflow-hidden border-l border-[var(--border)] bg-[var(--sidebar-bg)]"
     >
       {/* GraphPanel goes here — placeholder until S2-11 */}
       <div className="p-4 text-xs text-[var(--muted-foreground)]">Panel 3</div>
@@ -385,12 +427,14 @@ useEffect(() => {
 ```
 
 **Verification:**
+
 - At 1280px+ viewport: all three panels visible, no horizontal overflow
 - `panel1Collapsed` toggling works: AppShell exposes `setPanel1Collapsed` (will be connected to NavPanel's collapse button in S2-6)
 - State persists on page reload: open browser, note Panel 3 width, reload, Panel 3 width is the same
 - TypeScript compiles without errors: `npx tsc --noEmit`
 
 **Notes:**
+
 - The Supabase client stub (`const supabase = null as any`) is acceptable only for this ticket — S2-11 creates the real client.ts and the stub must be replaced. Mark it with `// TODO: replace with real client in S2-11`
 - `children` from `page.tsx` renders inside the Panel 2 `<div>` — ContentPanel (S2-10) will wrap this properly. In Sprint 2, the raw `{children}` renders the placeholder div from S2-3's `page.tsx`.
 - `usePathname`, `useRouter`, and `useSearchParams` all require the component to be a Client Component (already `'use client'`)
@@ -412,6 +456,7 @@ useEffect(() => {
 **Element dimensions:** `4px` wide, `100%` height, `cursor: col-resize`
 
 **Pointer capture drag implementation:**
+
 ```typescript
 const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
   e.currentTarget.setPointerCapture(e.pointerId)
@@ -432,6 +477,7 @@ const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
 ```
 
 **Visual states:**
+
 - Default: `bg-transparent`
 - Hover: `bg-[var(--accent)]/40` with `transition-colors duration-200`
 - Active drag: `bg-[var(--accent)]/80`
@@ -439,6 +485,7 @@ const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
 **Persistence:** ResizeHandle does NOT write to localStorage. It calls `onResize(clamped)` which updates AppShell's `panel3Width` state. AppShell's `useEffect` watching `panel3Width` persists to `localStorage('panel3Width')`.
 
 **Verification:**
+
 - Drag the handle: Panel 3 width changes in real time
 - Width clamps at 280px (minimum) and 600px (maximum)
 - Panel 3 width persists after drag + page reload
@@ -447,6 +494,7 @@ const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
 - AppShell updated to use `<ResizeHandle onResize={setPanel3Width} />` in place of the stub 4px div
 
 **Notes:**
+
 - This approach (pointer capture on the element) supersedes the ui-guide's suggestion of `document` listeners — pointer capture is cleaner and handles fast cursor movement correctly.
 - The `window.innerWidth - e.clientX` formula assumes Panel 3 is anchored to the right edge of the viewport. This is correct for the full-viewport flex layout.
 
@@ -461,12 +509,14 @@ const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
 **Acceptance Criteria:**
 
 **Files:**
+
 - `src/components/nav/NavPanel.tsx` — `'use client'`
 - `src/components/nav/NavFileTree.tsx` — `'use client'`
 
 **NavPanel (`src/components/nav/NavPanel.tsx`):**
 
 Props:
+
 ```typescript
 type NavPanelProps = {
   treeData: TreeNode[]
@@ -477,12 +527,14 @@ type NavPanelProps = {
 ```
 
 Structure (flex column, full height):
+
 - Header (48px): collapse toggle button (Lucide `PanelLeft`, 16px) on left; when not collapsed, show "OpenPropFirm" text in 14px font-medium; when collapsed, show only the icon
 - Search trigger (36px): visible only when not collapsed; full-width button with 8px horizontal margin, rounded-md border, `bg-[var(--muted)]`; contains Lucide `Search` (14px) + "Search..." placeholder text + `<kbd>⌘K</kbd>` badge; clicking it is a no-op for now (`onClick={() => {}}` with a `// TODO: wire to SearchModal in Sprint 3` comment)
 - File tree (flex-1, overflow-y-auto): `<NavFileTree>` — hidden (or icon-only) when collapsed
 - Bottom bar (40px): `border-t border-[var(--border)]`; flex row; Settings icon (Lucide `Settings`, 16px, left) — `onClick={() => console.log('settings — v2')}` — ; ThemeToggle (right, from `src/components/nav/ThemeToggle`)
 
 When `collapsed`:
+
 - Header: only the toggle button
 - Search trigger: hidden
 - File tree: hidden (Panel 1 is 48px wide — just show the toggle button icon)
@@ -491,6 +543,7 @@ When `collapsed`:
 **NavFileTree (`src/components/nav/NavFileTree.tsx`):**
 
 Props:
+
 ```typescript
 type NavFileTreeProps = {
   treeData: TreeNode[]
@@ -499,10 +552,12 @@ type NavFileTreeProps = {
 ```
 
 Category headers (rendered from `nodeRole: 'category'` nodes):
+
 - Non-collapsible label: 10px uppercase, font-semibold, `var(--muted-foreground)`, 16px top margin, 8px bottom, 12px left padding
 - No chevron, no click handler
 
 Firm folders (rendered from `nodeRole: 'firm'` nodes):
+
 - 28px height, flex row, 12px left padding, depth indentation
 - Lucide `ChevronRight` (14px), rotates 90° when open (`transition-transform duration-200`)
 - Firm name: 13px font-medium, `var(--foreground)`
@@ -510,9 +565,11 @@ Firm folders (rendered from `nodeRole: 'firm'` nodes):
 - Active (contains the active file): `bg-[var(--muted)] text-[var(--accent)]`
 
 Challenges sub-folder (rendered from `nodeRole: 'challenges-folder'` nodes):
+
 - Same rendering as firm folders but at depth+1 indentation (28px more left padding)
 
 File items (rendered from `nodeRole: 'file'` nodes):
+
 - 26px height, flex row, 12px left padding + depth indent
 - File type icon (14px, colored):
   - `basic-info` → Lucide `Info`, color `var(--muted-foreground)`
@@ -525,6 +582,7 @@ File items (rendered from `nodeRole: 'file'` nodes):
 - Clicking a file: `router.push('/' + node.id)` — use `useRouter` from `next/navigation`
 
 Folder expand/collapse state:
+
 - `useState<Record<string, boolean>>` initialized from `localStorage('navTreeState')` with `try/catch`
 - On mount: auto-expand the parent chain of `activeSlug`:
   - Walk `treeData` to find all ancestor folder nodes of the active file
@@ -535,9 +593,11 @@ Folder expand/collapse state:
 - No animation on children appearing (instant — Obsidian-style)
 
 AppShell wiring:
+
 - AppShell updated to render `<NavPanel treeData={treeData} activeSlug={activeSlug} collapsed={panel1Collapsed} onToggleCollapse={() => setPanel1Collapsed(v => !v)} />` inside Panel 1, replacing the placeholder
 
 **Verification:**
+
 - File tree renders all 4 firms in correct CFD/Futures groupings
 - Funded Next shows 5 challenge files under a "Challenges" sub-folder
 - Clicking a firm folder expands/collapses it; state persists on reload
@@ -548,6 +608,7 @@ AppShell wiring:
 - ThemeToggle in bottom bar works (theme changes immediately)
 
 **Notes:**
+
 - `activeSlug` is derived in AppShell from `usePathname()` (stripping leading `/`) and passed down as a prop
 - The challenges sub-folder node has no click handler — it's a collapsible container only
 
@@ -562,13 +623,14 @@ AppShell wiring:
 **Acceptance Criteria:**
 
 **`src/lib/theme.ts`:**
+
 ```typescript
 export type Theme = 'light' | 'dark' | 'blue'
 export const THEMES: Theme[] = ['light', 'dark', 'blue']
 
 export function setTheme(theme: Theme): void {
   document.documentElement.setAttribute('data-theme', theme)
-  localStorage.setItem('theme', theme)  // key must match anti-flash script in layout.tsx
+  localStorage.setItem('theme', theme) // key must match anti-flash script in layout.tsx
   window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }))
 }
 
@@ -582,6 +644,7 @@ export function getTheme(): Theme {
 ```
 
 **`src/components/nav/ThemeToggle.tsx`** (`'use client'`):
+
 - `useState<Theme>('dark')` as initial state (static, SSR-safe)
 - `useEffect(() => { setCurrentTheme(getTheme()) }, [])` — correct from DOM on mount
 - On click: `const next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length]; setTheme(next); setCurrentTheme(next)`
@@ -590,6 +653,7 @@ export function getTheme(): Theme {
 - Wrap with shadcn `Tooltip` showing the current theme name (e.g. "Dark theme") — `TooltipProvider` must wrap the component or be at layout level
 
 **Verification:**
+
 - Clicking toggle cycles light → dark → blue → light
 - Colors update immediately with no visible flash or transition delay between themes
 - Theme persists on page reload (the anti-flash inline script in layout.tsx uses `localStorage.getItem('theme')` with the same key)
@@ -597,6 +661,7 @@ export function getTheme(): Theme {
 - All three themes render the sidebar, content area, and buttons with correct colors
 
 **Notes:**
+
 - `localStorage` key is `'theme'` — this must match the anti-flash script in `layout.tsx` exactly. Do not use `'theme-preference'` or any other key.
 - `getTheme()` and `setTheme()` use `document` which only exists on the client. Never call them during SSR. The ThemeToggle component guards this with the `useEffect` initial correction.
 
@@ -613,6 +678,7 @@ export function getTheme(): Theme {
 **File:** `src/components/content/TabBar.tsx` — `'use client'`
 
 **Props:**
+
 ```typescript
 type TabBarProps = {
   openTabs: TabEntry[]
@@ -620,18 +686,25 @@ type TabBarProps = {
   onTabClick: (slug: string) => void
   onTabClose: (slug: string) => void
   onNewTab: () => void
-  onTogglePanel3: () => void  // shows/hides Panel 3 — the VISIBILITY toggle button lives here
+  onTogglePanel3: () => void // shows/hides Panel 3 — the VISIBILITY toggle button lives here
 }
 ```
 
 **Structure:**
+
 - Outer container: `flex items-center border-b border-[var(--border)] h-9 overflow-hidden`
 - Tabs scroll container: `flex-1 flex overflow-x-auto` with CSS scrollbar hiding:
+
   ```css
   /* In globals.css @layer components or inline style */
-  .tab-scroll::-webkit-scrollbar { display: none; }
-  .tab-scroll { scrollbar-width: none; }
+  .tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .tab-scroll {
+    scrollbar-width: none;
+  }
   ```
+
   Use a className `tab-scroll` — avoid Tailwind arbitrary pseudo-element variants for this.
 
 - Each tab item (`<button>`):
@@ -653,6 +726,7 @@ type TabBarProps = {
   - **This is the VISIBILITY toggle — it shows/hides Panel 3. It is NOT the mode toggle (graph/compare) which lives in GraphPanel.**
 
 **Verification:**
+
 - Multiple tabs render in a horizontal scroll container; tabs wider than container scroll correctly
 - Active tab has bottom accent border; inactive tabs have sidebar background
 - Hovering a tab reveals the close button
@@ -662,6 +736,7 @@ type TabBarProps = {
 - Panel 3 visibility toggle is present and visible
 
 **Notes:**
+
 - NO state management in TabBar. NO localStorage writes. NO router.push calls. This is a pure presentational component.
 - Tab state (`openTabs`), localStorage persistence, and close-then-navigate logic all live in AppShell (S2-4).
 
@@ -682,6 +757,7 @@ type TabBarProps = {
 **This component does NOT call `usePathname()` directly** — it receives `activeSlug` as a prop from ContentPanel (which receives it from AppShell).
 
 **Slug-to-breadcrumb formatting:**
+
 - Strip leading `firms/` from `activeSlug`
 - Split remaining path on `/`
 - Segment labels:
@@ -697,6 +773,7 @@ type TabBarProps = {
 **Layout:** 36px height bar, `px-6` padding, flex row, `border-b border-[var(--border)]`
 
 **Back/Forward buttons:**
+
 ```typescript
 const backStack = useRef<string[]>([])
 const forwardStack = useRef<string[]>([])
@@ -705,13 +782,14 @@ const prevSlug = useRef<string>('')
 useEffect(() => {
   if (prevSlug.current && prevSlug.current !== activeSlug) {
     backStack.current.push(prevSlug.current)
-    forwardStack.current = []  // new navigation clears forward history
+    forwardStack.current = [] // new navigation clears forward history
     setCanGoBack(backStack.current.length > 0)
     setCanGoForward(false)
   }
   prevSlug.current = activeSlug
 }, [activeSlug])
 ```
+
 - `canGoBack` and `canGoForward`: `useState<boolean>` used only to trigger re-renders for button disabled state (refs don't trigger re-renders)
 - Back button (Lucide `ChevronLeft`, 16px): `disabled` + 30% opacity when `!canGoBack`; on click: `const slug = backStack.current.pop(); forwardStack.current.push(activeSlug); setCanGoForward(true); setCanGoBack(backStack.current.length > 0); router.push('/' + slug)`
 - Forward button (Lucide `ChevronRight`, 16px): `disabled` + 30% opacity when `!canGoForward`; same pattern
@@ -719,6 +797,7 @@ useEffect(() => {
 **History stack does NOT persist to localStorage** — resets on page reload (Obsidian-style)
 
 **Verification:**
+
 - Navigate to 3 different pages → back button works, navigating to the previously visited pages in order
 - After going back, forward button enables; forward navigates correctly
 - Breadcrumb shows correct segments for any content page slug
@@ -726,6 +805,7 @@ useEffect(() => {
 - `npx tsc --noEmit` passes
 
 **Notes:**
+
 - The `router` here is `const router = useRouter()` from `next/navigation`
 - The `prevSlug.current = ''` on first render means the first navigation (page load) does not add anything to the back stack — this is correct behavior
 
@@ -742,6 +822,7 @@ useEffect(() => {
 **File:** `src/components/content/ContentPanel.tsx` — `'use client'`
 
 **Props:**
+
 ```typescript
 type ContentPanelProps = {
   openTabs: TabEntry[]
@@ -755,8 +836,9 @@ type ContentPanelProps = {
 ```
 
 **Layout (flex column, 100% height):**
+
 ```tsx
-<div className="flex flex-col h-full">
+<div className="flex h-full flex-col">
   <TabBar
     openTabs={openTabs}
     activeSlug={activeSlug}
@@ -766,13 +848,12 @@ type ContentPanelProps = {
     onTogglePanel3={onTogglePanel3}
   />
   <BreadcrumbBar activeSlug={activeSlug} />
-  <div className="flex-1 overflow-y-auto">
-    {children}
-  </div>
+  <div className="flex-1 overflow-y-auto">{children}</div>
 </div>
 ```
 
 **AppShell wiring:**
+
 - AppShell derives `activeSlug` from `usePathname()`: `const activeSlug = pathname.replace(/^\//, '')`
 - AppShell renders `<ContentPanel>` inside Panel 2, replacing the previous placeholder:
   ```tsx
@@ -781,8 +862,8 @@ type ContentPanelProps = {
     activeSlug={activeSlug}
     onTabClick={(slug) => router.push('/' + slug)}
     onTabClose={handleTabClose}
-    onNewTab={() => {}}   // TODO: wire to SearchModal in Sprint 3
-    onTogglePanel3={() => setPanel3Visible(v => !v)}
+    onNewTab={() => {}} // TODO: wire to SearchModal in Sprint 3
+    onTogglePanel3={() => setPanel3Visible((v) => !v)}
   >
     {children}
   </ContentPanel>
@@ -790,6 +871,7 @@ type ContentPanelProps = {
 - `children` is the output from `page.tsx` (the placeholder div from S2-3)
 
 **Verification:**
+
 - All three panels render correctly at 1280px+
 - Navigating to `/firms/cfd/funded-next/challenges/50k`:
   - TabBar shows a tab labeled "Funded Next — $50k Challenge"
@@ -810,6 +892,7 @@ type ContentPanelProps = {
 **Acceptance Criteria:**
 
 **Supabase client (`src/lib/supabase/client.ts`):**
+
 ```typescript
 import { createClient } from '@supabase/supabase-js'
 
@@ -818,14 +901,16 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 ```
+
 - Replace the AppShell stub (`const supabase = null as any`) with `import { supabase } from '@/lib/supabase/client'`
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` must be in `.env.local` for local testing; if missing, the `!` non-null assertion throws at runtime (intentional — clear failure signal)
 
 **Env var prebuild validation:**
+
 - Add `scripts/validate-env.ts`:
   ```typescript
   const required = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY']
-  const missing = required.filter(k => !process.env[k])
+  const missing = required.filter((k) => !process.env[k])
   if (missing.length > 0) {
     console.error('Missing required env vars:', missing.join(', '))
     process.exit(1)
@@ -841,16 +926,18 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 **GraphPanel (`src/components/graph/GraphPanel.tsx`):** `'use client'`
 
 Props:
+
 ```typescript
 type GraphPanelProps = {
   mode: 'graph' | 'compare'
   user: User | null
-  onModeToggle: () => void     // called when mode switch is confirmed (user authenticated, or back to graph)
-  onDismissGate: () => void    // called when auth gate is dismissed — AppShell resets mode to 'graph'
+  onModeToggle: () => void // called when mode switch is confirmed (user authenticated, or back to graph)
+  onDismissGate: () => void // called when auth gate is dismissed — AppShell resets mode to 'graph'
 }
 ```
 
 Structure:
+
 - Header (40px): `flex items-center justify-between px-3 border-b border-[var(--border)]`
   - Left: "Graph" label in 12px font-medium `var(--muted-foreground)` (or "Compare" when in compare mode)
   - Right: mode toggle button — **this is the MODE toggle (graph ↔ compare), NOT the visibility toggle**
@@ -863,6 +950,7 @@ Structure:
   - Compare mode + `user === null`: `<CompareAuthGate onDismiss={onDismissGate} />`
 
 Mode toggle click logic (inside GraphPanel, using local state):
+
 ```typescript
 const [pendingCompare, setPendingCompare] = useState(false)
 
@@ -873,20 +961,21 @@ const handleModeToggleClick = () => {
   } else {
     // switching to compare
     if (user) {
-      onModeToggle()  // authenticated — switch immediately
+      onModeToggle() // authenticated — switch immediately
     } else {
-      setPendingCompare(true)  // not authenticated — show gate but don't switch mode yet
+      setPendingCompare(true) // not authenticated — show gate but don't switch mode yet
     }
   }
 }
 ```
 
 When `user` becomes non-null (auth state change in AppShell flows down as prop):
+
 ```typescript
 useEffect(() => {
   if (user && pendingCompare) {
     setPendingCompare(false)
-    onModeToggle()  // transition to compare mode now that user is authenticated
+    onModeToggle() // transition to compare mode now that user is authenticated
   }
 }, [user])
 ```
@@ -896,6 +985,7 @@ useEffect(() => {
 Props: `{ onDismiss: () => void }`
 
 Layout: centered vertically and horizontally inside Panel 3:
+
 ```tsx
 <div className="flex flex-col items-center justify-center h-full gap-4 p-6 text-center">
   <button
@@ -923,21 +1013,26 @@ Layout: centered vertically and horizontally inside Panel 3:
   </button>
 </div>
 ```
+
 - The `window.location.origin` access is inside a click handler (client-side only) — safe from SSR
 - `supabase` imported from `@/lib/supabase/client`
 
 **AppShell wiring:**
+
 - AppShell renders `<GraphPanel>` inside Panel 3, replacing the placeholder:
   ```tsx
   <GraphPanel
     mode={panel3Mode}
     user={user}
-    onModeToggle={() => setPanel3Mode(m => m === 'graph' ? 'compare' : 'graph')}
+    onModeToggle={() =>
+      setPanel3Mode((m) => (m === 'graph' ? 'compare' : 'graph'))
+    }
     onDismissGate={() => setPanel3Mode('graph')}
   />
   ```
 
 **Verification:**
+
 - Panel 3 renders with header showing mode toggle button
 - Unauthenticated user clicks mode toggle → `<CompareAuthGate>` appears in Panel 3; graph view text is gone
 - Clicking X in auth gate → Panel 3 returns to graph placeholder
@@ -946,6 +1041,7 @@ Layout: centered vertically and horizontally inside Panel 3:
 - `npx tsc --noEmit` passes
 
 **Notes:**
+
 - Google OAuth requires a configured Supabase project with Google provider enabled AND `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`. Without this setup by the founder (documented in S1-8), the Google sign-in button will error. The component is correct — the env/OAuth setup is a manual founder step.
 - The Google G logo SVG can be found at https://developers.google.com/identity/branding-guidelines or use a simple "G" text as a placeholder for Sprint 2.
 
@@ -960,20 +1056,22 @@ Layout: centered vertically and horizontally inside Panel 3:
 **Acceptance Criteria:**
 
 **New AppShell state (retrofit S2-4):**
+
 - `panel1OverlayOpen: boolean` — `false` by default, `true` when hamburger menu is open (< 768px)
 - No new localStorage keys for these — they reset on reload (viewport-derived)
 
 **Viewport behavior:**
 
-| Viewport | Panel 1 | Panel 2 | Panel 3 | Notes |
-|---|---|---|---|---|
-| ≥ 1280px | 260px visible | flex-1 | 360px visible by default | Full layout |
-| 1100px – 1279px | 260px visible | flex-1 | Hidden by default; overlay when toggled | `panel3Visible: false` on mount |
-| < 1100px | 260px visible | flex-1 | Always hidden | Panel 3 toggle button in TabBar still present but clicking shows overlay |
-| < 1024px | Auto-collapse to 48px rail | flex-1 | Always hidden | On mount: `setPanel1Collapsed(true)` if viewport < 1024px |
-| < 768px | Hidden (display none); hamburger opens overlay | Full width | Always hidden | Panel 1 overlays content when hamburger is open |
+| Viewport        | Panel 1                                        | Panel 2    | Panel 3                                 | Notes                                                                    |
+| --------------- | ---------------------------------------------- | ---------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| ≥ 1280px        | 260px visible                                  | flex-1     | 360px visible by default                | Full layout                                                              |
+| 1100px – 1279px | 260px visible                                  | flex-1     | Hidden by default; overlay when toggled | `panel3Visible: false` on mount                                          |
+| < 1100px        | 260px visible                                  | flex-1     | Always hidden                           | Panel 3 toggle button in TabBar still present but clicking shows overlay |
+| < 1024px        | Auto-collapse to 48px rail                     | flex-1     | Always hidden                           | On mount: `setPanel1Collapsed(true)` if viewport < 1024px                |
+| < 768px         | Hidden (display none); hamburger opens overlay | Full width | Always hidden                           | Panel 1 overlays content when hamburger is open                          |
 
 **Implementation — viewport detection in AppShell (single useEffect on mount):**
+
 ```typescript
 useEffect(() => {
   const w = window.innerWidth
@@ -984,6 +1082,7 @@ useEffect(() => {
 ```
 
 **Panel 3 overlay (1100px – 1279px):**
+
 - When `panel3Visible` is `true` at < 1280px, Panel 3 renders as `position: fixed` overlay on the right edge, not as a flex sibling
 - Add to AppShell render logic: `const isOverlay = panel3Visible && viewportWidth < 1280`
 - Overlay style: `position: fixed, right: 0, top: 0, height: 100vh, z-index: 50`
@@ -991,15 +1090,18 @@ useEffect(() => {
 - Need `viewportWidth` state: `const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280)` + resize listener in `useEffect`
 
 **Hamburger menu (< 768px):**
+
 - TabBar (or ContentPanel header) renders a Lucide `Menu` (20px) button when `viewportWidth < 768`
 - `onClick={() => setPanel1OverlayOpen(true)}` — add `onHamburger` prop to ContentPanel/TabBar
 - Panel 1 overlay: `position: fixed, left: 0, top: 0, height: 100vh, width: 260px, z-index: 50` — renders when `panel1OverlayOpen && viewportWidth < 768`
 - Clicking outside (backdrop) closes it: `setPanel1OverlayOpen(false)`
 
 **Drag resize and ResizeHandle visibility:**
+
 - ResizeHandle hidden when Panel 3 is not a flex sibling: `{panel3Visible && viewportWidth >= 1280 && <ResizeHandle ... />}`
 
 **Verification:**
+
 - At ≥ 1280px viewport: three panels visible, no overflow
 - Resize browser to 1100px: Panel 3 disappears; clicking Panel 3 toggle shows it as an overlay
 - Resize to < 1024px: Panel 1 auto-collapses to icon rail
@@ -1008,6 +1110,7 @@ useEffect(() => {
 - `npm run build` passes
 
 **Notes:**
+
 - The layout shift (initial `false` → viewport-corrected) is acceptable in Sprint 2. On desktop, users may see Panel 3 appear after the first paint. Sprint 3 can address with a CSS-only fallback (`@media` show/hide) if the flash is visually problematic.
 - `window.addEventListener('resize', ...)` listener in AppShell should update `viewportWidth` state. Add `() => window.removeEventListener('resize', handler)` cleanup.
 

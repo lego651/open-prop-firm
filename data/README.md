@@ -28,6 +28,7 @@ _templates/          # Templates for community contributions
 See [CONTRIBUTING.md](../CONTRIBUTING.md) (coming in Sprint 6) for how to submit content updates via GitHub PR.
 
 Every content file requires:
+
 - A `last_verified` timestamp
 - At least one `sources` entry with a URL
 - Correct YAML frontmatter (see `_templates/` for schema)

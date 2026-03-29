@@ -12,35 +12,44 @@ type NavPanelProps = {
   onToggleCollapse: () => void
 }
 
-export default function NavPanel({ treeData, activeSlug, collapsed, onToggleCollapse }: NavPanelProps) {
+export default function NavPanel({
+  treeData,
+  activeSlug,
+  collapsed,
+  onToggleCollapse,
+}: NavPanelProps) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center h-12 px-3 border-b border-[var(--border)] shrink-0">
+      <div className="flex h-12 shrink-0 items-center border-b border-[var(--border)] px-3">
         <button
           type="button"
-          className="size-7 rounded-md hover:bg-[var(--muted)] flex items-center justify-center"
+          className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
           onClick={onToggleCollapse}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <PanelLeft size={16} />
         </button>
         {!collapsed && (
-          <span className="text-[14px] font-medium text-[var(--foreground)] ml-2">OpenPropFirm</span>
+          <span className="ml-2 text-[14px] font-medium text-[var(--foreground)]">
+            OpenPropFirm
+          </span>
         )}
       </div>
 
       {/* Search trigger */}
       {!collapsed && (
-        <div className="mx-2 mb-1 shrink-0 mt-2">
+        <div className="mx-2 mt-2 mb-1 shrink-0">
           <button
             type="button"
-            className="w-full flex items-center gap-2 h-9 px-3 rounded-md border border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)] text-[13px]"
+            className="flex h-9 w-full items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 text-[13px] text-[var(--muted-foreground)]"
             onClick={() => {}}
           >
             <Search size={14} />
             <span className="flex-1 text-left">Search...</span>
-            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)]">⌘K</kbd>
+            <kbd className="rounded border border-[var(--border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px]">
+              ⌘K
+            </kbd>
           </button>
           {/* TODO: wire to SearchModal in Sprint 3 */}
         </div>
@@ -55,10 +64,10 @@ export default function NavPanel({ treeData, activeSlug, collapsed, onToggleColl
 
       {/* Bottom bar */}
       {!collapsed && (
-        <div className="flex items-center justify-between px-3 border-t border-[var(--border)] shrink-0 h-10">
+        <div className="flex h-10 shrink-0 items-center justify-between border-t border-[var(--border)] px-3">
           <button
             type="button"
-            className="size-7 rounded-md hover:bg-[var(--muted)] flex items-center justify-center"
+            className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
             onClick={() => console.log('settings — v2')}
             aria-label="Settings"
           >

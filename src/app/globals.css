@@ -1,8 +1,8 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "../styles/themes.css";
-@import "../styles/prose.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '../styles/themes.css';
+@import '../styles/prose.css';
 
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, [data-theme="blue"], [data-theme="blue"] *));
 
@@ -12,7 +12,6 @@
 }
 
 @theme inline {
-
   --font-heading: var(--font-sans);
 
   --font-sans: var(--font-geist-sans);
@@ -128,6 +127,10 @@
 }
 
 @layer components {
-  .tab-scroll::-webkit-scrollbar { display: none; }
-  .tab-scroll { scrollbar-width: none; }
+  .tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .tab-scroll {
+    scrollbar-width: none;
+  }
 }

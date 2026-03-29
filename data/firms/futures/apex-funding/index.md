@@ -1,17 +1,17 @@
 ---
-title: "Apex Funding — Overview"
+title: 'Apex Funding — Overview'
 firm: apex-funding
 category: futures
 type: basic-info
 status: active
-last_verified: "2026-03-29T00:00:00Z"
+last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
-website: "https://apextraderfinancial.com"
+website: 'https://apextraderfinancial.com'
 founded: 0
-headquarters: ""
+headquarters: ''
 sources:
-  - url: "https://apextraderfinancial.com"
-    label: "Official Website — to be expanded in Sprint 4"
+  - url: 'https://apextraderfinancial.com'
+    label: 'Official Website — to be expanded in Sprint 4'
 tags: [futures, overview]
 ---
 

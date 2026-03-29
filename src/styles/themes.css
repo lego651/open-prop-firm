@@ -4,191 +4,192 @@
 
 :root {
   --font-sans: var(--font-geist-sans);
-  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  --font-mono:
+    'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
 }
 
 /* ─────────────────────────────────────────
    LIGHT THEME
    ───────────────────────────────────────── */
 
-[data-theme="light"] {
+[data-theme='light'] {
   /* Core surfaces */
-  --background:             #FFFFFF;
-  --foreground:             #1A1A1A;
-  --sidebar-bg:             #F7F7F7;
-  --border:                 #E0E0E0;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --sidebar-bg: #f7f7f7;
+  --border: #e0e0e0;
 
   /* Accent */
-  --accent:                 #7B61FF;
-  --accent-foreground:      #FFFFFF;
+  --accent: #7b61ff;
+  --accent-foreground: #ffffff;
 
   /* Muted */
-  --muted:                  #F0F0F0;
-  --muted-foreground:       #777777;
+  --muted: #f0f0f0;
+  --muted-foreground: #777777;
 
   /* Text aliases */
-  --text-primary:           #1A1A1A;
-  --text-secondary:         #555555;
-  --text-muted:             #777777;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #777777;
 
   /* Nav */
-  --nav-active-bg:          #EAE8FF;
-  --nav-active-fg:          #5A48D0;
+  --nav-active-bg: #eae8ff;
+  --nav-active-fg: #5a48d0;
 
   /* Popovers / Dropdowns */
-  --popover-bg:             #FFFFFF;
-  --popover-border:         #E0E0E0;
+  --popover-bg: #ffffff;
+  --popover-border: #e0e0e0;
 
   /* Code */
-  --code-bg:                #F0F0F0;
-  --code-block-bg:          #F5F5F5;
-  --code-fg:                #C7254E;
+  --code-bg: #f0f0f0;
+  --code-block-bg: #f5f5f5;
+  --code-fg: #c7254e;
 
   /* Links */
-  --link-fg:                #7B61FF;
-  --wikilink-fg:            #4A4A8A;
-  --wikilink-underline:     #A0A0C0;
-  --wikilink-hover-fg:      #7B61FF;
-  --wikilink-missing-fg:    #C0504A;
+  --link-fg: #7b61ff;
+  --wikilink-fg: #4a4a8a;
+  --wikilink-underline: #a0a0c0;
+  --wikilink-hover-fg: #7b61ff;
+  --wikilink-missing-fg: #c0504a;
 
   /* Verified badge */
-  --verified-badge-bg:      #EFF7F2;
-  --verified-badge-border:  #B8DEC8;
-  --verified-badge-fg:      #2D6A4F;
+  --verified-badge-bg: #eff7f2;
+  --verified-badge-border: #b8dec8;
+  --verified-badge-fg: #2d6a4f;
 
   /* Search */
-  --search-highlight-bg:    #FFF380;
-  --search-highlight-fg:    #1A1A1A;
+  --search-highlight-bg: #fff380;
+  --search-highlight-fg: #1a1a1a;
 
   /* Graph */
-  --graph-bg:               #FAFAFA;
-  --graph-edge-color:       #BBBBBB;
-  --graph-node-stroke:      rgba(0, 0, 0, 0.15);
+  --graph-bg: #fafafa;
+  --graph-edge-color: #bbbbbb;
+  --graph-node-stroke: rgba(0, 0, 0, 0.15);
 
   /* File type colors */
-  --file-type-promo:        #2A9D4E;
+  --file-type-promo: #2a9d4e;
 }
 
 /* ─────────────────────────────────────────
    DARK THEME (default)
    ───────────────────────────────────────── */
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   /* Core surfaces */
-  --background:             #1E1E2E;
-  --foreground:             #CDD6F4;
-  --sidebar-bg:             #181825;
-  --border:                 #313244;
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --sidebar-bg: #181825;
+  --border: #313244;
 
   /* Accent */
-  --accent:                 #CBA6F7;
-  --accent-foreground:      #1E1E2E;
+  --accent: #cba6f7;
+  --accent-foreground: #1e1e2e;
 
   /* Muted */
-  --muted:                  #2A2A3E;
-  --muted-foreground:       #6C7086;
+  --muted: #2a2a3e;
+  --muted-foreground: #6c7086;
 
   /* Text aliases */
-  --text-primary:           #CDD6F4;
-  --text-secondary:         #A6ADC8;
-  --text-muted:             #6C7086;
+  --text-primary: #cdd6f4;
+  --text-secondary: #a6adc8;
+  --text-muted: #6c7086;
 
   /* Nav */
-  --nav-active-bg:          #313244;
-  --nav-active-fg:          #CBA6F7;
+  --nav-active-bg: #313244;
+  --nav-active-fg: #cba6f7;
 
   /* Popovers / Dropdowns */
-  --popover-bg:             #24273A;
-  --popover-border:         #363A52;
+  --popover-bg: #24273a;
+  --popover-border: #363a52;
 
   /* Code */
-  --code-bg:                #2A2A3E;
-  --code-block-bg:          #232336;
-  --code-fg:                #F38BA8;
+  --code-bg: #2a2a3e;
+  --code-block-bg: #232336;
+  --code-fg: #f38ba8;
 
   /* Links */
-  --link-fg:                #89B4FA;
-  --wikilink-fg:            #B4BEFE;
-  --wikilink-underline:     #585B70;
-  --wikilink-hover-fg:      #CBA6F7;
-  --wikilink-missing-fg:    #F38BA8;
+  --link-fg: #89b4fa;
+  --wikilink-fg: #b4befe;
+  --wikilink-underline: #585b70;
+  --wikilink-hover-fg: #cba6f7;
+  --wikilink-missing-fg: #f38ba8;
 
   /* Verified badge */
-  --verified-badge-bg:      #1E2D24;
-  --verified-badge-border:  #2D4A38;
-  --verified-badge-fg:      #A6E3A1;
+  --verified-badge-bg: #1e2d24;
+  --verified-badge-border: #2d4a38;
+  --verified-badge-fg: #a6e3a1;
 
   /* Search */
-  --search-highlight-bg:    #F9E2AF;
-  --search-highlight-fg:    #1E1E2E;
+  --search-highlight-bg: #f9e2af;
+  --search-highlight-fg: #1e1e2e;
 
   /* Graph */
-  --graph-bg:               #181825;
-  --graph-edge-color:       #45475A;
-  --graph-node-stroke:      rgba(255, 255, 255, 0.1);
+  --graph-bg: #181825;
+  --graph-edge-color: #45475a;
+  --graph-node-stroke: rgba(255, 255, 255, 0.1);
 
   /* File type colors */
-  --file-type-promo:        #3FB950;
+  --file-type-promo: #3fb950;
 }
 
 /* ─────────────────────────────────────────
    BLUE THEME
    ───────────────────────────────────────── */
 
-[data-theme="blue"] {
+[data-theme='blue'] {
   /* Core surfaces */
-  --background:             #0D1117;
-  --foreground:             #E6EDF3;
-  --sidebar-bg:             #090D12;
-  --border:                 #30363D;
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --sidebar-bg: #090d12;
+  --border: #30363d;
 
   /* Accent */
-  --accent:                 #58A6FF;
-  --accent-foreground:      #0D1117;
+  --accent: #58a6ff;
+  --accent-foreground: #0d1117;
 
   /* Muted */
-  --muted:                  #161B22;
-  --muted-foreground:       #8B949E;
+  --muted: #161b22;
+  --muted-foreground: #8b949e;
 
   /* Text aliases */
-  --text-primary:           #E6EDF3;
-  --text-secondary:         #C9D1D9;
-  --text-muted:             #8B949E;
+  --text-primary: #e6edf3;
+  --text-secondary: #c9d1d9;
+  --text-muted: #8b949e;
 
   /* Nav */
-  --nav-active-bg:          #1F3A5F;
-  --nav-active-fg:          #79C0FF;
+  --nav-active-bg: #1f3a5f;
+  --nav-active-fg: #79c0ff;
 
   /* Popovers / Dropdowns */
-  --popover-bg:             #161B22;
-  --popover-border:         #30363D;
+  --popover-bg: #161b22;
+  --popover-border: #30363d;
 
   /* Code */
-  --code-bg:                #161B22;
-  --code-block-bg:          #0D1117;
-  --code-fg:                #FF7B72;
+  --code-bg: #161b22;
+  --code-block-bg: #0d1117;
+  --code-fg: #ff7b72;
 
   /* Links */
-  --link-fg:                #58A6FF;
-  --wikilink-fg:            #79C0FF;
-  --wikilink-underline:     #21262D;
-  --wikilink-hover-fg:      #A5D6FF;
-  --wikilink-missing-fg:    #FF7B72;
+  --link-fg: #58a6ff;
+  --wikilink-fg: #79c0ff;
+  --wikilink-underline: #21262d;
+  --wikilink-hover-fg: #a5d6ff;
+  --wikilink-missing-fg: #ff7b72;
 
   /* Verified badge */
-  --verified-badge-bg:      #0D1F2D;
-  --verified-badge-border:  #133D5E;
-  --verified-badge-fg:      #3FB950;
+  --verified-badge-bg: #0d1f2d;
+  --verified-badge-border: #133d5e;
+  --verified-badge-fg: #3fb950;
 
   /* Search */
-  --search-highlight-bg:    #E3B341;
-  --search-highlight-fg:    #0D1117;
+  --search-highlight-bg: #e3b341;
+  --search-highlight-fg: #0d1117;
 
   /* Graph */
-  --graph-bg:               #090D12;
-  --graph-edge-color:       #21262D;
-  --graph-node-stroke:      rgba(255, 255, 255, 0.08);
+  --graph-bg: #090d12;
+  --graph-edge-color: #21262d;
+  --graph-node-stroke: rgba(255, 255, 255, 0.08);
 
   /* File type colors */
-  --file-type-promo:        #4ADE80;
+  --file-type-promo: #4ade80;
 }
