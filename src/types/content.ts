@@ -28,3 +28,46 @@ export type TabEntry = {
   slug: string // full URL slug, e.g. "firms/cfd/funded-next/challenges/50k"
   title: string // display label from frontmatter or slug-derived
 }
+
+export type SourceEntry = {
+  url: string
+  label: string
+}
+
+export type Frontmatter = {
+  title: string
+  firm: string
+  category: 'cfd' | 'futures'
+  type: FileType
+  status: 'active' | 'inactive' | 'shutdown'
+  last_verified: string // ISO 8601 UTC string
+  verified_by: 'bot' | 'manual'
+  sources: SourceEntry[]
+  tags?: string[]
+  // challenge-specific
+  challenge_size?: number
+  price_usd?: number
+  affiliate_available?: boolean
+  // basic-info-specific
+  website?: string
+  founded?: number
+  headquarters?: string
+}
+
+export type PageContent = {
+  frontmatter: Frontmatter
+  htmlContent: string
+  slug: string
+}
+
+// API response from /api/content/[...slug]
+export type ContentApiResponse = PageContent | { error: string }
+
+export type SearchEntry = {
+  slug: string
+  title: string
+  firm: string
+  type: string
+  category: string // "CFD" | "Futures"
+  excerpt: string
+}

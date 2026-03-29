@@ -16,9 +16,13 @@ function findLabelInTree(nodes: TreeNode[], slug: string): string | null {
   return null
 }
 
-export function useTabManager(treeData: TreeNode[], pathname: string) {
+export function useTabManager(
+  treeData: TreeNode[],
+  pathname: string,
+  storageKey = 'openTabs',
+) {
   const router = useRouter()
-  const [openTabs, setOpenTabs] = useLocalStorage<TabEntry[]>('openTabs', [])
+  const [openTabs, setOpenTabs] = useLocalStorage<TabEntry[]>(storageKey, [])
   const activeSlug = pathname.replace(/^\//, '')
 
   // Open a tab for the current route when it changes. Uses functional updater
