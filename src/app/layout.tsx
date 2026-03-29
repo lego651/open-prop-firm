@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getContentTree } from "@/lib/content/getContentTree";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,15 +18,21 @@ export const metadata: Metadata = {
   description: "Open source prop trading firm platform",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { treeData, validSlugs } = await getContentTree();
+  // AppShell will replace this placeholder div in S2-4.
+  // treeData and validSlugs are passed as props once AppShell exists.
+  void treeData;
+  void validSlugs;
+
   return (
     <html
       lang="en"
-      data-theme="light"
+      data-theme="dark"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -37,7 +44,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        {children}
+        <div className="flex h-screen">{children}</div>
         {/* Analytics: Google Analytics — to be added in Sprint 6 before launch */}
       </body>
     </html>
