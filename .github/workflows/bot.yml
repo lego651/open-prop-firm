@@ -1,0 +1,22 @@
+name: Content Monitor
+
+on:
+  schedule:
+    # Runs daily at 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  monitor:
+    name: Monitor firm content for changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run content monitor
+        run: |
+          echo "Content monitor placeholder — to be implemented in Sprint 6"
+          echo "Run date: $(date -u)"

@@ -1,0 +1,186 @@
+/* ─────────────────────────────────────────
+   BASE TOKENS (shared structure, non-color)
+   ───────────────────────────────────────── */
+
+:root {
+  --radius: 6px;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+}
+
+/* ─────────────────────────────────────────
+   LIGHT THEME
+   ───────────────────────────────────────── */
+
+[data-theme="light"] {
+  /* Core surfaces */
+  --background:             #FFFFFF;
+  --foreground:             #1A1A1A;
+  --sidebar-bg:             #F7F7F7;
+  --border:                 #E0E0E0;
+
+  /* Accent */
+  --accent:                 #7B61FF;
+  --accent-foreground:      #FFFFFF;
+
+  /* Muted */
+  --muted:                  #F0F0F0;
+  --muted-foreground:       #777777;
+
+  /* Text aliases */
+  --text-primary:           #1A1A1A;
+  --text-secondary:         #555555;
+  --text-muted:             #777777;
+
+  /* Nav */
+  --nav-active-bg:          #EAE8FF;
+  --nav-active-fg:          #5A48D0;
+
+  /* Popovers / Dropdowns */
+  --popover-bg:             #FFFFFF;
+  --popover-border:         #E0E0E0;
+
+  /* Code */
+  --code-bg:                #F0F0F0;
+  --code-block-bg:          #F5F5F5;
+  --code-fg:                #C7254E;
+
+  /* Links */
+  --link-fg:                #7B61FF;
+  --wikilink-fg:            #4A4A8A;
+  --wikilink-underline:     #A0A0C0;
+  --wikilink-hover-fg:      #7B61FF;
+  --wikilink-missing-fg:    #C0504A;
+
+  /* Verified badge */
+  --verified-badge-bg:      #EFF7F2;
+  --verified-badge-border:  #B8DEC8;
+  --verified-badge-fg:      #2D6A4F;
+
+  /* Search */
+  --search-highlight-bg:    #FFF380;
+  --search-highlight-fg:    #1A1A1A;
+
+  /* Graph */
+  --graph-bg:               #FAFAFA;
+  --graph-edge-color:       #BBBBBB;
+  --graph-node-stroke:      rgba(0, 0, 0, 0.15);
+}
+
+/* ─────────────────────────────────────────
+   DARK THEME (default)
+   ───────────────────────────────────────── */
+
+[data-theme="dark"] {
+  /* Core surfaces */
+  --background:             #1E1E2E;
+  --foreground:             #CDD6F4;
+  --sidebar-bg:             #181825;
+  --border:                 #313244;
+
+  /* Accent */
+  --accent:                 #CBA6F7;
+  --accent-foreground:      #1E1E2E;
+
+  /* Muted */
+  --muted:                  #2A2A3E;
+  --muted-foreground:       #6C7086;
+
+  /* Text aliases */
+  --text-primary:           #CDD6F4;
+  --text-secondary:         #A6ADC8;
+  --text-muted:             #6C7086;
+
+  /* Nav */
+  --nav-active-bg:          #313244;
+  --nav-active-fg:          #CBA6F7;
+
+  /* Popovers / Dropdowns */
+  --popover-bg:             #24273A;
+  --popover-border:         #363A52;
+
+  /* Code */
+  --code-bg:                #2A2A3E;
+  --code-block-bg:          #232336;
+  --code-fg:                #F38BA8;
+
+  /* Links */
+  --link-fg:                #89B4FA;
+  --wikilink-fg:            #B4BEFE;
+  --wikilink-underline:     #585B70;
+  --wikilink-hover-fg:      #CBA6F7;
+  --wikilink-missing-fg:    #F38BA8;
+
+  /* Verified badge */
+  --verified-badge-bg:      #1E2D24;
+  --verified-badge-border:  #2D4A38;
+  --verified-badge-fg:      #A6E3A1;
+
+  /* Search */
+  --search-highlight-bg:    #F9E2AF;
+  --search-highlight-fg:    #1E1E2E;
+
+  /* Graph */
+  --graph-bg:               #181825;
+  --graph-edge-color:       #45475A;
+  --graph-node-stroke:      rgba(255, 255, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────
+   BLUE THEME
+   ───────────────────────────────────────── */
+
+[data-theme="blue"] {
+  /* Core surfaces */
+  --background:             #0D1117;
+  --foreground:             #E6EDF3;
+  --sidebar-bg:             #090D12;
+  --border:                 #30363D;
+
+  /* Accent */
+  --accent:                 #58A6FF;
+  --accent-foreground:      #0D1117;
+
+  /* Muted */
+  --muted:                  #161B22;
+  --muted-foreground:       #8B949E;
+
+  /* Text aliases */
+  --text-primary:           #E6EDF3;
+  --text-secondary:         #C9D1D9;
+  --text-muted:             #8B949E;
+
+  /* Nav */
+  --nav-active-bg:          #1F3A5F;
+  --nav-active-fg:          #79C0FF;
+
+  /* Popovers / Dropdowns */
+  --popover-bg:             #161B22;
+  --popover-border:         #30363D;
+
+  /* Code */
+  --code-bg:                #161B22;
+  --code-block-bg:          #0D1117;
+  --code-fg:                #FF7B72;
+
+  /* Links */
+  --link-fg:                #58A6FF;
+  --wikilink-fg:            #79C0FF;
+  --wikilink-underline:     #21262D;
+  --wikilink-hover-fg:      #A5D6FF;
+  --wikilink-missing-fg:    #FF7B72;
+
+  /* Verified badge */
+  --verified-badge-bg:      #0D1F2D;
+  --verified-badge-border:  #133D5E;
+  --verified-badge-fg:      #3FB950;
+
+  /* Search */
+  --search-highlight-bg:    #E3B341;
+  --search-highlight-fg:    #0D1117;
+
+  /* Graph */
+  --graph-bg:               #090D12;
+  --graph-edge-color:       #21262D;
+  --graph-node-stroke:      rgba(255, 255, 255, 0.08);
+}
