@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 import fg from 'fast-glob'
 import matter from 'gray-matter'
@@ -81,6 +81,7 @@ async function main() {
   }
 
   const graphData: GraphData = { nodes, edges }
+  await mkdir(path.dirname(OUTPUT), { recursive: true })
   await writeFile(OUTPUT, JSON.stringify(graphData, null, 2))
   console.log(`Built graph data: ${nodes.length} nodes, ${edges.length} edges written to public/graph-data.json`)
 }

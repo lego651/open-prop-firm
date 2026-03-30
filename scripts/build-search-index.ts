@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 import fg from 'fast-glob'
 import matter from 'gray-matter'
@@ -65,6 +65,7 @@ async function main() {
   )
   const entries = results.filter((e): e is SearchEntry => e !== null)
 
+  await mkdir(path.dirname(OUTPUT), { recursive: true })
   await writeFile(OUTPUT, JSON.stringify(entries, null, 2))
   console.log(`Built search index: ${entries.length} entries written to public/search-index.json`)
 }
