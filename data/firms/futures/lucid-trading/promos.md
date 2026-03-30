@@ -8,7 +8,7 @@ last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 affiliate_available: true
 sources:
-
+  - url: 'https://saveonpropfirms.com/prop-firms/lucid-trading'
     label: 'Lucid Trading — Promo Codes and Discounts'
   - url: 'https://lucidtrading.com'
     label: 'Lucid Trading — Official Website'

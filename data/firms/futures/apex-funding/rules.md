@@ -11,7 +11,7 @@ sources:
     label: 'Apex Trader Funding — Legacy Evaluation Rules (Help Center)'
   - url: 'https://support.apextraderfunding.com/hc/en-us/articles/4408610260507-How-Does-the-Trailing-Static-Drawdown-Threshold-Work-Master-Course'
     label: 'Apex Trader Funding — How Trailing Drawdown Works'
-
+  - url: 'https://propfirmapp.com/prop-firms/apex-trader-funding'
     label: 'Apex Trader Funding — Account and Rule Summary 2026'
 ---
 
