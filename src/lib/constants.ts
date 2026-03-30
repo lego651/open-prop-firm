@@ -13,3 +13,6 @@ export const BREAKPOINTS = {
   PANEL3_AUTO_HIDE: 1100,
   PANEL3_OVERLAY: 1280,
 } as const
+
+/** Default firm slug used as fallback when no tab is active or all tabs are closed. */
+export const DEFAULT_FIRM_SLUG = 'firms/cfd/funded-next'

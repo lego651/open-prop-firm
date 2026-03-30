@@ -7,12 +7,12 @@ status: active
 last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 sources:
+  - url: 'https://fundingpips.com/faq'
+    label: 'Funding Pips — FAQ and Rules (Official)'
   - url: 'https://tradingfinder.com/props/funding-pips/'
-    label: 'Funding Pips — Rules and Trading Policies'
+    label: 'Funding Pips — Rules and Trading Policies (third-party reference)'
   - url: 'https://thetrustedprop.com/blogs/funding-pips-1-step-evaluation-explained'
-    label: 'Funding Pips 1-Step Evaluation Explained'
-  - url: 'https://fundingpips.com'
-    label: 'Funding Pips — Official Website'
+    label: 'Funding Pips 1-Step Evaluation Explained (third-party reference)'
 ---
 
 # Funding Pips — Trading Rules

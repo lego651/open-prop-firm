@@ -1,7 +1,8 @@
+import { readFile } from 'fs/promises'
 import fg from 'fast-glob'
 import matter from 'gray-matter'
-import fs from 'fs'
 import path from 'path'
+import { parseWikilinkTargets } from '../src/lib/content/wikilinks'
 
 const PLACEHOLDER_PATTERNS = [
   /placeholder/i,
@@ -37,28 +38,49 @@ interface ValidationError {
   message: string
 }
 
+interface FileValidationResult {
+  relativePath: string
+  errors: ValidationError[]
+  warnings: string[]
+  fm: Record<string, unknown> | null
+  content: string | null
+}
+
 function isValidISODate(value: unknown): boolean {
   if (typeof value !== 'string') return false
   const d = new Date(value)
   return !isNaN(d.getTime())
 }
 
-function validateFile(filePath: string): ValidationError[] {
+function slugFromFilePath(absPath: string): string {
+  const dataRoot = path.join(process.cwd(), 'data')
+  const rel = path.relative(dataRoot, absPath)
+  return rel.replace(/\.md$/, '').replace(/\/index$/, '')
+}
+
+async function validateFile(filePath: string): Promise<FileValidationResult> {
   const errors: ValidationError[] = []
+  const warnings: string[] = []
   const relativePath = path.relative(process.cwd(), filePath)
 
   let parsed: matter.GrayMatterFile<string>
   try {
-    const content = fs.readFileSync(filePath, 'utf-8')
-    parsed = matter(content)
+    const raw = await readFile(filePath, 'utf-8')
+    parsed = matter(raw)
   } catch {
-    return [
-      {
-        file: relativePath,
-        field: 'frontmatter',
-        message: 'Failed to parse YAML frontmatter',
-      },
-    ]
+    return {
+      relativePath,
+      errors: [
+        {
+          file: relativePath,
+          field: 'frontmatter',
+          message: 'Failed to parse YAML frontmatter',
+        },
+      ],
+      warnings: [],
+      fm: null,
+      content: null,
+    }
   }
 
   const fm = parsed.data
@@ -80,7 +102,7 @@ function validateFile(filePath: string): ValidationError[] {
     })
   }
 
-  if (!VALID_CATEGORIES.includes(fm.category)) {
+  if (!VALID_CATEGORIES.includes(fm.category as (typeof VALID_CATEGORIES)[number])) {
     errors.push({
       file: relativePath,
       field: 'category',
@@ -88,7 +110,7 @@ function validateFile(filePath: string): ValidationError[] {
     })
   }
 
-  if (!VALID_TYPES.includes(fm.type)) {
+  if (!VALID_TYPES.includes(fm.type as (typeof VALID_TYPES)[number])) {
     errors.push({
       file: relativePath,
       field: 'type',
@@ -96,7 +118,7 @@ function validateFile(filePath: string): ValidationError[] {
     })
   }
 
-  if (!VALID_STATUSES.includes(fm.status)) {
+  if (!VALID_STATUSES.includes(fm.status as (typeof VALID_STATUSES)[number])) {
     errors.push({
       file: relativePath,
       field: 'status',
@@ -112,7 +134,7 @@ function validateFile(filePath: string): ValidationError[] {
     })
   }
 
-  if (!VALID_VERIFIED_BY.includes(fm.verified_by)) {
+  if (!VALID_VERIFIED_BY.includes(fm.verified_by as (typeof VALID_VERIFIED_BY)[number])) {
     errors.push({
       file: relativePath,
       field: 'verified_by',
@@ -170,14 +192,52 @@ function validateFile(filePath: string): ValidationError[] {
     }
   }
 
-  // Placeholder text in source labels
+  // Source validation
   if (Array.isArray(fm.sources)) {
     for (const source of fm.sources) {
-      if (
-        source &&
-        typeof source.label === 'string' &&
-        /to be expanded|placeholder|tbd/i.test(source.label)
-      ) {
+      if (!source || typeof source !== 'object') continue
+
+      // Validate url
+      if (!source.url || typeof source.url !== 'string') {
+        errors.push({
+          file: relativePath,
+          field: 'sources.url',
+          message: 'source.url must be a non-empty string',
+        })
+      } else {
+        if (!source.url.startsWith('https://')) {
+          errors.push({
+            file: relativePath,
+            field: 'sources.url',
+            message: `source.url must start with https://: "${source.url}"`,
+          })
+        } else {
+          // Warn on bare root domain (no meaningful path)
+          try {
+            const u = new URL(source.url as string)
+            if (u.pathname === '/' || u.pathname === '') {
+              warnings.push(
+                `Warning: ${relativePath} — source URL is a bare root domain with no path: "${source.url}"`,
+              )
+            }
+          } catch {
+            errors.push({
+              file: relativePath,
+              field: 'sources.url',
+              message: `source.url is not a valid URL: "${source.url}"`,
+            })
+          }
+        }
+      }
+
+      // Validate label
+      if (!source.label || typeof source.label !== 'string') {
+        errors.push({
+          file: relativePath,
+          field: 'sources.label',
+          message: 'source.label must be a non-empty string',
+        })
+      } else if (/to be expanded|placeholder|tbd/i.test(source.label as string)) {
         errors.push({
           file: relativePath,
           field: 'sources.label',
@@ -206,7 +266,7 @@ function validateFile(filePath: string): ValidationError[] {
   }
 
   // Minimum content length checks
-  const minLength = MIN_BODY_LENGTH[fm.type]
+  const minLength = MIN_BODY_LENGTH[fm.type as string]
   if (minLength !== undefined && body.trim().length < minLength) {
     errors.push({
       file: relativePath,
@@ -215,23 +275,21 @@ function validateFile(filePath: string): ValidationError[] {
     })
   }
 
-  return errors
-}
-
-function checkRecency(
-  filePath: string,
-  lastVerified: string,
-): string | null {
-  const verified = new Date(lastVerified)
-  const now = new Date()
-  const diffDays = Math.floor(
-    (now.getTime() - verified.getTime()) / (1000 * 60 * 60 * 24),
-  )
-  if (diffDays > 30) {
-    const relativePath = path.relative(process.cwd(), filePath)
-    return `Warning: ${relativePath} — last_verified is ${diffDays} days old (${lastVerified})`
+  // Recency check — uses already-parsed fm, no second file read
+  if (typeof fm.last_verified === 'string') {
+    const verified = new Date(fm.last_verified)
+    const now = new Date()
+    const diffDays = Math.floor(
+      (now.getTime() - verified.getTime()) / (1000 * 60 * 60 * 24),
+    )
+    if (diffDays > 30) {
+      warnings.push(
+        `Warning: ${relativePath} — last_verified is ${diffDays} days old (${fm.last_verified})`,
+      )
+    }
   }
-  return null
+
+  return { relativePath, errors, warnings, fm, content: parsed.content }
 }
 
 async function main() {
@@ -244,28 +302,39 @@ async function main() {
     process.exit(0)
   }
 
+  // Phase 1: Validate all files in parallel (single read per file)
+  const results = await Promise.all(
+    files.map((file) => validateFile(path.join(process.cwd(), file))),
+  )
+
+  // Phase 2: Build slug set for wikilink resolution validation
+  const slugSet = new Set(
+    files.map((f) => slugFromFilePath(path.join(process.cwd(), f))),
+  )
+
   const allErrors: ValidationError[] = []
-  const warnings: string[] = []
+  const allWarnings: string[] = []
 
-  for (const file of files) {
-    const absPath = path.join(process.cwd(), file)
-    const errors = validateFile(absPath)
-    allErrors.push(...errors)
+  for (const result of results) {
+    allErrors.push(...result.errors)
+    allWarnings.push(...result.warnings)
 
-    // Recency check (warning only)
-    try {
-      const raw = fs.readFileSync(absPath, 'utf-8')
-      const { data } = matter(raw)
-      if (typeof data.last_verified === 'string') {
-        const warning = checkRecency(absPath, data.last_verified)
-        if (warning) warnings.push(warning)
+    // Phase 3: Wikilink resolution check — error on broken links
+    if (result.content !== null) {
+      const targets = parseWikilinkTargets(result.content)
+      for (const target of targets) {
+        if (!slugSet.has(target)) {
+          allErrors.push({
+            file: result.relativePath,
+            field: 'wikilink',
+            message: `Broken wikilink: [[${target}]] — no matching content slug`,
+          })
+        }
       }
-    } catch {
-      // already caught in validateFile
     }
   }
 
-  for (const w of warnings) {
+  for (const w of allWarnings) {
     console.warn(w)
   }
 

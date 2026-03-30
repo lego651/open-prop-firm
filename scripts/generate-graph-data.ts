@@ -3,12 +3,10 @@ import path from 'path'
 import fg from 'fast-glob'
 import matter from 'gray-matter'
 import type { GraphNode, GraphEdge, GraphData } from '../src/types/content'
+import { WIKILINK_RE } from '../src/lib/content/wikilinks'
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'firms')
 const OUTPUT = path.join(process.cwd(), 'public', 'graph-data.json')
-
-// Regex: [[target|label]] or [[target]]
-const WIKILINK_RE = /\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g
 
 function slugFromFilePath(filePath: string): string {
   const rel = path.relative(path.join(process.cwd(), 'data'), filePath)
@@ -50,14 +48,17 @@ async function main() {
   const nodes = parsed.map((p) => p.node)
   const nodeSet = new Set(nodes.map((n) => n.id))
 
-  // Extract wikilinks → edges
+  // Extract wikilinks → edges, deduplicating by (source, target) pair
+  const edgeSet = new Set<string>()
   const edges: GraphEdge[] = []
   for (const { slug: sourceSlug, content } of parsed) {
     const re = new RegExp(WIKILINK_RE.source, 'g')
     let match: RegExpExecArray | null
     while ((match = re.exec(content)) !== null) {
       const targetSlug = match[1].trim()
-      if (nodeSet.has(targetSlug) && targetSlug !== sourceSlug) {
+      const key = `${sourceSlug}:${targetSlug}`
+      if (nodeSet.has(targetSlug) && targetSlug !== sourceSlug && !edgeSet.has(key)) {
+        edgeSet.add(key)
         edges.push({ source: sourceSlug, target: targetSlug })
       }
     }

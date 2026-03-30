@@ -4,6 +4,7 @@ import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import type { TreeNode, TabEntry } from '@/types/content'
 import { useLocalStorage } from './useLocalStorage'
+import { DEFAULT_FIRM_SLUG } from '@/lib/constants'
 
 function findLabelInTree(nodes: TreeNode[], slug: string): string | null {
   for (const node of nodes) {
@@ -51,12 +52,14 @@ export function useTabManager(
 
   const closeTab = useCallback(
     (slug: string) => {
+      // Derive navigation target from current openTabs before mutating
       const idx = openTabs.findIndex((t) => t.slug === slug)
       const newTabs = openTabs.filter((t) => t.slug !== slug)
-      setOpenTabs(newTabs)
+      // Functional updater prevents stale-closure bugs on rapid successive closes
+      setOpenTabs((prev) => prev.filter((t) => t.slug !== slug))
       if (activeSlug === slug) {
         const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
-        const nextSlug = next ? next.slug : 'firms/cfd/funded-next'
+        const nextSlug = next ? next.slug : DEFAULT_FIRM_SLUG
         if (onNavigate) {
           onNavigate(nextSlug)
         } else {

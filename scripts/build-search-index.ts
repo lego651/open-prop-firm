@@ -43,7 +43,12 @@ async function main() {
       const { data, content } = matter(raw)
       if (!data.title) return null
       const plainText = await stripMd(content)
-      const excerpt = plainText.trim().slice(0, 500)
+      // Strip the first line (title heading) — it's already in the title field
+      const lines = plainText.trim().split('\n')
+      const firstLineIsTitle =
+        lines[0]?.trim() === String(data.title).trim()
+      const bodyText = (firstLineIsTitle ? lines.slice(1).join('\n') : plainText).trim()
+      const excerpt = bodyText.slice(0, 500)
       const slug = slugFromFilePath(file)
       return {
         slug,
@@ -52,6 +57,7 @@ async function main() {
         type: String(data.type ?? ''),
         category: categoryFromSlug(slug),
         excerpt,
+        body: bodyText,
       } satisfies SearchEntry
     }),
   )

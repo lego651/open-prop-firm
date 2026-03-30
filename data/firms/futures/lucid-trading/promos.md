@@ -43,4 +43,4 @@ Lucid Trading operates an affiliate program. Partners receive commissions on ref
 
 Codes apply to new evaluation purchases only. Cannot be combined with other active promotions.
 
-See [[firms/futures/lucid-funding/challenges/25k|$25k Account]] for account details.
+See [[firms/futures/lucid-trading/challenges/25k|$25k Account]] for account details.

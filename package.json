@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "tsx scripts/validate-content.ts && tsx scripts/validate-env.ts && tsx scripts/build-search-index.ts && tsx scripts/generate-graph-data.ts",
+    "prebuild": "tsx scripts/validate-content.ts && tsx scripts/build-search-index.ts && tsx scripts/generate-graph-data.ts",
+    "check:env": "tsx scripts/validate-env.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -12,10 +12,22 @@ import rehypeExternalLinks from 'rehype-external-links'
 import rehypeStringify from 'rehype-stringify'
 import { getContentTree } from './getContentTree'
 import type { Frontmatter, PageContent } from '@/types/content'
+import { WIKILINK_RE } from './wikilinks'
 
 const DATA_ROOT = path.join(process.cwd(), 'data')
 
-const WIKILINK_RE = /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g
+function parseFrontmatter(data: Record<string, unknown>, slug: string): Frontmatter {
+  const required = ['title', 'firm', 'category', 'type', 'status'] as const
+  for (const field of required) {
+    if (typeof data[field] !== 'string' || !data[field]) {
+      throw new Error(`Content file ${slug}: missing or invalid frontmatter field "${field}"`)
+    }
+  }
+  if (!Array.isArray(data.sources)) {
+    throw new Error(`Content file ${slug}: frontmatter field "sources" must be an array`)
+  }
+  return data as unknown as Frontmatter
+}
 
 /**
  * Convert [[target|alias]] wikilinks to standard markdown links before
@@ -54,7 +66,7 @@ export const getPageContent = cache(async (slug: string): Promise<PageContent> =
   }
 
   const { data, content } = matter(raw)
-  const frontmatter = data as Frontmatter
+  const frontmatter = parseFrontmatter(data, slug)
 
   const { slugToPathMap } = await getContentTree()
   const resolved = resolveWikilinks(content, slugToPathMap)

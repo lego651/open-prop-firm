@@ -16,10 +16,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>
 }) {
   const { slug } = await params
-  const { frontmatter } = await getPageContent('firms/' + slug.join('/'))
-  return {
-    title: frontmatter.title + ' — OpenPropFirm',
-    description: `${frontmatter.firm} — ${frontmatter.type}`,
+  try {
+    const { frontmatter } = await getPageContent('firms/' + slug.join('/'))
+    return {
+      title: frontmatter.title + ' — OpenPropFirm',
+      description: `${frontmatter.firm} — ${frontmatter.type}`,
+    }
+  } catch {
+    return { title: 'Page Not Found — OpenPropFirm' }
   }
 }
 

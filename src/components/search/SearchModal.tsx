@@ -31,13 +31,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     if (!isOpen || fuse) return
     const controller = new AbortController()
     fetch('/search-index.json', { signal: controller.signal })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to load search index: ${r.status}`)
+        return r.json()
+      })
       .then((entries: SearchEntry[]) => {
         setFuse(
           new Fuse(entries, {
             keys: [
               { name: 'title', weight: 0.4 },
-              { name: 'excerpt', weight: 0.3 },
+              { name: 'body', weight: 0.3 },
               { name: 'firm', weight: 0.2 },
               { name: 'type', weight: 0.1 },
             ],

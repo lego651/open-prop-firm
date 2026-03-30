@@ -19,7 +19,7 @@ firms/
     funding-pips/
   futures/           # Futures prop firms
     apex-funding/
-    lucid-funding/
+    lucid-trading/
 _templates/          # Templates for community contributions
 ```
 

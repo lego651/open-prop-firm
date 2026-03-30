@@ -72,6 +72,7 @@ export type SearchEntry = {
   type: string
   category: string // "CFD" | "Futures"
   excerpt: string
+  body: string // full plain text for full-body keyword search
 }
 
 // Graph types — single source of truth for scripts and components

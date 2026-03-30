@@ -10,10 +10,10 @@ website: 'https://apextraderfunding.com'
 founded: 2021
 headquarters: 'Austin, TX, USA'
 sources:
+  - url: 'https://apextraderfunding.com/evaluation'
+    label: 'Apex Trader Funding — Evaluations (Official)'
   - url: 'https://propfirmapp.com/prop-firms/apex-trader-funding'
-    label: 'Apex Trader Funding — Account Specifications 2026'
-  - url: 'https://apextraderfunding.com'
-    label: 'Apex Trader Funding — Official Website'
+    label: 'Apex Trader Funding — Account Specifications 2026 (third-party reference)'
 ---
 
 # Apex Trader Funding — Overview
@@ -54,6 +54,6 @@ All accounts below reflect the 4.0 pricing structure (March 2026). Prices shown 
 - Activation fee of $99 (EOD) or $79 (Intraday) applies after passing evaluation
 - Up to 20 Performance Accounts can be held simultaneously
 
-Compare with: [[firms/futures/lucid-funding|Lucid Trading]]
+Compare with: [[firms/futures/lucid-trading|Lucid Trading]]
 
 See also: [[firms/futures/apex-funding/rules|Trading Rules]] · [[firms/futures/apex-funding/promos|Promo Codes]] · [[firms/futures/apex-funding/changelog|Changelog]]

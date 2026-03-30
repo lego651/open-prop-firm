@@ -10,17 +10,15 @@ website: 'https://lucidtrading.com'
 founded: 2025
 headquarters: 'USA'
 sources:
+  - url: 'https://lucidtrading.com/how-it-works'
+    label: 'Lucid Trading — How It Works (Official)'
   - url: 'https://saveonpropfirms.com/prop-firms/lucid-trading'
-    label: 'Lucid Trading — Account Types, Pricing, and Rules'
-  - url: 'https://lucidtrading.com'
-    label: 'Lucid Trading — Official Website'
+    label: 'Lucid Trading — Account Types, Pricing, and Rules (third-party reference)'
 ---
 
 # Lucid Trading — Overview
 
 Lucid Trading (Lucid Trading Group LLC) is a US-based futures proprietary trading evaluation firm founded in early 2025 by CEO AJ Campanella. The firm offers funded accounts for CME-listed futures contracts, including ES, NQ, YM, CL, and GC. As of March 2026, Lucid Trading has served over 14,000 traders and paid over $10 million in profits.
-
-> **Note:** This firm's data directory is labeled `lucid-funding`, but the operating entity is Lucid Trading at lucidtrading.com. The original `lucidfunding.io` domain referenced in the initial data setup does not resolve.
 
 Lucid Trading offers three evaluation paths: LucidFlex (two-day minimum, 50% consistency rule), LucidPro (one-day minimum, no consistency rule), and LucidDirect (instant-funded, no evaluation phase). Account sizes start at $25,000. Payouts are available daily and traders keep 90% of profits.
 
@@ -44,8 +42,8 @@ Lucid Trading offers three account types. All use an End-of-Day (EOD) trailing d
 ### LucidFlex (Evaluation)
 Two-day minimum trading, 50% consistency rule during evaluation. One-time fee, no monthly charges, no activation fee.
 
-- [[firms/futures/lucid-funding/challenges/25k|$25k LucidFlex]] — $100, profit target $1,250, drawdown $1,000
-- [[firms/futures/lucid-funding/challenges/50k|$50k LucidFlex]] — $130, profit target $3,000, drawdown $2,000
+- [[firms/futures/lucid-trading/challenges/25k|$25k LucidFlex]] — $100, profit target $1,250, drawdown $1,000
+- [[firms/futures/lucid-trading/challenges/50k|$50k LucidFlex]] — $130, profit target $3,000, drawdown $2,000
 
 ### LucidPro (Evaluation)
 One-day minimum, no consistency rule. Higher entry price, but stricter drawdown relative to account size (drawdown equals profit target).
@@ -66,4 +64,4 @@ No evaluation phase. Traders begin trading immediately on a funded account, subj
 
 Compare with: [[firms/futures/apex-funding|Apex Trader Funding]]
 
-See also: [[firms/futures/lucid-funding/rules|Trading Rules]] · [[firms/futures/lucid-funding/promos|Promo Codes]] · [[firms/futures/lucid-funding/changelog|Changelog]]
+See also: [[firms/futures/lucid-trading/rules|Trading Rules]] · [[firms/futures/lucid-trading/promos|Promo Codes]] · [[firms/futures/lucid-trading/changelog|Changelog]]

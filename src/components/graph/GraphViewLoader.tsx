@@ -19,7 +19,10 @@ export default function GraphViewLoader({ activeSlug, onNodeClick }: GraphViewLo
   useEffect(() => {
     const controller = new AbortController()
     fetch('/graph-data.json', { signal: controller.signal })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to load graph data: ${r.status}`)
+        return r.json()
+      })
       .then(setGraphData)
       .catch((err) => {
         if (err.name === 'AbortError') return

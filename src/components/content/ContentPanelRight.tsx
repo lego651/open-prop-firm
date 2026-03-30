@@ -6,6 +6,7 @@ import { BreadcrumbBar } from '@/components/content/BreadcrumbBar'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTabManager } from '@/hooks/useTabManager'
+import { DEFAULT_FIRM_SLUG } from '@/lib/constants'
 import type { TreeNode, PageContent, ContentApiResponse } from '@/types/content'
 
 type ContentPanelRightProps = {
@@ -13,7 +14,7 @@ type ContentPanelRightProps = {
 }
 
 export default function ContentPanelRight({ treeData }: ContentPanelRightProps) {
-  const [compareSlug, setCompareSlug] = useState('firms/cfd/funded-next')
+  const [compareSlug, setCompareSlug] = useState(DEFAULT_FIRM_SLUG)
   const { openTabs, activeSlug, closeTab } = useTabManager(
     treeData,
     '/' + compareSlug,
@@ -44,6 +45,7 @@ export default function ContentPanelRight({ treeData }: ContentPanelRightProps) 
       })
       .catch((err) => {
         if (err.name === 'AbortError') return
+        setError('Failed to load content. Please check your connection.')
         setLoading(false)
       })
     return () => controller.abort()

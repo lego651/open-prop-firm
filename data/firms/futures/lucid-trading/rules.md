@@ -7,12 +7,12 @@ status: active
 last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 sources:
+  - url: 'https://lucidtrading.com/rules'
+    label: 'Lucid Trading — Trading Rules (Official)'
   - url: 'https://saveonpropfirms.com/prop-firms/lucid-trading'
-    label: 'Lucid Trading — Rules, Accounts, and Payouts'
+    label: 'Lucid Trading — Rules, Accounts, and Payouts (third-party reference)'
   - url: 'https://www.quantvps.com/blog/lucid-trading-prop-firm-review'
-    label: 'Lucid Trading — Prop Firm Review 2026'
-  - url: 'https://lucidtrading.com'
-    label: 'Lucid Trading — Official Website'
+    label: 'Lucid Trading — Prop Firm Review 2026 (third-party reference)'
 ---
 
 # Lucid Trading — Trading Rules
@@ -71,4 +71,4 @@ Lucid Trading does not publish a formal scaling plan with preset milestones. The
 - Available payout methods: ACH, Wire, Plaid, Crypto.
 - No activation fee or monthly fee on any account type.
 
-See [[firms/futures/lucid-funding|Overview]] for general firm information.
+See [[firms/futures/lucid-trading|Overview]] for general firm information.

@@ -10,10 +10,10 @@ website: 'https://fundingpips.com'
 founded: 2022
 headquarters: 'Dubai, UAE'
 sources:
+  - url: 'https://fundingpips.com/challenge'
+    label: 'Funding Pips — Challenge Types (Official)'
   - url: 'https://tradingfinder.com/props/funding-pips/'
-    label: 'Funding Pips — Firm Profile and Challenge Details'
-  - url: 'https://fundingpips.com'
-    label: 'Funding Pips — Official Website'
+    label: 'Funding Pips — Firm Profile and Challenge Details (third-party reference)'
 ---
 
 # Funding Pips — Overview
