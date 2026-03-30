@@ -6,15 +6,16 @@ import { BreadcrumbBar } from '@/components/content/BreadcrumbBar'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTabManager } from '@/hooks/useTabManager'
+import { useAppShell } from '@/contexts/AppShellContext'
 import { DEFAULT_FIRM_SLUG } from '@/lib/constants'
-import type { TreeNode, PageContent, ContentApiResponse } from '@/types/content'
+import type { PageContent, ContentApiResponse } from '@/types/content'
 
 type ContentPanelRightProps = {
-  treeData: TreeNode[]
   externalSlug?: string | null
 }
 
-export default function ContentPanelRight({ treeData, externalSlug }: ContentPanelRightProps) {
+export default function ContentPanelRight({ externalSlug }: ContentPanelRightProps) {
+  const { treeData } = useAppShell()
   const [compareSlug, setCompareSlug] = useState(DEFAULT_FIRM_SLUG)
   const { openTabs, activeSlug, closeTab } = useTabManager(
     treeData,
@@ -25,7 +26,10 @@ export default function ContentPanelRight({ treeData, externalSlug }: ContentPan
 
   useEffect(() => {
     if (externalSlug) {
-      // Syncing context-driven slug into local state — setState in effect is intentional.
+      // externalSlug is a one-way override: when the user cmd+clicks a graph node,
+      // it sets the slug here. After that, compareSlug advances independently via
+      // tab interactions. The invariant: external takes precedence when set, then
+      // local navigation takes over.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCompareSlug(externalSlug)
     }

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { ZoomIn, ZoomOut, Maximize2, SlidersHorizontal } from 'lucide-react'
 import type { ForceGraphMethods } from 'react-force-graph-2d'
 import { FILE_TYPE_COLORS } from '@/lib/graph-colors'
@@ -13,6 +12,9 @@ import {
 
 type GraphControlsProps = {
   graphRef: React.RefObject<ForceGraphMethods | undefined>
+  zoomLevel: number
+  onZoomIn: () => void
+  onZoomOut: () => void
   hiddenTypes: Set<string>
   onToggleType: (type: string) => void
 }
@@ -22,23 +24,11 @@ const BUTTON_CLASS =
 
 export default function GraphControls({
   graphRef,
+  onZoomIn,
+  onZoomOut,
   hiddenTypes,
   onToggleType,
 }: GraphControlsProps) {
-  const [zoomLevel, setZoomLevel] = useState(1.0)
-
-  function handleZoomIn() {
-    const next = Math.min(zoomLevel * 1.5, 8)
-    setZoomLevel(next)
-    graphRef.current?.zoom(next, 300)
-  }
-
-  function handleZoomOut() {
-    const next = Math.max(zoomLevel / 1.5, 0.1)
-    setZoomLevel(next)
-    graphRef.current?.zoom(next, 300)
-  }
-
   function handleFit() {
     graphRef.current?.zoomToFit(400, 40)
   }
@@ -51,7 +41,7 @@ export default function GraphControls({
         type="button"
         aria-label="Zoom in"
         className={BUTTON_CLASS}
-        onClick={handleZoomIn}
+        onClick={onZoomIn}
       >
         <ZoomIn size={14} />
       </button>
@@ -60,7 +50,7 @@ export default function GraphControls({
         type="button"
         aria-label="Zoom out"
         className={BUTTON_CLASS}
-        onClick={handleZoomOut}
+        onClick={onZoomOut}
       >
         <ZoomOut size={14} />
       </button>

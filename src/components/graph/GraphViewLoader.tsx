@@ -15,6 +15,7 @@ const GraphView = dynamic(() => import('./GraphView'), { ssr: false })
 
 export default function GraphViewLoader({ activeSlug, onNodeClick }: GraphViewLoaderProps) {
   const [graphData, setGraphData] = useState<GraphData | null>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -27,9 +28,18 @@ export default function GraphViewLoader({ activeSlug, onNodeClick }: GraphViewLo
       .catch((err) => {
         if (err.name === 'AbortError') return
         console.error('Failed to load graph data:', err)
+        setError(true)
       })
     return () => controller.abort()
   }, [])
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-[12px] text-[var(--muted-foreground)]">Graph unavailable</p>
+      </div>
+    )
+  }
 
   if (!graphData) {
     return <Skeleton className="h-full w-full" />

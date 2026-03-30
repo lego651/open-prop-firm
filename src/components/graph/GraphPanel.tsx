@@ -21,7 +21,6 @@ export default function GraphPanel() {
     user,
     activeSlug,
     navigateTo,
-    treeData,
     compareSlug,
   } = useAppShell()
 
@@ -81,7 +80,7 @@ export default function GraphPanel() {
           />
         ) : panel3Mode === 'compare' ? (
           <Suspense fallback={<Skeleton className="h-full w-full" />}>
-            <ContentPanelRight treeData={treeData} externalSlug={compareSlug} />
+            <ContentPanelRight externalSlug={compareSlug} />
           </Suspense>
         ) : (
           <Suspense fallback={<Skeleton className="h-full w-full" />}>

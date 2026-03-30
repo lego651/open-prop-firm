@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getSupabase } from '@/lib/supabase/client'
@@ -12,29 +12,22 @@ type State =
   | { status: 'success' }
   | { status: 'error'; message: string }
 
-function getErrorMessage(error: { message?: string; status?: number }): string {
+function getErrorMessage(error: { message?: string }): string {
   const msg = error.message ?? ''
   if (msg.includes('Password should be at least') || msg.includes('weak_password')) {
     return 'Password is too weak. Use at least 8 characters.'
   }
-  if (
-    msg.includes('User already registered') ||
-    msg.includes('already been registered') ||
-    msg.includes('email_exists')
-  ) {
-    return 'An account with this email already exists. Try signing in.'
-  }
-  if (msg.includes('Unable to validate email address') || msg.includes('invalid_email')) {
-    return 'Please enter a valid email address.'
+  if (msg.includes('Auth session missing') || msg.includes('session_not_found')) {
+    return 'Reset link has expired or is invalid. Please request a new one.'
   }
   if (msg.includes('fetch') || msg.includes('network') || msg.includes('Network')) {
     return 'Network error. Please check your connection and try again.'
   }
-  return msg || 'Something went wrong. Please try again.'
+  return msg || 'Could not update password. Please try again.'
 }
 
-export default function SignUpPage() {
-  const [email, setEmail] = useState('')
+export default function UpdatePasswordPage() {
+  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMismatch, setPasswordMismatch] = useState(false)
@@ -49,11 +42,12 @@ export default function SignUpPage() {
     setState({ status: 'loading' })
 
     try {
-      const { error } = await getSupabase().auth.signUp({ email, password })
+      const { error } = await getSupabase().auth.updateUser({ password })
       if (error) {
         setState({ status: 'error', message: getErrorMessage(error) })
       } else {
         setState({ status: 'success' })
+        setTimeout(() => router.push('/'), 2000)
       }
     } catch (err) {
       setState({
@@ -75,11 +69,10 @@ export default function SignUpPage() {
         }}
       >
         <p style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-          Check your email
+          Password updated
         </p>
         <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
-          We sent a confirmation link to <strong>{email}</strong>. Click it to activate
-          your account.
+          Your password has been changed. Redirecting you…
         </p>
       </div>
     )
@@ -102,34 +95,16 @@ export default function SignUpPage() {
           color: 'var(--foreground)',
         }}
       >
-        Create an account
+        Set new password
       </h2>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
           <label
-            htmlFor="email"
-            style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--foreground)' }}
-          >
-            Email
-          </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-          <label
             htmlFor="password"
             style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--foreground)' }}
           >
-            Password
+            New password
           </label>
           <Input
             id="password"
@@ -147,12 +122,12 @@ export default function SignUpPage() {
             htmlFor="confirm-password"
             style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--foreground)' }}
           >
-            Confirm password
+            Confirm new password
           </label>
           <Input
             id="confirm-password"
             type="password"
-            placeholder="Repeat your password"
+            placeholder="Repeat your new password"
             autoComplete="new-password"
             required
             value={confirmPassword}
@@ -166,44 +141,15 @@ export default function SignUpPage() {
         </div>
 
         {state.status === 'error' && (
-          <p
-            role="alert"
-            style={{
-              fontSize: '0.875rem',
-              color: 'var(--destructive)',
-              margin: 0,
-            }}
-          >
+          <p role="alert" style={{ fontSize: '0.875rem', color: 'var(--destructive)', margin: 0 }}>
             {state.message}
           </p>
         )}
 
-        <Button
-          type="submit"
-          disabled={state.status === 'loading'}
-          className="w-full mt-1"
-          size="lg"
-        >
-          {state.status === 'loading' ? 'Creating account…' : 'Create account'}
+        <Button type="submit" disabled={state.status === 'loading'} className="w-full mt-1" size="lg">
+          {state.status === 'loading' ? 'Updating…' : 'Update password'}
         </Button>
       </form>
-
-      <p
-        style={{
-          marginTop: '1.25rem',
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          color: 'var(--muted-foreground)',
-        }}
-      >
-        Already have an account?{' '}
-        <Link
-          href="/auth/sign-in"
-          style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}
-        >
-          Sign in →
-        </Link>
-      </p>
     </div>
   )
 }

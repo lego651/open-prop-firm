@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { User as UserIcon } from 'lucide-react'
 import { useAppShell } from '@/contexts/AppShellContext'
@@ -16,6 +17,18 @@ type AuthButtonProps = {
 
 export function AuthButton({ collapsed = false }: AuthButtonProps) {
   const { user, authLoading } = useAppShell()
+  const [signingOut, setSigningOut] = useState(false)
+  const [signOutError, setSignOutError] = useState(false)
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    setSignOutError(false)
+    const { error } = await getSupabase().auth.signOut()
+    if (error) {
+      setSignOutError(true)
+    }
+    setSigningOut(false)
+  }
 
   // Loading skeleton
   if (authLoading) {
@@ -86,12 +99,16 @@ export function AuthButton({ collapsed = false }: AuthButtonProps) {
         <div className="my-1 h-px bg-[var(--border)]" />
 
         {/* Sign out */}
+        {signOutError && (
+          <p className="px-2 py-1 text-[11px] text-[var(--destructive)]">Sign out failed</p>
+        )}
         <button
           type="button"
-          className="w-full rounded px-2 py-1.5 text-left text-[12px] text-[var(--foreground)] hover:bg-[var(--muted)]"
-          onClick={() => getSupabase().auth.signOut()}
+          disabled={signingOut}
+          className="w-full rounded px-2 py-1.5 text-left text-[12px] text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
+          onClick={handleSignOut}
         >
-          Sign out
+          {signingOut ? 'Signing out…' : 'Sign out'}
         </button>
       </PopoverContent>
     </Popover>

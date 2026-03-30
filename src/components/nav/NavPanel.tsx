@@ -1,7 +1,6 @@
 'use client'
 
 import { PanelLeft, Search, Settings } from 'lucide-react'
-import type { TreeNode } from '@/types/content'
 import { useAppShell } from '@/contexts/AppShellContext'
 import NavFileTree from '@/components/nav/NavFileTree'
 import { ThemeToggle } from '@/components/nav/ThemeToggle'
@@ -9,13 +8,12 @@ import { useSearch } from '@/contexts/SearchContext'
 import { AuthButton } from '@/components/auth/AuthButton'
 
 type NavPanelProps = {
-  treeData: TreeNode[]
   collapsed: boolean
   onToggleCollapse: () => void
 }
 
-export default function NavPanel({ treeData, collapsed, onToggleCollapse }: NavPanelProps) {
-  const { activeSlug } = useAppShell()
+export default function NavPanel({ collapsed, onToggleCollapse }: NavPanelProps) {
+  const { activeSlug, treeData } = useAppShell()
   const { open: openSearch } = useSearch()
 
   return (

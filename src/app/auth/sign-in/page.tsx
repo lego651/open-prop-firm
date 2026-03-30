@@ -179,12 +179,20 @@ function SignInPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-            <label
-              htmlFor="password"
-              style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--foreground)' }}
-            >
-              Password
-            </label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <label
+                htmlFor="password"
+                style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--foreground)' }}
+              >
+                Password
+              </label>
+              <Link
+                href="/auth/reset-password"
+                style={{ fontSize: '0.8rem', color: 'var(--accent)', textDecoration: 'none' }}
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"

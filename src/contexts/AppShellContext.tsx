@@ -17,7 +17,6 @@ type AppShellContextValue = {
   // Tabs (main panel)
   openTabs: TabEntry[]
   closeTab: (slug: string) => void
-  openTab: (slug: string) => void
 
   // Panel 1 mobile overlay
   panel1OverlayOpen: boolean
@@ -69,10 +68,6 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     router.push('/' + slug)
   }, [router])
 
-  const openTab = useCallback((slug: string) => {
-    router.push('/' + slug)
-  }, [router])
-
   const openInPanel3 = useCallback((slug: string) => {
     setCompareSlug(slug)
     setPanel3Mode('compare')
@@ -84,7 +79,6 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     navigateTo,
     openTabs,
     closeTab,
-    openTab,
     panel1OverlayOpen,
     setPanel1OverlayOpen,
     panel3Mode,

@@ -15,7 +15,7 @@ type AppShellProps = {
   children: React.ReactNode
 }
 
-function AppShellLayout({ treeData, children }: AppShellProps) {
+function AppShellLayout({ children }: { children: React.ReactNode }) {
   const { panel3Visible, setPanel3Visible, viewportWidth, panel1OverlayOpen, setPanel1OverlayOpen } = useAppShell()
   const [panel1Collapsed, setPanel1Collapsed] = useLocalStorage('panel1Collapsed', false)
   const [panel3Width, setPanel3Width] = useLocalStorage<number>('panel3Width', LAYOUT.PANEL3_DEFAULT_WIDTH)
@@ -30,7 +30,7 @@ function AppShellLayout({ treeData, children }: AppShellProps) {
           style={{ width: panel1Collapsed ? LAYOUT.PANEL1_COLLAPSED : LAYOUT.PANEL1_WIDTH, transition: 'width 200ms ease' }}
           className="shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--sidebar-bg)]"
         >
-          <NavPanel treeData={treeData} collapsed={panel1Collapsed} onToggleCollapse={() => setPanel1Collapsed((v) => !v)} />
+          <NavPanel collapsed={panel1Collapsed} onToggleCollapse={() => setPanel1Collapsed((v) => !v)} />
         </div>
       ) : null}
 
@@ -39,7 +39,7 @@ function AppShellLayout({ treeData, children }: AppShellProps) {
         <>
           <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setPanel1OverlayOpen(false)} />
           <div style={{ width: LAYOUT.PANEL1_WIDTH }} className="fixed top-0 left-0 z-50 h-full overflow-hidden border-r border-[var(--border)] bg-[var(--sidebar-bg)]">
-            <NavPanel treeData={treeData} collapsed={false} onToggleCollapse={() => setPanel1OverlayOpen(false)} />
+            <NavPanel collapsed={false} onToggleCollapse={() => setPanel1OverlayOpen(false)} />
           </div>
         </>
       )}
@@ -78,7 +78,7 @@ function AppShellLayout({ treeData, children }: AppShellProps) {
 export default function AppShell({ treeData, children }: AppShellProps) {
   return (
     <AppShellProvider treeData={treeData}>
-      <AppShellLayout treeData={treeData}>{children}</AppShellLayout>
+      <AppShellLayout>{children}</AppShellLayout>
     </AppShellProvider>
   )
 }

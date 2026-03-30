@@ -1,26 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { FILE_TYPE_COLORS } from '@/lib/graph-colors'
-import type { ThemeVariant } from '@/lib/graph-colors'
+import { useTheme } from '@/hooks/useTheme'
 
 export default function GraphLegend() {
-  const [theme, setTheme] = useState<ThemeVariant>('dark')
-
-  useEffect(() => {
-    const read = () =>
-      setTheme(
-        (document.documentElement.dataset.theme as ThemeVariant | undefined) ??
-          'dark',
-      )
-    read()
-    const observer = new MutationObserver(read)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    })
-    return () => observer.disconnect()
-  }, [])
+  const theme = useTheme()
 
   return (
     <div className="absolute bottom-3 left-3 rounded-md border border-[var(--border)] bg-[var(--sidebar-bg)]/80 px-2.5 py-1.5">

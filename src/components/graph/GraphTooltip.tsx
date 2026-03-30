@@ -2,6 +2,7 @@
 
 import type { GraphNode } from '@/types/content'
 import { FILE_TYPE_COLORS } from '@/lib/graph-colors'
+import { useTheme } from '@/hooks/useTheme'
 
 type GraphTooltipProps = {
   node: GraphNode
@@ -11,7 +12,7 @@ type GraphTooltipProps = {
 }
 
 export default function GraphTooltip({ node, x, y }: GraphTooltipProps) {
-  const theme = (document.documentElement.dataset.theme as 'light' | 'dark' | 'blue') ?? 'dark'
+  const theme = useTheme()
   const typeColors = FILE_TYPE_COLORS[node.type as keyof typeof FILE_TYPE_COLORS]
   const dotColor = typeColors
     ? theme === 'light' ? typeColors.light : theme === 'blue' ? typeColors.blue : typeColors.dark

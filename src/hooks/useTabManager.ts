@@ -61,23 +61,25 @@ export function useTabManager(
   const closeTab = useCallback(
     (slug: string) => {
       const currentSlug = activeSlugRef.current
+      // Compute the navigation target inside the updater (runs synchronously),
+      // then navigate outside — keeps the updater pure (no side effects).
+      let nextSlug: string | null = null
       setOpenTabs((prev) => {
         const idx = prev.findIndex((t) => t.slug === slug)
         const newTabs = prev.filter((t) => t.slug !== slug)
         if (currentSlug === slug) {
           const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
-          const nextSlug = next ? next.slug : DEFAULT_FIRM_SLUG
-          // Schedule navigation after state commit to avoid updating state during render
-          setTimeout(() => {
-            if (onNavigate) {
-              onNavigate(nextSlug)
-            } else {
-              router.push('/' + nextSlug)
-            }
-          }, 0)
+          nextSlug = next ? next.slug : DEFAULT_FIRM_SLUG
         }
         return newTabs
       })
+      if (nextSlug) {
+        if (onNavigate) {
+          onNavigate(nextSlug)
+        } else {
+          router.push('/' + nextSlug)
+        }
+      }
     },
     [setOpenTabs, router, onNavigate],
   )

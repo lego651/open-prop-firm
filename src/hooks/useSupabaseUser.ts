@@ -15,12 +15,7 @@ export function useSupabaseUser(): { user: User | null; loading: boolean } {
 
   useEffect(() => {
     const supabase = getSupabase()
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        setUser(data.session?.user ?? null)
-        setLoading(false)
-      })
+    // onAuthStateChange fires immediately with INITIAL_SESSION — no need for getSession()
     const { data } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null)
       setLoading(false)

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 
 type CompareAuthGateProps = {
@@ -8,6 +9,9 @@ type CompareAuthGateProps = {
 }
 
 export default function CompareAuthGate({ onDismiss }: CompareAuthGateProps) {
+  const pathname = usePathname()
+  const next = encodeURIComponent(pathname)
+
   return (
     <div className="relative flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
       <button
@@ -25,14 +29,14 @@ export default function CompareAuthGate({ onDismiss }: CompareAuthGateProps) {
         Create a free account to unlock the comparison panel — no payment required.
       </p>
       <Link
-        href="/auth/sign-up"
+        href={`/auth/sign-up?next=${next}`}
         className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm text-[var(--accent-foreground)] hover:opacity-90"
       >
         Sign up free
       </Link>
       <p className="text-xs text-[var(--muted-foreground)]">
         Already have an account?{' '}
-        <Link href="/auth/sign-in" className="underline hover:opacity-80">
+        <Link href={`/auth/sign-in?next=${next}`} className="underline hover:opacity-80">
           Sign in
         </Link>
       </p>
