@@ -1,6 +1,7 @@
 'use client'
 
 import { PanelLeft, Search, Settings } from 'lucide-react'
+import Link from 'next/link'
 import { useAppShell } from '@/contexts/AppShellContext'
 import NavFileTree from '@/components/nav/NavFileTree'
 import { ThemeToggle } from '@/components/nav/ThemeToggle'
@@ -57,6 +58,24 @@ export default function NavPanel({ collapsed, onToggleCollapse }: NavPanelProps)
       {!collapsed && (
         <div className="flex-1 overflow-y-auto">
           <NavFileTree treeData={treeData} activeSlug={activeSlug} />
+        </div>
+      )}
+
+      {/* Legal links */}
+      {!collapsed && (
+        <div className="flex shrink-0 items-center gap-3 border-t border-[var(--border)] px-3 py-1.5">
+          <Link
+            href="/legal/terms-of-service"
+            className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          >
+            Terms
+          </Link>
+          <Link
+            href="/legal/disclaimer"
+            className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          >
+            Disclaimer
+          </Link>
         </div>
       )}
 

@@ -57,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Contributing
 
-CONTRIBUTING.md — coming in Sprint 6. See `/data/_templates/` for content frontmatter schema.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add or update firm data, run the monitoring bot locally, and PR conventions.
 
 ## Live Site
 

@@ -43,12 +43,25 @@ async function main() {
       const { data, content } = matter(raw)
       if (!data.title) return null
       const plainText = await stripMd(content)
-      // Strip the first line (title heading) — it's already in the title field
+      // Strip leading H1 — it duplicates the title field already indexed separately
       const lines = plainText.trim().split('\n')
       const firstLineIsTitle =
         lines[0]?.trim() === String(data.title).trim()
       const bodyText = (firstLineIsTitle ? lines.slice(1).join('\n') : plainText).trim()
-      const excerpt = bodyText.slice(0, 500)
+      // Find first substantive paragraph: non-empty, not a heading remnant, min 40 chars
+      const bodyLines = bodyText.split('\n')
+      let excerpt = ''
+      for (const line of bodyLines) {
+        const t = line.trim()
+        if (t.length >= 40) {
+          excerpt = t.length > 160 ? t.slice(0, 157) + '…' : t
+          break
+        }
+      }
+      if (!excerpt) {
+        // fallback: first 160 chars of body
+        excerpt = bodyText.slice(0, 157) + (bodyText.length > 157 ? '…' : '')
+      }
       const slug = slugFromFilePath(file)
       return {
         slug,

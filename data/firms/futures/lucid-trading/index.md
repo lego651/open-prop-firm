@@ -12,8 +12,8 @@ headquarters: 'USA'
 sources:
   - url: 'https://lucidtrading.com/how-it-works'
     label: 'Lucid Trading — How It Works (Official)'
-  - url: 'https://saveonpropfirms.com/prop-firms/lucid-trading'
-    label: 'Lucid Trading — Account Types, Pricing, and Rules (third-party reference)'
+
+
 ---
 
 # Lucid Trading — Overview

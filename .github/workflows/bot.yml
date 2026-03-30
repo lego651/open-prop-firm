@@ -1,22 +1,49 @@
-name: Content Monitor
+name: Monitoring Bot
 
 on:
   schedule:
-    # Runs daily at 06:00 UTC
-    - cron: '0 6 * * *'
-  workflow_dispatch:
-    # Allows manual trigger from GitHub Actions UI
+    - cron: '0 6 * * 1'   # Mondays at 06:00 UTC
+  workflow_dispatch:        # Manual trigger from GitHub UI
 
 jobs:
   monitor:
-    name: Monitor firm content for changes
+    name: Run firm scrapers
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    permissions:
+      contents: write       # push temp branch
+      pull-requests: write  # open PR
 
-      - name: Run content monitor
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # full history needed for git operations
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git
         run: |
-          echo "Content monitor placeholder — to be implemented in Sprint 6"
-          echo "Run date: $(date -u)"
+          git config user.name  "OpenPropFirm Bot"
+          git config user.email "bot@openpropfirm.com"
+
+      - name: Run health check
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx tsx --project tsconfig.scripts.json scripts/monitor/health-check.ts
+
+      - name: Run monitor
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx tsx --project tsconfig.scripts.json scripts/monitor/runner.ts

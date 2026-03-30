@@ -9,10 +9,10 @@ verified_by: manual
 sources:
   - url: 'https://lucidtrading.com/rules'
     label: 'Lucid Trading — Trading Rules (Official)'
-  - url: 'https://saveonpropfirms.com/prop-firms/lucid-trading'
-    label: 'Lucid Trading — Rules, Accounts, and Payouts (third-party reference)'
-  - url: 'https://www.quantvps.com/blog/lucid-trading-prop-firm-review'
-    label: 'Lucid Trading — Prop Firm Review 2026 (third-party reference)'
+
+
+
+
 ---
 
 # Lucid Trading — Trading Rules

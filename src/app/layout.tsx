@@ -4,6 +4,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { getContentTree } from '@/lib/content/getContentTree'
 import AppShell from '@/components/layout/AppShell'
 import { SearchProvider } from '@/contexts/SearchContext'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 const geistSans = Geist({
@@ -20,8 +22,28 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://openpropfirm.com',
   ),
-  title: 'OpenPropFirm',
-  description: 'Open source prop trading firm platform',
+  title: {
+    default: 'OpenPropFirm',
+    template: '%s — OpenPropFirm',
+  },
+  description:
+    'Free, community-maintained information hub for prop firm traders. Compare challenges, rules, and promo codes across top prop trading firms.',
+  openGraph: {
+    title: 'OpenPropFirm',
+    description:
+      'Free, community-maintained information hub for prop firm traders. Compare challenges, rules, and promo codes across top prop trading firms.',
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://openpropfirm.com',
+    siteName: 'OpenPropFirm',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'OpenPropFirm' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'OpenPropFirm',
+    description:
+      'Free, community-maintained information hub for prop firm traders.',
+    images: ['/og.png'],
+  },
 }
 
 export default async function RootLayout({
@@ -51,7 +73,8 @@ export default async function RootLayout({
             <AppShell treeData={treeData}>{children}</AppShell>
           </SearchProvider>
         </TooltipProvider>
-        {/* Analytics: Google Analytics — to be added in Sprint 6 before launch */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

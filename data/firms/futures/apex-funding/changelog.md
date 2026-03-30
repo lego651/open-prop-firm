@@ -7,7 +7,7 @@ status: active
 last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 sources:
-  - url: 'https://propfirmapp.com/prop-firms/apex-trader-funding'
+
     label: 'Apex Trader Funding — Review and History 2026'
   - url: 'https://apextraderfunding.com'
     label: 'Apex Trader Funding — Official Website'
@@ -28,7 +28,7 @@ Apex Trader Funding launched its "4.0" update in March 2026. Key changes:
 - No more payout denials tied to video review requirements
 - Chart screenshot submission for payout approval removed
 
-Source: https://propfirmapp.com/prop-firms/apex-trader-funding
+_Verified as of March 2026._
 
 ---
 

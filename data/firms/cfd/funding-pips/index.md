@@ -12,8 +12,8 @@ headquarters: 'Dubai, UAE'
 sources:
   - url: 'https://fundingpips.com/challenge'
     label: 'Funding Pips — Challenge Types (Official)'
-  - url: 'https://tradingfinder.com/props/funding-pips/'
-    label: 'Funding Pips — Firm Profile and Challenge Details (third-party reference)'
+  - url: 'https://fundingpips.com'
+    label: 'Funding Pips — Official Website'
 ---
 
 # Funding Pips — Overview
