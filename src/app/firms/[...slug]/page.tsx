@@ -16,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>
 }) {
   const { slug } = await params
-  const { frontmatter } = await getPageContent(slug.join('/'))
+  const { frontmatter } = await getPageContent('firms/' + slug.join('/'))
   return {
     title: frontmatter.title + ' — OpenPropFirm',
     description: `${frontmatter.firm} — ${frontmatter.type}`,
@@ -29,7 +29,7 @@ export default async function FirmPage({
   params: Promise<{ slug: string[] }>
 }) {
   const { slug } = await params
-  const slugPath = slug.join('/')
+  const slugPath = 'firms/' + slug.join('/')
 
   let content: Awaited<ReturnType<typeof getPageContent>> | null = null
   try {
