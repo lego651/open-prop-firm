@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { getContentTree } from '@/lib/content/getContentTree'
 import AppShell from '@/components/layout/AppShell'
+import { SearchProvider } from '@/contexts/SearchContext'
 import './globals.css'
 
 const geistSans = Geist({
@@ -43,7 +44,9 @@ export default async function RootLayout({
       </head>
       <body>
         <TooltipProvider>
-          <AppShell treeData={treeData}>{children}</AppShell>
+          <SearchProvider>
+            <AppShell treeData={treeData}>{children}</AppShell>
+          </SearchProvider>
         </TooltipProvider>
         {/* Analytics: Google Analytics — to be added in Sprint 6 before launch */}
       </body>

@@ -60,8 +60,10 @@ export type PageContent = {
   slug: string
 }
 
-// API response from /api/content/[...slug]
-export type ContentApiResponse = PageContent | { error: string }
+// API response from /api/content/[...slug] — discriminant wrapper
+export type ContentApiResponse =
+  | { ok: true; data: PageContent }
+  | { ok: false; error: string }
 
 export type SearchEntry = {
   slug: string
@@ -70,4 +72,23 @@ export type SearchEntry = {
   type: string
   category: string // "CFD" | "Futures"
   excerpt: string
+}
+
+// Graph types — single source of truth for scripts and components
+export type GraphNode = {
+  id: string
+  label: string
+  type: string
+  firm: string
+  category: string
+}
+
+export type GraphEdge = {
+  source: string
+  target: string
+}
+
+export type GraphData = {
+  nodes: GraphNode[]
+  edges: GraphEdge[]
 }

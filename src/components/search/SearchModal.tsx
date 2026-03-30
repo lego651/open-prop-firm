@@ -21,38 +21,41 @@ type SearchModalProps = {
   onClose: () => void
 }
 
-// Module-level Fuse instance — persists across modal open/close cycles
-let fuseInstance: Fuse<SearchEntry> | null = null
-
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter()
   const [query, setQuery] = useState('')
+  const [fuse, setFuse] = useState<Fuse<SearchEntry> | null>(null)
 
   // Load and initialize Fuse on first open
   useEffect(() => {
-    if (!isOpen || fuseInstance) return
-    fetch('/search-index.json')
+    if (!isOpen || fuse) return
+    const controller = new AbortController()
+    fetch('/search-index.json', { signal: controller.signal })
       .then((r) => r.json())
       .then((entries: SearchEntry[]) => {
-        fuseInstance = new Fuse(entries, {
-          keys: [
-            { name: 'title', weight: 0.4 },
-            { name: 'excerpt', weight: 0.3 },
-            { name: 'firm', weight: 0.2 },
-            { name: 'type', weight: 0.1 },
-          ],
-          threshold: 0.4,
-          includeScore: true,
-        })
+        setFuse(
+          new Fuse(entries, {
+            keys: [
+              { name: 'title', weight: 0.4 },
+              { name: 'excerpt', weight: 0.3 },
+              { name: 'firm', weight: 0.2 },
+              { name: 'type', weight: 0.1 },
+            ],
+            threshold: 0.4,
+            includeScore: true,
+          }),
+        )
       })
-      .catch((err) => console.error('Failed to load search index:', err))
-  }, [isOpen])
+      .catch((err) => {
+        if (err.name === 'AbortError') return
+        console.error('Failed to load search index:', err)
+      })
+    return () => controller.abort()
+  }, [isOpen, fuse])
 
   // Compute results synchronously — Fuse.search is fast for client-side indexes
   const results: SearchEntry[] =
-    query && fuseInstance
-      ? fuseInstance.search(query).slice(0, 10).map((r) => r.item)
-      : []
+    query && fuse ? fuse.search(query).slice(0, 10).map((r) => r.item) : []
 
   function handleClose() {
     setQuery('')

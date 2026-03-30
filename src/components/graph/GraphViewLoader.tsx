@@ -3,24 +3,7 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '@/components/ui/skeleton'
-
-type GraphNode = {
-  id: string
-  label: string
-  type: string
-  firm: string
-  category: string
-}
-
-type GraphEdge = {
-  source: string
-  target: string
-}
-
-type GraphData = {
-  nodes: GraphNode[]
-  edges: GraphEdge[]
-}
+import type { GraphData } from '@/types/content'
 
 type GraphViewLoaderProps = {
   activeSlug: string
@@ -34,10 +17,15 @@ export default function GraphViewLoader({ activeSlug, onNodeClick }: GraphViewLo
   const [graphData, setGraphData] = useState<GraphData | null>(null)
 
   useEffect(() => {
-    fetch('/graph-data.json')
+    const controller = new AbortController()
+    fetch('/graph-data.json', { signal: controller.signal })
       .then((r) => r.json())
       .then(setGraphData)
-      .catch((err) => console.error('Failed to load graph data:', err))
+      .catch((err) => {
+        if (err.name === 'AbortError') return
+        console.error('Failed to load graph data:', err)
+      })
+    return () => controller.abort()
   }, [])
 
   if (!graphData) {

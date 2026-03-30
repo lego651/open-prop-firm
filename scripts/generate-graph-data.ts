@@ -42,42 +42,38 @@ function categoryFromSlug(slug: string): string {
 async function main() {
   const files = await fg('**/*.md', { cwd: DATA_DIR, absolute: true })
 
-  const nodes: GraphNode[] = []
-  const nodeSet = new Set<string>()
+  // Single pass: read each file once, build nodes and store content for edge extraction
+  const parsed = await Promise.all(
+    files.map(async (file) => {
+      const raw = await readFile(file, 'utf-8')
+      const { data, content } = matter(raw)
+      const slug = slugFromFilePath(file)
+      const parts = slug.split('/')
+      const firmSegment = parts[2] ?? slug
+      return {
+        slug,
+        node: {
+          id: slug,
+          label: data.title ? String(data.title) : firmSegment,
+          type: String(data.type ?? ''),
+          firm: String(data.firm ?? firmSegment),
+          category: categoryFromSlug(slug),
+        } satisfies GraphNode,
+        content,
+      }
+    }),
+  )
 
-  // First pass: build all nodes
-  for (const file of files) {
-    const raw = await readFile(file, 'utf-8')
-    const { data } = matter(raw)
-    const slug = slugFromFilePath(file)
-    const parts = slug.split('/')
-    const firmSegment = parts[2] ?? slug
+  const nodes = parsed.map((p) => p.node)
+  const nodeSet = new Set(nodes.map((n) => n.id))
 
-    nodes.push({
-      id: slug,
-      label: data.title ? String(data.title) : firmSegment,
-      type: String(data.type ?? ''),
-      firm: String(data.firm ?? firmSegment),
-      category: categoryFromSlug(slug),
-    })
-    nodeSet.add(slug)
-  }
-
-  // Second pass: extract wikilinks → edges
+  // Extract wikilinks → edges
   const edges: GraphEdge[] = []
-
-  for (const file of files) {
-    const raw = await readFile(file, 'utf-8')
-    const { content } = matter(raw)
-    const sourceSlug = slugFromFilePath(file)
-
+  for (const { slug: sourceSlug, content } of parsed) {
+    const re = new RegExp(WIKILINK_RE.source, 'g')
     let match: RegExpExecArray | null
-    WIKILINK_RE.lastIndex = 0
-    while ((match = WIKILINK_RE.exec(content)) !== null) {
-      const rawTarget = match[1].trim()
-      // Resolve: if starts with firms/, use as-is; otherwise try relative
-      const targetSlug = rawTarget.startsWith('firms/') ? rawTarget : rawTarget
-
+    while ((match = re.exec(content)) !== null) {
+      const targetSlug = match[1].trim()
       if (nodeSet.has(targetSlug) && targetSlug !== sourceSlug) {
         edges.push({ source: sourceSlug, target: targetSlug })
       }

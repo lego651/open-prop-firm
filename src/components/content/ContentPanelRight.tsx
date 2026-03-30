@@ -6,7 +6,7 @@ import { BreadcrumbBar } from '@/components/content/BreadcrumbBar'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTabManager } from '@/hooks/useTabManager'
-import type { TreeNode, PageContent } from '@/types/content'
+import type { TreeNode, PageContent, ContentApiResponse } from '@/types/content'
 
 type ContentPanelRightProps = {
   treeData: TreeNode[]
@@ -18,23 +18,35 @@ export default function ContentPanelRight({ treeData }: ContentPanelRightProps) 
     treeData,
     '/' + compareSlug,
     'compareTab',
+    (slug) => setCompareSlug(slug),
   )
 
   const [content, setContent] = useState<PageContent | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!compareSlug) return
+    const controller = new AbortController()
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setContent(null)
-    fetch('/api/content/' + compareSlug)
+    setError(null)
+    fetch('/api/content/' + compareSlug, { signal: controller.signal })
       .then((r) => r.json())
-      .then((data: PageContent) => {
-        setContent(data)
+      .then((data: ContentApiResponse) => {
+        if (data.ok) {
+          setContent(data.data)
+        } else {
+          setError(data.error)
+        }
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((err) => {
+        if (err.name === 'AbortError') return
+        setLoading(false)
+      })
+    return () => controller.abort()
   }, [compareSlug])
 
   return (
@@ -55,8 +67,10 @@ export default function ContentPanelRight({ treeData }: ContentPanelRightProps) 
             <Skeleton className="mb-2 h-4 w-5/6" />
             <Skeleton className="h-4 w-4/6" />
           </>
+        ) : error ? (
+          <p className="text-sm text-[var(--muted-foreground)]">{error}</p>
         ) : content ? (
-          <MarkdownRenderer htmlContent={content.htmlContent} slug={content.slug} />
+          <MarkdownRenderer htmlContent={content.htmlContent} />
         ) : null}
       </div>
     </div>

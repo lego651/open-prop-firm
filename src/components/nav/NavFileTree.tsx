@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   BookOpen,
@@ -71,10 +71,10 @@ function findParentId(nodes: TreeNode[], targetId: string, parentId: string | nu
     if (node.id === targetId) return parentId
     if (node.children) {
       const found = findParentId(node.children, targetId, node.id)
-      if (found !== undefined) return found
+      if (found !== null) return found
     }
   }
-  return undefined as unknown as null
+  return null
 }
 
 function findNode(nodes: TreeNode[], id: string): TreeNode | null {
@@ -282,9 +282,13 @@ export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) 
     [router],
   )
 
+  // Memoized visible list — recomputed only when treeData or expanded changes, not on every keypress
+  const visibleList = useMemo(
+    () => buildVisibleList(treeData, expanded),
+    [treeData, expanded],
+  )
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent, nodeId: string) => {
-      const visibleList = buildVisibleList(treeData, expanded)
       const currentIdx = visibleList.indexOf(nodeId)
       const node = findNode(treeData, nodeId)
       const isFolder = node?.nodeRole === 'firm' || node?.nodeRole === 'challenges-folder'
@@ -355,7 +359,7 @@ export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) 
         }
       }
     },
-    [treeData, expanded, handleToggleFolder, handleFileClick],
+    [visibleList, treeData, expanded, handleToggleFolder, handleFileClick],
   )
 
   return (

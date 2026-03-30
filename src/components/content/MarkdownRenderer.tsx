@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 
 type MarkdownRendererProps = {
   htmlContent: string
-  slug: string // current page slug, used for context
 }
 
 export default function MarkdownRenderer({ htmlContent }: MarkdownRendererProps) {

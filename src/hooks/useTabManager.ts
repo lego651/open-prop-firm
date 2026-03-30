@@ -16,10 +16,20 @@ function findLabelInTree(nodes: TreeNode[], slug: string): string | null {
   return null
 }
 
+/**
+ * storageKey — localStorage key for this tab list.
+ * Default: 'openTabs' (main panel).
+ * Compare panel uses 'compareTab' to maintain an independent tab.
+ *
+ * onNavigate — optional callback for navigation after closing the active tab.
+ * Main panel omits this and uses router.push. Compare panel passes setCompareSlug
+ * so closing a tab does NOT change the URL or main panel content.
+ */
 export function useTabManager(
   treeData: TreeNode[],
   pathname: string,
   storageKey = 'openTabs',
+  onNavigate?: (slug: string) => void,
 ) {
   const router = useRouter()
   const [openTabs, setOpenTabs] = useLocalStorage<TabEntry[]>(storageKey, [])
@@ -46,10 +56,15 @@ export function useTabManager(
       setOpenTabs(newTabs)
       if (activeSlug === slug) {
         const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
-        router.push(next ? '/' + next.slug : '/firms/cfd/funded-next')
+        const nextSlug = next ? next.slug : 'firms/cfd/funded-next'
+        if (onNavigate) {
+          onNavigate(nextSlug)
+        } else {
+          router.push('/' + nextSlug)
+        }
       }
     },
-    [openTabs, activeSlug, router, setOpenTabs],
+    [openTabs, activeSlug, router, setOpenTabs, onNavigate],
   )
 
   return { openTabs, activeSlug, closeTab }

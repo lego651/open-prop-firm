@@ -4,6 +4,7 @@ import { PanelLeft, Search, Settings } from 'lucide-react'
 import type { TreeNode } from '@/types/content'
 import NavFileTree from '@/components/nav/NavFileTree'
 import { ThemeToggle } from '@/components/nav/ThemeToggle'
+import { useSearch } from '@/contexts/SearchContext'
 
 type NavPanelProps = {
   treeData: TreeNode[]
@@ -18,6 +19,8 @@ export default function NavPanel({
   collapsed,
   onToggleCollapse,
 }: NavPanelProps) {
+  const { open: openSearch } = useSearch()
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -43,7 +46,7 @@ export default function NavPanel({
           <button
             type="button"
             className="flex h-9 w-full items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 text-[13px] text-[var(--muted-foreground)]"
-            onClick={() => {}}
+            onClick={openSearch}
           >
             <Search size={14} />
             <span className="flex-1 text-left">Search...</span>
@@ -51,7 +54,6 @@ export default function NavPanel({
               ⌘K
             </kbd>
           </button>
-          {/* TODO: wire to SearchModal in Sprint 3 */}
         </div>
       )}
 
@@ -67,9 +69,10 @@ export default function NavPanel({
         <div className="flex h-10 shrink-0 items-center justify-between border-t border-[var(--border)] px-3">
           <button
             type="button"
-            className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
-            onClick={() => console.log('settings — v2')}
+            className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)] opacity-40 cursor-not-allowed"
+            onClick={() => {}}
             aria-label="Settings"
+            aria-disabled="true"
           >
             <Settings size={16} />
           </button>

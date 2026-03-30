@@ -45,27 +45,25 @@ function categoryFromSlug(slug: string): string {
 async function main() {
   const files = await fg('**/*.md', { cwd: DATA_DIR, absolute: true })
 
-  const entries: SearchEntry[] = []
-
-  for (const file of files) {
-    const raw = await readFile(file, 'utf-8')
-    const { data, content } = matter(raw)
-
-    if (!data.title) continue
-
-    const plainText = await stripMd(content)
-    const excerpt = plainText.trim().slice(0, 500)
-    const slug = slugFromFilePath(file)
-
-    entries.push({
-      slug,
-      title: String(data.title),
-      firm: String(data.firm ?? ''),
-      type: String(data.type ?? ''),
-      category: categoryFromSlug(slug),
-      excerpt,
-    })
-  }
+  const results = await Promise.all(
+    files.map(async (file) => {
+      const raw = await readFile(file, 'utf-8')
+      const { data, content } = matter(raw)
+      if (!data.title) return null
+      const plainText = await stripMd(content)
+      const excerpt = plainText.trim().slice(0, 500)
+      const slug = slugFromFilePath(file)
+      return {
+        slug,
+        title: String(data.title),
+        firm: String(data.firm ?? ''),
+        type: String(data.type ?? ''),
+        category: categoryFromSlug(slug),
+        excerpt,
+      } satisfies SearchEntry
+    }),
+  )
+  const entries = results.filter((e): e is SearchEntry => e !== null)
 
   await writeFile(OUTPUT, JSON.stringify(entries, null, 2))
   console.log(`Built search index: ${entries.length} entries written to public/search-index.json`)

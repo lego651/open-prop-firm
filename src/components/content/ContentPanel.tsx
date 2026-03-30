@@ -11,7 +11,6 @@ type ContentPanelProps = {
   onTabClose: (slug: string) => void
   onTogglePanel3: () => void
   onHamburger?: () => void
-  onSearchOpen?: () => void
   children: React.ReactNode
 }
 
@@ -22,7 +21,6 @@ export default function ContentPanel({
   onTabClose,
   onTogglePanel3,
   onHamburger,
-  onSearchOpen,
   children,
 }: ContentPanelProps) {
   return (
@@ -34,7 +32,6 @@ export default function ContentPanel({
         onTabClose={onTabClose}
         onTogglePanel3={onTogglePanel3}
         onHamburger={onHamburger}
-        onSearchOpen={onSearchOpen}
       />
       <BreadcrumbBar activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto">{children}</div>

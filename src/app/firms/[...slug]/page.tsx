@@ -51,7 +51,7 @@ export default async function FirmPage({
         lastVerified={frontmatter.last_verified}
         status={frontmatter.status}
       />
-      <MarkdownRenderer htmlContent={htmlContent} slug={slugPath} />
+      <MarkdownRenderer htmlContent={htmlContent} />
       <SourceFootnotes sources={frontmatter.sources} />
     </article>
   )

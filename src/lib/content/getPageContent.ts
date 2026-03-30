@@ -1,5 +1,6 @@
 import 'server-only'
-import { readFile } from 'fs/promises'
+import { cache } from 'react'
+import { readFile, access } from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
 import { unified } from 'unified'
@@ -13,7 +14,7 @@ import rehypeStringify from 'rehype-stringify'
 import { getContentTree } from './getContentTree'
 import type { Frontmatter, PageContent } from '@/types/content'
 
-const FIRMS_DIR = path.join(process.cwd(), 'data', 'firms')
+const DATA_ROOT = path.join(process.cwd(), 'data')
 
 // Allow data-wikilink and data-wikilink-missing attributes on <a> tags
 // so the client-side MarkdownRenderer can intercept wikilink clicks via event delegation.
@@ -29,8 +30,18 @@ const sanitizeSchema = {
   },
 }
 
-export async function getPageContent(slug: string): Promise<PageContent> {
-  const filePath = path.join(FIRMS_DIR, '..', slug + '.md')
+// cache() deduplicates calls within a single render pass (e.g. generateMetadata + page component
+// both call getPageContent for the same slug — only one filesystem read occurs).
+export const getPageContent = cache(async (slug: string): Promise<PageContent> => {
+  // Explicit path construction — no .. traversal
+  let filePath = path.join(DATA_ROOT, slug + '.md')
+
+  // index.md fallback: slug 'firms/cfd/funded-next' → data/firms/cfd/funded-next/index.md
+  try {
+    await access(filePath)
+  } catch {
+    filePath = path.join(DATA_ROOT, slug, 'index.md')
+  }
 
   let raw: string
   try {
@@ -75,4 +86,4 @@ export async function getPageContent(slug: string): Promise<PageContent> {
     htmlContent: String(vfile),
     slug,
   }
-}
+})

@@ -2,19 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
-
-type GraphNode = {
-  id: string
-  label: string
-  type: string
-  firm: string
-  category: string
-}
-
-type GraphEdge = {
-  source: string
-  target: string
-}
+import type { GraphNode, GraphEdge } from '@/types/content'
 
 type GraphViewProps = {
   nodes: GraphNode[]
@@ -23,9 +11,32 @@ type GraphViewProps = {
   onNodeClick: (slug: string) => void
 }
 
+function resolveColors() {
+  const styles = getComputedStyle(document.documentElement)
+  return {
+    accent: styles.getPropertyValue('--accent').trim() || '#3b82f6',
+    muted: styles.getPropertyValue('--muted-foreground').trim() || '#6b7280',
+    border: styles.getPropertyValue('--border').trim() || '#e5e7eb',
+    bg: styles.getPropertyValue('--sidebar-bg').trim() || '#1a1a1a',
+  }
+}
+
 export default function GraphView({ nodes, edges, activeSlug, onNodeClick }: GraphViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 400, height: 400 })
+
+  // Resolve CSS vars once on mount, then on theme changes via MutationObserver
+  // Fixes re-render storm (was called on every render) and adds live theme reactivity
+  const [colors, setColors] = useState(resolveColors)
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setColors(resolveColors()))
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const el = containerRef.current
@@ -37,19 +48,9 @@ export default function GraphView({ nodes, edges, activeSlug, onNodeClick }: Gra
       }
     })
     observer.observe(el)
-    // Set initial size
     setDimensions({ width: el.clientWidth, height: el.clientHeight })
     return () => observer.disconnect()
   }, [])
-
-  // Resolve CSS variables at render time so theme changes are reflected
-  const styles = typeof document !== 'undefined'
-    ? getComputedStyle(document.documentElement)
-    : null
-  const accentColor = styles?.getPropertyValue('--accent').trim() || '#3b82f6'
-  const mutedColor = styles?.getPropertyValue('--muted-foreground').trim() || '#6b7280'
-  const borderColor = styles?.getPropertyValue('--border').trim() || '#e5e7eb'
-  const bgColor = styles?.getPropertyValue('--sidebar-bg').trim() || '#1a1a1a'
 
   // ForceGraph2D uses 'links' not 'edges'
   const graphData = {
@@ -63,13 +64,13 @@ export default function GraphView({ nodes, edges, activeSlug, onNodeClick }: Gra
         graphData={graphData}
         width={dimensions.width}
         height={dimensions.height}
-        backgroundColor={bgColor}
+        backgroundColor={colors.bg}
         nodeLabel={(node) => (node as GraphNode).label}
         nodeColor={(node) =>
-          (node as GraphNode).id === activeSlug ? accentColor : mutedColor
+          (node as GraphNode).id === activeSlug ? colors.accent : colors.muted
         }
         nodeRelSize={5}
-        linkColor={() => borderColor}
+        linkColor={() => colors.border}
         onNodeClick={(node) => onNodeClick((node as GraphNode).id)}
       />
     </div>

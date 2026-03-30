@@ -7,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useSearch } from '@/contexts/SearchContext'
 import type { TabEntry } from '@/types/content'
 
 type TabBarProps = {
@@ -14,9 +15,8 @@ type TabBarProps = {
   activeSlug: string
   onTabClick: (slug: string) => void
   onTabClose: (slug: string) => void
-  onTogglePanel3: () => void
+  onTogglePanel3?: () => void
   onHamburger?: () => void
-  onSearchOpen?: () => void
 }
 
 export default function TabBar({
@@ -26,8 +26,9 @@ export default function TabBar({
   onTabClose,
   onTogglePanel3,
   onHamburger,
-  onSearchOpen,
 }: TabBarProps) {
+  const { open: openSearch } = useSearch()
+
   return (
     <div className="flex h-9 items-center overflow-hidden border-b border-[var(--border)] bg-[var(--sidebar-bg)]">
       {/* Hamburger — mobile only, rendered when onHamburger is provided */}
@@ -86,31 +87,31 @@ export default function TabBar({
         })}
       </div>
 
-      {/* Search button */}
-      {onSearchOpen && (
-        <button
-          type="button"
-          onClick={onSearchOpen}
-          className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
-          aria-label="Search (Cmd+K)"
-          title="Search (⌘K)"
-        >
-          <Search size={14} />
-        </button>
-      )}
+      {/* Search button — reads from SearchContext */}
+      <button
+        type="button"
+        onClick={openSearch}
+        className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+        aria-label="Search (Cmd+K)"
+        title="Search (⌘K)"
+      >
+        <Search size={14} />
+      </button>
 
-      {/* Panel 3 visibility toggle */}
-      <Tooltip>
-        <TooltipTrigger
-          type="button"
-          onClick={onTogglePanel3}
-          aria-label="Toggle sidebar"
-          className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-md hover:bg-[var(--muted)]"
-        >
-          <PanelRight size={16} />
-        </TooltipTrigger>
-        <TooltipContent>Toggle sidebar</TooltipContent>
-      </Tooltip>
+      {/* Panel 3 visibility toggle — only rendered when handler is provided */}
+      {onTogglePanel3 && (
+        <Tooltip>
+          <TooltipTrigger
+            type="button"
+            onClick={onTogglePanel3}
+            aria-label="Toggle sidebar"
+            className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+          >
+            <PanelRight size={16} />
+          </TooltipTrigger>
+          <TooltipContent>Toggle sidebar</TooltipContent>
+        </Tooltip>
+      )}
     </div>
   )
 }
