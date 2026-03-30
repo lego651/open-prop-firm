@@ -56,7 +56,7 @@ export default function ContentPanelRight({ treeData }: ContentPanelRightProps) 
         activeSlug={activeSlug}
         onTabClick={(slug) => setCompareSlug(slug)}
         onTabClose={closeTab}
-        onTogglePanel3={() => {}}
+        onTogglePanel3={undefined}
       />
       <BreadcrumbBar activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto p-6">

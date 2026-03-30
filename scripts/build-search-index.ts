@@ -6,15 +6,7 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import stripMarkdown from 'strip-markdown'
-
-type SearchEntry = {
-  slug: string
-  title: string
-  firm: string
-  type: string
-  category: string
-  excerpt: string
-}
+import type { SearchEntry } from '../src/types/content'
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'firms')
 const OUTPUT = path.join(process.cwd(), 'public', 'search-index.json')

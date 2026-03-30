@@ -2,24 +2,7 @@ import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 import fg from 'fast-glob'
 import matter from 'gray-matter'
-
-type GraphNode = {
-  id: string
-  label: string
-  type: string
-  firm: string
-  category: string
-}
-
-type GraphEdge = {
-  source: string
-  target: string
-}
-
-type GraphData = {
-  nodes: GraphNode[]
-  edges: GraphEdge[]
-}
+import type { GraphNode, GraphEdge, GraphData } from '../src/types/content'
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'firms')
 const OUTPUT = path.join(process.cwd(), 'public', 'graph-data.json')

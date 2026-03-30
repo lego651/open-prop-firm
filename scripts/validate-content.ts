@@ -3,6 +3,23 @@ import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
 
+const PLACEHOLDER_PATTERNS = [
+  /placeholder/i,
+  /content will be added/i,
+  /to be expanded/i,
+  /\bTBD\b/,
+  /\bTODO\b/,
+  /coming soon/i,
+]
+
+const MIN_BODY_LENGTH: Record<string, number> = {
+  'basic-info': 300,
+  challenge: 200,
+  rules: 500,
+  promo: 150,
+  changelog: 200,
+}
+
 const VALID_CATEGORIES = ['cfd', 'futures'] as const
 const VALID_TYPES = [
   'basic-info',
@@ -140,7 +157,81 @@ function validateFile(filePath: string): ValidationError[] {
     }
   }
 
+  // Placeholder text detection in markdown body
+  const body = parsed.content
+  for (const pattern of PLACEHOLDER_PATTERNS) {
+    if (pattern.test(body)) {
+      errors.push({
+        file: relativePath,
+        field: 'body',
+        message: `Markdown body contains placeholder text matching: ${pattern}`,
+      })
+      break
+    }
+  }
+
+  // Placeholder text in source labels
+  if (Array.isArray(fm.sources)) {
+    for (const source of fm.sources) {
+      if (
+        source &&
+        typeof source.label === 'string' &&
+        /to be expanded|placeholder|tbd/i.test(source.label)
+      ) {
+        errors.push({
+          file: relativePath,
+          field: 'sources.label',
+          message: `Source label contains placeholder text: "${source.label}"`,
+        })
+      }
+    }
+  }
+
+  // Zero-value field detection for active firms
+  if (fm.status === 'active') {
+    if (fm.type === 'basic-info' && fm.founded === 0) {
+      errors.push({
+        file: relativePath,
+        field: 'founded',
+        message: 'Founded year is placeholder (0)',
+      })
+    }
+    if (fm.type === 'challenge' && fm.price_usd === 0) {
+      errors.push({
+        file: relativePath,
+        field: 'price_usd',
+        message: 'Challenge price is placeholder (0)',
+      })
+    }
+  }
+
+  // Minimum content length checks
+  const minLength = MIN_BODY_LENGTH[fm.type]
+  if (minLength !== undefined && body.trim().length < minLength) {
+    errors.push({
+      file: relativePath,
+      field: 'body',
+      message: `Body too short: ${body.trim().length} chars (minimum ${minLength} for type '${fm.type}')`,
+    })
+  }
+
   return errors
+}
+
+function checkRecency(
+  filePath: string,
+  lastVerified: string,
+): string | null {
+  const verified = new Date(lastVerified)
+  const now = new Date()
+  const diffDays = Math.floor(
+    (now.getTime() - verified.getTime()) / (1000 * 60 * 60 * 24),
+  )
+  if (diffDays > 30) {
+    const relativePath = path.relative(process.cwd(), filePath)
+    return `Warning: ${relativePath} — last_verified is ${diffDays} days old (${lastVerified})`
+  }
+  return null
 }
 
 async function main() {
@@ -154,10 +245,28 @@ async function main() {
   }
 
   const allErrors: ValidationError[] = []
+  const warnings: string[] = []
 
   for (const file of files) {
-    const errors = validateFile(path.join(process.cwd(), file))
+    const absPath = path.join(process.cwd(), file)
+    const errors = validateFile(absPath)
     allErrors.push(...errors)
+
+    // Recency check (warning only)
+    try {
+      const raw = fs.readFileSync(absPath, 'utf-8')
+      const { data } = matter(raw)
+      if (typeof data.last_verified === 'string') {
+        const warning = checkRecency(absPath, data.last_verified)
+        if (warning) warnings.push(warning)
+      }
+    } catch {
+      // already caught in validateFile
+    }
+  }
+
+  for (const w of warnings) {
+    console.warn(w)
   }
 
   if (allErrors.length > 0) {
