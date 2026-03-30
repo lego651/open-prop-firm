@@ -2,23 +2,20 @@
 
 import { PanelLeft, Search, Settings } from 'lucide-react'
 import type { TreeNode } from '@/types/content'
+import { useAppShell } from '@/contexts/AppShellContext'
 import NavFileTree from '@/components/nav/NavFileTree'
 import { ThemeToggle } from '@/components/nav/ThemeToggle'
 import { useSearch } from '@/contexts/SearchContext'
+import { AuthButton } from '@/components/auth/AuthButton'
 
 type NavPanelProps = {
   treeData: TreeNode[]
-  activeSlug: string
   collapsed: boolean
   onToggleCollapse: () => void
 }
 
-export default function NavPanel({
-  treeData,
-  activeSlug,
-  collapsed,
-  onToggleCollapse,
-}: NavPanelProps) {
+export default function NavPanel({ treeData, collapsed, onToggleCollapse }: NavPanelProps) {
+  const { activeSlug } = useAppShell()
   const { open: openSearch } = useSearch()
 
   return (
@@ -34,10 +31,11 @@ export default function NavPanel({
           <PanelLeft size={16} />
         </button>
         {!collapsed && (
-          <span className="ml-2 text-[14px] font-medium text-[var(--foreground)]">
+          <span className="ml-2 flex-1 text-[14px] font-medium text-[var(--foreground)]">
             OpenPropFirm
           </span>
         )}
+        <AuthButton collapsed={collapsed} />
       </div>
 
       {/* Search trigger */}

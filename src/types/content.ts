@@ -82,6 +82,7 @@ export type GraphNode = {
   type: string
   firm: string
   category: string
+  linkCount: number
 }
 
 export type GraphEdge = {

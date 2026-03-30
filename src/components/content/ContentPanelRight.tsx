@@ -11,9 +11,10 @@ import type { TreeNode, PageContent, ContentApiResponse } from '@/types/content'
 
 type ContentPanelRightProps = {
   treeData: TreeNode[]
+  externalSlug?: string | null
 }
 
-export default function ContentPanelRight({ treeData }: ContentPanelRightProps) {
+export default function ContentPanelRight({ treeData, externalSlug }: ContentPanelRightProps) {
   const [compareSlug, setCompareSlug] = useState(DEFAULT_FIRM_SLUG)
   const { openTabs, activeSlug, closeTab } = useTabManager(
     treeData,
@@ -21,6 +22,14 @@ export default function ContentPanelRight({ treeData }: ContentPanelRightProps) 
     'compareTab',
     (slug) => setCompareSlug(slug),
   )
+
+  useEffect(() => {
+    if (externalSlug) {
+      // Syncing context-driven slug into local state — setState in effect is intentional.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCompareSlug(externalSlug)
+    }
+  }, [externalSlug])
 
   const [content, setContent] = useState<PageContent | null>(null)
   const [loading, setLoading] = useState(false)

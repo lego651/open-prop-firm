@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAppShell } from '@/contexts/AppShellContext'
 
 type MarkdownRendererProps = {
   htmlContent: string
@@ -9,6 +10,7 @@ type MarkdownRendererProps = {
 
 export default function MarkdownRenderer({ htmlContent }: MarkdownRendererProps) {
   const router = useRouter()
+  const { openInPanel3 } = useAppShell()
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -17,6 +19,15 @@ export default function MarkdownRenderer({ htmlContent }: MarkdownRendererProps)
       if (!anchor) return
       const href = anchor.getAttribute('href')
       if (!href) return
+
+      // Modifier-click on any internal link: open in Panel 3
+      if ((e.metaKey || e.ctrlKey) && href.startsWith('/')) {
+        e.preventDefault()
+        const slug = href.replace(/^\//, '')
+        openInPanel3(slug)
+        return
+      }
+
       // Internal wikilinks start with /firms/ — intercept and use router
       if (href.startsWith('/firms/')) {
         e.preventDefault()
@@ -24,7 +35,7 @@ export default function MarkdownRenderer({ htmlContent }: MarkdownRendererProps)
       }
       // External links fall through to default browser behavior
     },
-    [router],
+    [router, openInPanel3],
   )
 
   return (

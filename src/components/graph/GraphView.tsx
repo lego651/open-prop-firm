@@ -2,7 +2,13 @@
 
 import { useRef, useEffect, useState } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
+import type { ForceGraphMethods } from 'react-force-graph-2d'
 import type { GraphNode, GraphEdge } from '@/types/content'
+import { getNodeColor } from '@/lib/graph-colors'
+import type { ThemeVariant } from '@/lib/graph-colors'
+import GraphControls from './GraphControls'
+import GraphLegend from './GraphLegend'
+import { useAppShell } from '@/contexts/AppShellContext'
 
 type GraphViewProps = {
   nodes: GraphNode[]
@@ -18,15 +24,25 @@ function resolveColors() {
     muted: styles.getPropertyValue('--muted-foreground').trim() || '#6b7280',
     border: styles.getPropertyValue('--border').trim() || '#e5e7eb',
     bg: styles.getPropertyValue('--sidebar-bg').trim() || '#1a1a1a',
+    theme:
+      (document.documentElement.dataset.theme as ThemeVariant | undefined) ??
+      'dark',
   }
 }
 
-export default function GraphView({ nodes, edges, activeSlug, onNodeClick }: GraphViewProps) {
+export default function GraphView({
+  nodes,
+  edges,
+  activeSlug,
+  onNodeClick,
+}: GraphViewProps) {
+  const { openInPanel3 } = useAppShell()
   const containerRef = useRef<HTMLDivElement>(null)
+  const graphRef = useRef<ForceGraphMethods | undefined>(undefined)
   const [dimensions, setDimensions] = useState({ width: 400, height: 400 })
+  const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(new Set())
 
   // Resolve CSS vars once on mount, then on theme changes via MutationObserver
-  // Fixes re-render storm (was called on every render) and adds live theme reactivity
   const [colors, setColors] = useState(resolveColors)
 
   useEffect(() => {
@@ -52,26 +68,58 @@ export default function GraphView({ nodes, edges, activeSlug, onNodeClick }: Gra
     return () => observer.disconnect()
   }, [])
 
-  // ForceGraph2D uses 'links' not 'edges'
-  const graphData = {
-    nodes: nodes.map((n) => ({ ...n })),
-    links: edges.map((e) => ({ source: e.source, target: e.target })),
+  function handleToggleType(type: string) {
+    setHiddenTypes((prev) => {
+      const next = new Set(prev)
+      if (next.has(type)) next.delete(type)
+      else next.add(type)
+      return next
+    })
   }
 
+  // Filter nodes by hidden types, then filter edges to only visible node pairs
+  const filteredNodes = nodes
+    .filter((n) => !hiddenTypes.has(n.type))
+    .map((n) => ({ ...n }))
+  const filteredNodeIds = new Set(filteredNodes.map((n) => n.id))
+  const filteredLinks = edges
+    .filter(
+      (e) => filteredNodeIds.has(e.source) && filteredNodeIds.has(e.target),
+    )
+    .map((e) => ({ source: e.source, target: e.target }))
+
+  const graphData = { nodes: filteredNodes, links: filteredLinks }
+
   return (
-    <div ref={containerRef} className="h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full">
       <ForceGraph2D
+        ref={graphRef}
         graphData={graphData}
         width={dimensions.width}
         height={dimensions.height}
         backgroundColor={colors.bg}
         nodeLabel={(node) => (node as GraphNode).label}
-        nodeColor={(node) =>
-          (node as GraphNode).id === activeSlug ? colors.accent : colors.muted
-        }
+        nodeColor={(node) => {
+          const n = node as GraphNode
+          if (n.id === activeSlug) return colors.accent
+          return getNodeColor(n.type, colors.theme)
+        }}
         nodeRelSize={5}
         linkColor={() => colors.border}
-        onNodeClick={(node) => onNodeClick((node as GraphNode).id)}
+        onNodeClick={(node, event) => {
+          const slug = (node as GraphNode).id
+          if (event.metaKey || event.ctrlKey) {
+            openInPanel3(slug)
+          } else {
+            onNodeClick(slug)
+          }
+        }}
+      />
+      <GraphLegend />
+      <GraphControls
+        graphRef={graphRef}
+        hiddenTypes={hiddenTypes}
+        onToggleType={handleToggleType}
       />
     </div>
   )

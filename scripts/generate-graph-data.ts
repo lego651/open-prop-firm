@@ -39,7 +39,7 @@ async function main() {
           type: String(data.type ?? ''),
           firm: String(data.firm ?? firmSegment),
           category: categoryFromSlug(slug),
-        } satisfies GraphNode,
+        } satisfies Omit<GraphNode, 'linkCount'>,
         content,
       }
     }),
@@ -64,10 +64,16 @@ async function main() {
     }
   }
 
-  const graphData: GraphData = { nodes, edges }
+  const linkCounts = new Map<string, number>()
+  for (const edge of edges) {
+    linkCounts.set(edge.target, (linkCounts.get(edge.target) ?? 0) + 1)
+  }
+  const nodesWithCounts = nodes.map(n => ({ ...n, linkCount: linkCounts.get(n.id) ?? 0 }))
+
+  const graphData: GraphData = { nodes: nodesWithCounts, edges }
   await mkdir(path.dirname(OUTPUT), { recursive: true })
   await writeFile(OUTPUT, JSON.stringify(graphData, null, 2))
-  console.log(`Built graph data: ${nodes.length} nodes, ${edges.length} edges written to public/graph-data.json`)
+  console.log(`Built graph data: ${nodesWithCounts.length} nodes, ${edges.length} edges written to public/graph-data.json`)
 }
 
 main().catch((err) => {

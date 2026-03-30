@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { TreeNode, TabEntry } from '@/types/content'
 import { useLocalStorage } from './useLocalStorage'
@@ -36,6 +36,12 @@ export function useTabManager(
   const [openTabs, setOpenTabs] = useLocalStorage<TabEntry[]>(storageKey, [])
   const activeSlug = pathname.replace(/^\//, '')
 
+  // Ref always holds the latest activeSlug — prevents stale closure in closeTab.
+  const activeSlugRef = useRef(activeSlug)
+  useEffect(() => {
+    activeSlugRef.current = activeSlug
+  })
+
   // Open a tab for the current route when it changes. Uses functional updater
   // so openTabs is never read directly — no stale closure risk.
   useEffect(() => {
@@ -50,24 +56,30 @@ export function useTabManager(
     })
   }, [pathname, treeData, setOpenTabs])
 
+  // closeTab uses a functional updater so it never reads openTabs or activeSlug
+  // from a stale closure. activeSlugRef.current is always current.
   const closeTab = useCallback(
     (slug: string) => {
-      // Derive navigation target from current openTabs before mutating
-      const idx = openTabs.findIndex((t) => t.slug === slug)
-      const newTabs = openTabs.filter((t) => t.slug !== slug)
-      // Functional updater prevents stale-closure bugs on rapid successive closes
-      setOpenTabs((prev) => prev.filter((t) => t.slug !== slug))
-      if (activeSlug === slug) {
-        const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
-        const nextSlug = next ? next.slug : DEFAULT_FIRM_SLUG
-        if (onNavigate) {
-          onNavigate(nextSlug)
-        } else {
-          router.push('/' + nextSlug)
+      const currentSlug = activeSlugRef.current
+      setOpenTabs((prev) => {
+        const idx = prev.findIndex((t) => t.slug === slug)
+        const newTabs = prev.filter((t) => t.slug !== slug)
+        if (currentSlug === slug) {
+          const next = newTabs[idx] ?? newTabs[idx - 1] ?? null
+          const nextSlug = next ? next.slug : DEFAULT_FIRM_SLUG
+          // Schedule navigation after state commit to avoid updating state during render
+          setTimeout(() => {
+            if (onNavigate) {
+              onNavigate(nextSlug)
+            } else {
+              router.push('/' + nextSlug)
+            }
+          }, 0)
         }
-      }
+        return newTabs
+      })
     },
-    [openTabs, activeSlug, router, setOpenTabs, onNavigate],
+    [setOpenTabs, router, onNavigate],
   )
 
   return { openTabs, activeSlug, closeTab }

@@ -1,0 +1,40 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { FILE_TYPE_COLORS } from '@/lib/graph-colors'
+import type { ThemeVariant } from '@/lib/graph-colors'
+
+export default function GraphLegend() {
+  const [theme, setTheme] = useState<ThemeVariant>('dark')
+
+  useEffect(() => {
+    const read = () =>
+      setTheme(
+        (document.documentElement.dataset.theme as ThemeVariant | undefined) ??
+          'dark',
+      )
+    read()
+    const observer = new MutationObserver(read)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div className="absolute bottom-3 left-3 rounded-md border border-[var(--border)] bg-[var(--sidebar-bg)]/80 px-2.5 py-1.5">
+      {Object.entries(FILE_TYPE_COLORS).map(([type, colors]) => (
+        <div key={type} className="flex items-center gap-1.5 py-0.5">
+          <span
+            className="inline-block size-2 shrink-0 rounded-full"
+            style={{ backgroundColor: colors[theme] }}
+          />
+          <span className="text-[10px] text-[var(--muted-foreground)]">
+            {type}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
