@@ -29,6 +29,10 @@ async function getLegalPage(slug: string) {
     return null
   }
   const { data, content } = matter(raw)
+  // Intentionally standalone pipeline: no wikilink pre-processing and no
+  // content-tree dependencies. If the main getPageContent pipeline gains
+  // plugins (e.g. syntax highlighting), decide consciously whether legal
+  // pages should adopt them too.
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -50,7 +54,6 @@ export async function generateMetadata({
   if (!page) return { title: 'Not Found' }
   return {
     title: page.title,
-    robots: { index: false },
   }
 }
 

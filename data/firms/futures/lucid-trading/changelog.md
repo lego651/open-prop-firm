@@ -7,10 +7,6 @@ status: active
 last_verified: '2026-03-29T00:00:00Z'
 verified_by: manual
 sources:
-
-
-
-
   - url: 'https://lucidtrading.com'
     label: 'Lucid Trading — Official Website'
 ---

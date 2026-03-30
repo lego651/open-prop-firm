@@ -49,7 +49,7 @@ async function main() {
         lines[0]?.trim() === String(data.title).trim()
       const bodyText = (firstLineIsTitle ? lines.slice(1).join('\n') : plainText).trim()
       // Find first substantive paragraph: non-empty, not a heading remnant, min 40 chars
-      const bodyLines = bodyText.split('\n')
+      const bodyLines = bodyText.split('\n').filter((l) => l.trim().length > 0)
       let excerpt = ''
       for (const line of bodyLines) {
         const t = line.trim()

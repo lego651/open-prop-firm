@@ -12,10 +12,11 @@
  */
 
 import { readFile, writeFile } from 'fs/promises'
+import { writeFileSync, unlinkSync } from 'fs'
+import { tmpdir } from 'os'
 import path from 'path'
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import { createClient } from '@supabase/supabase-js'
-import matter from 'gray-matter'
 import type { BotRunResult } from './types'
 
 // --- Scrapers ------------------------------------------------------------------
@@ -69,18 +70,16 @@ function firmDir(slug: string): string {
 
 /** Update last_verified front-matter across all .md files in a firm directory. */
 async function updateLastVerified(slug: string, date: string) {
-  const { readdir } = await import('fs/promises')
   const fg = (await import('fast-glob')).default
   const dir = firmDir(slug)
   const files = await fg('**/*.md', { cwd: dir, absolute: true })
 
   for (const file of files) {
-    const raw = await readFile(file, 'utf-8')
-    const parsed = matter(raw)
-    parsed.data.last_verified = `${date}T00:00:00Z`
-    parsed.data.verified_by = 'bot'
-    const updated = matter.stringify(parsed.content, parsed.data)
-    await writeFile(file, updated, 'utf-8')
+    let content = await readFile(file, 'utf-8')
+    // Replace only the two bot-managed fields, preserving all other bytes
+    content = content.replace(/^last_verified:.*$/m, `last_verified: '${date}T00:00:00Z'`)
+    content = content.replace(/^verified_by:.*$/m, `verified_by: bot`)
+    await writeFile(file, content, 'utf-8')
   }
   console.log(`  Updated last_verified to ${date} across ${files.length} files for ${slug}`)
 }
@@ -100,37 +99,45 @@ function createPR(result: BotRunResult): string | null {
     '_Opened by the OpenPropFirm monitoring bot. Review before merging._',
   ].join('\n')
 
+  // Write body to a temp file to prevent shell metacharacter injection
+  const bodyFile = path.join(tmpdir(), `opf-bot-pr-body-${Date.now()}.md`)
+
   try {
     // Check for a clean working tree first
-    const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim()
+    const status = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf-8' }).trim()
     if (!status) {
       console.log(`  No file changes to commit for ${result.firmSlug}`)
       return null
     }
 
-    execSync(`git checkout -b ${branch}`, { stdio: 'inherit' })
-    execSync(`git add data/firms`, { stdio: 'inherit' })
-    execSync(`git commit -m "${title}"`, { stdio: 'inherit' })
-    execSync(`git push -u origin ${branch}`, { stdio: 'inherit' })
+    execFileSync('git', ['checkout', '-b', branch], { stdio: 'inherit' })
+    execFileSync('git', ['add', 'data/firms'], { stdio: 'inherit' })
+    execFileSync('git', ['commit', '-m', title], { stdio: 'inherit' })
+    execFileSync('git', ['push', '-u', 'origin', branch], { stdio: 'inherit' })
 
     // Ensure the bot-update label exists
     try {
-      execSync(`gh label create "bot-update" --color "0075ca" --description "Opened by the monitoring bot" 2>/dev/null || true`, { stdio: 'pipe' })
+      execFileSync('gh', ['label', 'create', 'bot-update', '--color', '0075ca', '--description', 'Opened by the monitoring bot'], { stdio: 'pipe' })
     } catch { /* label already exists */ }
 
-    const prUrl = execSync(
-      `gh pr create --title "${title}" --body "${body.replace(/"/g, '\\"')}" --label "bot-update"`,
+    writeFileSync(bodyFile, body, 'utf-8')
+
+    const prUrl = execFileSync(
+      'gh',
+      ['pr', 'create', '--title', title, '--body-file', bodyFile, '--label', 'bot-update'],
       { encoding: 'utf-8' },
     ).trim()
 
     console.log(`  PR created: ${prUrl}`)
     // Switch back to main
-    execSync('git checkout main', { stdio: 'inherit' })
+    execFileSync('git', ['checkout', 'main'], { stdio: 'inherit' })
     return prUrl
   } catch (err) {
     console.error(`  Failed to create PR: ${err instanceof Error ? err.message : err}`)
-    try { execSync('git checkout main', { stdio: 'pipe' }) } catch { /* ignore */ }
+    try { execFileSync('git', ['checkout', 'main'], { stdio: 'pipe' }) } catch { /* ignore */ }
     return null
+  } finally {
+    try { unlinkSync(bodyFile) } catch { /* file may not exist if body write failed */ }
   }
 }
 

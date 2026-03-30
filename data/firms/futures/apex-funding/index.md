@@ -12,8 +12,6 @@ headquarters: 'Austin, TX, USA'
 sources:
   - url: 'https://apextraderfunding.com/evaluation'
     label: 'Apex Trader Funding — Evaluations (Official)'
-
-
 ---
 
 # Apex Trader Funding — Overview

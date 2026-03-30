@@ -1,6 +1,6 @@
 'use client'
 
-import { PanelLeft, Search, Settings } from 'lucide-react'
+import { PanelLeft, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useAppShell } from '@/contexts/AppShellContext'
 import NavFileTree from '@/components/nav/NavFileTree'
@@ -82,15 +82,6 @@ export default function NavPanel({ collapsed, onToggleCollapse }: NavPanelProps)
       {/* Bottom bar */}
       {!collapsed && (
         <div className="flex h-10 shrink-0 items-center justify-between border-t border-[var(--border)] px-3">
-          <button
-            type="button"
-            className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)] opacity-40 cursor-not-allowed"
-            onClick={() => {}}
-            aria-label="Settings"
-            aria-disabled="true"
-          >
-            <Settings size={16} />
-          </button>
           <ThemeToggle />
         </div>
       )}

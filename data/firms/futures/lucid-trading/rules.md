@@ -9,10 +9,6 @@ verified_by: manual
 sources:
   - url: 'https://lucidtrading.com/rules'
     label: 'Lucid Trading — Trading Rules (Official)'
-
-
-
-
 ---
 
 # Lucid Trading — Trading Rules

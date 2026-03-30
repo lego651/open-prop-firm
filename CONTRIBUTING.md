@@ -83,8 +83,8 @@ Wikilinks are resolved at build time. Use the full `firms/<category>/<slug>` pat
 ### 4. Validate before submitting
 
 ```bash
-pnpm install
-pnpm run build    # runs validate-content and build-search-index as prebuild steps
+npm install
+npm run build    # runs validate-content and build-search-index as prebuild steps
 ```
 
 If the build passes, your content structure is valid.
@@ -96,7 +96,7 @@ If the build passes, your content structure is valid.
 1. Find the relevant file under `data/firms/`
 2. Edit the data and update `last_verified` to today's date
 3. If you verified via the official firm website, set `verified_by: manual`
-4. Run `pnpm run build` to validate
+4. Run `npm run build` to validate
 
 ---
 
@@ -106,8 +106,7 @@ The monitor bot scrapes firm websites, compares against local content, and optio
 
 ### Prerequisites
 
-- Node.js 20+
-- `pnpm` installed
+- Node.js 20+ (npm is included with Node.js — no separate install needed)
 - GitHub CLI (`gh`) authenticated: `gh auth login`
 - Supabase service role key (for logging — optional for local runs)
 
@@ -115,27 +114,27 @@ The monitor bot scrapes firm websites, compares against local content, and optio
 
 ```bash
 # 1. Install dependencies
-pnpm install
+npm install
 
 # 2. Set up environment variables
 cp .env.example .env.local
 # Add SUPABASE_SERVICE_ROLE_KEY if you want to log results
 
 # 3. Run the health check (verifies connectivity)
-pnpm run monitor:health
+npm run monitor:health
 
 # 4. Run all scrapers
-pnpm run monitor
+npm run monitor
 
 # 5. Run a single firm only
-pnpm run monitor -- --firm funded-next
+npm run monitor -- --firm funded-next
 ```
 
 ### How the bot works
 
 1. **Health check** — verifies Supabase connectivity and `gh` auth
 2. **Scrape** — each `scripts/monitor/<firm-slug>.ts` fetches the firm's website and extracts key data points
-3. **Diff** — compares scraped data against local markdown content
+3. **Diff** — checks the live page for expected keywords and product names, flagging structural changes (removed products, changed pricing signals)
 4. **PR** — if changes are detected, commits the updated content to a branch and opens a PR with label `bot-update`
 5. **Log** — inserts a row into `bot_usage_log` in Supabase
 
@@ -143,7 +142,7 @@ pnpm run monitor -- --firm funded-next
 
 1. Create `scripts/monitor/<firm-slug>.ts` — implement the `run(): Promise<BotRunResult>` function
 2. Register the scraper in `scripts/monitor/runner.ts`
-3. Test locally: `pnpm run monitor -- --firm your-firm-slug`
+3. Test locally: `npm run monitor -- --firm your-firm-slug`
 
 See `scripts/monitor/types.ts` for the `BotRunResult` interface and an existing scraper for reference.
 
@@ -156,7 +155,7 @@ See `scripts/monitor/types.ts` for the `BotRunResult` interface and an existing 
 - Keep PRs focused — one firm or one topic per PR
 - Include the `last_verified` date you used for research
 - Source all data from official firm websites
-- Run `pnpm run build` before opening the PR
+- Run `npm run build` before opening the PR
 
 ### Bot PRs
 

@@ -30,6 +30,15 @@ export default async function AdminPage() {
     redirect('/auth/sign-in')
   }
 
+  // Role check — only allow explicitly listed admin emails
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+  if (!adminEmails.includes((user.email ?? '').toLowerCase())) {
+    redirect('/')
+  }
+
   // Fetch bot run log via service role (bypasses RLS)
   const admin = createSupabaseServiceRole()
   const { data: rows, error } = await admin

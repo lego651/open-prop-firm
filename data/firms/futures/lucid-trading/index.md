@@ -12,8 +12,6 @@ headquarters: 'USA'
 sources:
   - url: 'https://lucidtrading.com/how-it-works'
     label: 'Lucid Trading — How It Works (Official)'
-
-
 ---
 
 # Lucid Trading — Overview

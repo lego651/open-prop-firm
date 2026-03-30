@@ -6,7 +6,7 @@ The OpenPropFirm monitoring bot scrapes firm websites weekly, compares against l
 
 1. **Health check** — verifies Supabase connectivity and `gh` auth before running
 2. **Scrape** — per-firm TypeScript scripts in `scripts/monitor/<firm-slug>.ts` fetch each firm's website and extract key data points using Cheerio
-3. **Diff** — compares scraped data against local content, detecting removed products, pricing changes, or structural changes
+3. **Diff** — checks the live page for expected keywords and product names, flagging structural changes (removed products, changed pricing signals). Does not perform field-level content diffing
 4. **Update** — `last_verified` front-matter is updated to today's date on every successful run (regardless of whether changes were detected)
 5. **PR** — if changes are detected, commits the updated content to a temp branch and opens a GitHub PR with label `bot-update`
 6. **Log** — inserts a row into `bot_usage_log` in Supabase for every run
@@ -17,8 +17,7 @@ View run history at `/admin` (authentication required).
 
 ### Prerequisites
 
-- Node.js 20+
-- `pnpm` installed
+- Node.js 20+ (npm is included with Node.js — no separate install needed)
 - GitHub CLI (`gh`) authenticated: `gh auth login`
 - `.env.local` with Supabase credentials (see below)
 
@@ -34,16 +33,16 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 ```bash
 # Pre-flight check (verifies connectivity before running)
-pnpm run monitor:health
+npm run monitor:health
 
 # Run all scrapers
-pnpm run monitor
+npm run monitor
 
 # Run a single firm only
-pnpm run monitor -- --firm funded-next
-pnpm run monitor -- --firm funding-pips
-pnpm run monitor -- --firm apex-funding
-pnpm run monitor -- --firm lucid-trading
+npm run monitor -- --firm funded-next
+npm run monitor -- --firm funding-pips
+npm run monitor -- --firm apex-funding
+npm run monitor -- --firm lucid-trading
 ```
 
 ## Adding a New Firm
@@ -116,7 +115,7 @@ const SCRAPERS = [
 ### 3. Test locally
 
 ```bash
-pnpm run monitor -- --firm your-firm
+npm run monitor -- --firm your-firm
 ```
 
 ### 4. Add content
@@ -130,7 +129,7 @@ The workflow lives at `.github/workflows/bot.yml`. To enable it:
 1. Add the following **repository secrets** in GitHub → Settings → Secrets → Actions:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `GH_TOKEN` — a Personal Access Token with `repo` and `pull_request` scopes
+   - No `GH_TOKEN` needed — the workflow uses the built-in `GITHUB_TOKEN` (auto-provisioned by GitHub Actions)
 
 2. The workflow runs automatically every Monday at 06:00 UTC.
 

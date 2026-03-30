@@ -1,47 +1,17 @@
 /**
  * Monitor scraper for Funding Pips (fundingpips.com)
  *
- * Checks the challenge page for key parameters:
- * model names, account sizes, and pricing signals.
+ * Keyword-based page structure monitor: detects removed products and pricing
+ * signal changes on the live website. Not a field-level diff — it cannot
+ * detect granular content edits, only structural changes.
  */
 
 import * as cheerio from 'cheerio'
-import { readFile } from 'fs/promises'
-import path from 'path'
-import matter from 'gray-matter'
 import type { BotRunResult } from './types'
+import { fetchPage } from './utils'
 
 const FIRM_SLUG = 'funding-pips'
-const FIRM_DIR = path.join(process.cwd(), 'data', 'firms', 'cfd', 'funding-pips')
 const SCRAPE_URL = 'https://fundingpips.com/challenge'
-const TIMEOUT_MS = 30_000
-const USER_AGENT =
-  'Mozilla/5.0 (compatible; OpenPropFirmBot/1.0; +https://openpropfirm.com/bot)'
-
-async function fetchPage(url: string): Promise<string> {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': USER_AGENT },
-      signal: controller.signal,
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`)
-    return await res.text()
-  } finally {
-    clearTimeout(timer)
-  }
-}
-
-async function readLocalData(): Promise<Record<string, string>> {
-  const indexPath = path.join(FIRM_DIR, 'index.md')
-  const raw = await readFile(indexPath, 'utf-8')
-  const { data, content } = matter(raw)
-  return {
-    status: String(data.status ?? ''),
-    bodySnapshot: content.slice(0, 2000),
-  }
-}
 
 async function scrapeRemote(): Promise<Record<string, string>> {
   const html = await fetchPage(SCRAPE_URL)
@@ -70,7 +40,7 @@ export async function run(): Promise<BotRunResult> {
   const today = new Date().toISOString().slice(0, 10)
 
   try {
-    const [local, remote] = await Promise.all([readLocalData(), scrapeRemote()])
+    const remote = await scrapeRemote()
 
     const diffs: string[] = []
 
