@@ -14,7 +14,7 @@
 @theme inline {
   --font-heading: var(--font-sans);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
 
   --color-sidebar-ring: var(--sidebar-ring);
 
@@ -78,19 +78,20 @@
 
   --color-background: var(--background);
 
-  --radius-sm: calc(var(--radius) * 0.6);
+  /* Obsidian radius scale: 4px / 8px / 12px / 16px */
+  --radius-sm: 4px;   /* Obsidian --radius-s */
 
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-md: 8px;   /* Obsidian --radius-m */
 
-  --radius-lg: var(--radius);
+  --radius-lg: 8px;   /* Obsidian --radius-m (default) */
 
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: 12px;  /* Obsidian --radius-l */
 
-  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-2xl: 16px; /* Obsidian --radius-xl */
 
-  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-3xl: 16px; /* Obsidian --radius-xl */
 
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-4xl: 16px; /* Obsidian --radius-xl */
 }
 
 @layer base {

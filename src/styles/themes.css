@@ -1,70 +1,90 @@
 /* ─────────────────────────────────────────
    BASE TOKENS (shared structure, non-color)
+   Source: Obsidian CSS Variables Reference
+   https://docs.obsidian.md/Reference/CSS+variables
    ───────────────────────────────────────── */
 
 :root {
-  --font-sans: var(--font-geist-sans);
-  --font-mono:
-    'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+  --font-sans: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: Menlo, SFMono-Regular, Consolas, 'Source Code Pro', monospace;
+
+  /* Shadows — Obsidian --shadow-s and --shadow-l */
+  --shadow-s: rgba(0, 0, 0, 0.08) 0px 12px 24px -4px,
+    rgba(0, 0, 0, 0.04) 0px 8px 16px -4px;
+  --shadow-l: 0 14px 62px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* ─────────────────────────────────────────
    LIGHT THEME
+   Source: Obsidian base color scale (light)
    ───────────────────────────────────────── */
 
 [data-theme='light'] {
-  /* Core surfaces */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --sidebar-bg: #f7f7f7;
-  --border: #e0e0e0;
+  /* Core surfaces — Obsidian base scale */
+  --background: #ffffff; /* --color-base-00 */
+  --foreground: #222222; /* --color-base-100 (--text-normal) */
+  --sidebar-bg: #fafafa; /* --color-base-10 (--background-primary-alt) */
+  --border: #e0e0e0; /* --color-base-30 (--background-modifier-border) */
 
-  /* Accent */
-  --accent: #7b61ff;
-  --accent-foreground: #ffffff;
+  /* Accent — Obsidian hsl(254, 80%, 68%) light */
+  --accent: #705dcf; /* --text-accent */
+  --accent-foreground: #ffffff; /* --text-on-accent */
 
   /* Muted */
-  --muted: #f0f0f0;
-  --muted-foreground: #777777;
+  --muted: #f6f6f6; /* --color-base-20 (--background-secondary) */
+  --muted-foreground: #5a5a5a; /* --color-base-70 (--text-muted) */
 
   /* Text aliases */
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #777777;
+  --text-primary: #222222; /* --text-normal */
+  --text-secondary: #5a5a5a; /* --text-muted */
+  --text-muted: #5a5a5a; /* --text-muted */
+  --text-faint: #ababab; /* --color-base-50 (--text-faint) */
 
   /* Nav */
-  --nav-active-bg: #eae8ff;
-  --nav-active-fg: #5a48d0;
+  --nav-active-bg: #f2f3f5; /* --interactive-normal */
+  --nav-active-fg: #705dcf; /* --text-accent */
 
   /* Popovers / Dropdowns */
-  --popover-bg: #ffffff;
-  --popover-border: #e0e0e0;
+  --popover-bg: #ffffff; /* --color-base-00 */
+  --popover-border: #e0e0e0; /* --color-base-30 */
 
-  /* Code */
-  --code-bg: #f0f0f0;
-  --code-block-bg: #f5f5f5;
-  --code-fg: #c7254e;
+  /* Code — Obsidian code variables */
+  --code-bg: #f6f6f6; /* --background-secondary */
+  --code-block-bg: #fafafa; /* --background-primary-alt (--code-background) */
+  --code-fg: #222222; /* --text-normal */
 
-  /* Links */
-  --link-fg: #7b61ff;
-  --wikilink-fg: #4a4a8a;
-  --wikilink-underline: #a0a0c0;
-  --wikilink-hover-fg: #7b61ff;
-  --wikilink-missing-fg: #c0504a;
+  /* Links — Obsidian uses purple accent for all links */
+  --link-fg: #705dcf; /* --text-accent */
+  --wikilink-fg: #705dcf;
+  --wikilink-underline: rgba(112, 93, 207, 0.3);
+  --wikilink-hover-fg: #7a6ae6; /* --text-accent-hover */
+  --wikilink-missing-fg: #e93147; /* --color-red */
 
   /* Verified badge */
   --verified-badge-bg: #eff7f2;
   --verified-badge-border: #b8dec8;
   --verified-badge-fg: #2d6a4f;
 
-  /* Search */
-  --search-highlight-bg: #fff380;
-  --search-highlight-fg: #1a1a1a;
+  /* Search — Obsidian --text-highlight-bg */
+  --search-highlight-bg: rgba(255, 208, 0, 0.4);
+  --search-highlight-fg: #222222;
 
   /* Graph */
-  --graph-bg: #fafafa;
-  --graph-edge-color: #bbbbbb;
+  --graph-bg: #fafafa; /* --background-primary-alt */
+  --graph-edge-color: #bdbdbd; /* --color-base-40 */
   --graph-node-stroke: rgba(0, 0, 0, 0.15);
+
+  /* Scrollbar — Obsidian opacity-based */
+  --scrollbar-bg: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb-bg: rgba(0, 0, 0, 0.1);
+  --scrollbar-active-thumb-bg: rgba(0, 0, 0, 0.2);
+
+  /* Interactive elements */
+  --interactive-normal: #f2f3f5;
+  --interactive-hover: #e9e9e9;
+  --interactive-accent: #7b6cd9;
+  --interactive-accent-hover: #8273e6;
 
   /* File type colors */
   --file-type-promo: #2a9d4e;
@@ -72,68 +92,81 @@
 
 /* ─────────────────────────────────────────
    DARK THEME (default)
+   Source: Obsidian base color scale (dark)
    ───────────────────────────────────────── */
 
 [data-theme='dark'] {
-  /* Core surfaces */
-  --background: #1e1e2e;
-  --foreground: #cdd6f4;
-  --sidebar-bg: #181825;
-  --border: #313244;
+  /* Core surfaces — Obsidian base scale */
+  --background: #1e1e1e; /* --color-base-00 */
+  --foreground: #dadada; /* --color-base-100 (--text-normal) */
+  --sidebar-bg: #242424; /* --color-base-10 (--background-primary-alt) */
+  --border: #363636; /* --color-base-30 (--background-modifier-border) */
 
-  /* Accent */
-  --accent: #cba6f7;
-  --accent-foreground: #1e1e2e;
+  /* Accent — Obsidian hsl(254, 80%, 68%) dark */
+  --accent: #7f6df2; /* --text-accent */
+  --accent-foreground: #1e1e1e; /* --color-base-00 */
 
   /* Muted */
-  --muted: #2a2a3e;
-  --muted-foreground: #6c7086;
+  --muted: #262626; /* --color-base-20 (--background-secondary) */
+  --muted-foreground: #bababa; /* --color-base-70 (--text-muted) */
 
   /* Text aliases */
-  --text-primary: #cdd6f4;
-  --text-secondary: #a6adc8;
-  --text-muted: #6c7086;
+  --text-primary: #dadada; /* --text-normal */
+  --text-secondary: #bababa; /* --text-muted */
+  --text-muted: #bababa; /* --text-muted */
+  --text-faint: #666666; /* --color-base-50 (--text-faint) */
 
   /* Nav */
-  --nav-active-bg: #313244;
-  --nav-active-fg: #cba6f7;
+  --nav-active-bg: #2a2a2a; /* --interactive-normal */
+  --nav-active-fg: #7f6df2; /* --text-accent */
 
   /* Popovers / Dropdowns */
-  --popover-bg: #24273a;
-  --popover-border: #363a52;
+  --popover-bg: #242424; /* --color-base-05 */
+  --popover-border: #363636; /* --color-base-30 */
 
-  /* Code */
-  --code-bg: #2a2a3e;
-  --code-block-bg: #232336;
-  --code-fg: #f38ba8;
+  /* Code — Obsidian code variables */
+  --code-bg: #262626; /* --background-secondary */
+  --code-block-bg: #242424; /* --background-primary-alt (--code-background) */
+  --code-fg: #dadada; /* --text-normal */
 
   /* Links */
-  --link-fg: #89b4fa;
-  --wikilink-fg: #b4befe;
-  --wikilink-underline: #585b70;
-  --wikilink-hover-fg: #cba6f7;
-  --wikilink-missing-fg: #f38ba8;
+  --link-fg: #7f6df2; /* --text-accent */
+  --wikilink-fg: #7f6df2;
+  --wikilink-underline: rgba(127, 109, 242, 0.3);
+  --wikilink-hover-fg: #8875ff; /* --text-accent-hover */
+  --wikilink-missing-fg: #fb464c; /* --color-red */
 
   /* Verified badge */
   --verified-badge-bg: #1e2d24;
   --verified-badge-border: #2d4a38;
-  --verified-badge-fg: #a6e3a1;
+  --verified-badge-fg: #44cf6e; /* --color-green (dark) */
 
-  /* Search */
-  --search-highlight-bg: #f9e2af;
-  --search-highlight-fg: #1e1e2e;
+  /* Search — Obsidian --text-highlight-bg */
+  --search-highlight-bg: rgba(255, 208, 0, 0.4);
+  --search-highlight-fg: #dadada;
 
   /* Graph */
-  --graph-bg: #181825;
-  --graph-edge-color: #45475a;
+  --graph-bg: #242424; /* --background-primary-alt */
+  --graph-edge-color: #555555; /* --color-base-40 */
   --graph-node-stroke: rgba(255, 255, 255, 0.1);
+
+  /* Scrollbar — Obsidian opacity-based */
+  --scrollbar-bg: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.1);
+  --scrollbar-active-thumb-bg: rgba(255, 255, 255, 0.2);
+
+  /* Interactive elements */
+  --interactive-normal: #2a2a2a;
+  --interactive-hover: #303030;
+  --interactive-accent: #483699;
+  --interactive-accent-hover: #4d3ca6;
 
   /* File type colors */
   --file-type-promo: #3fb950;
 }
 
 /* ─────────────────────────────────────────
-   BLUE THEME
+   BLUE THEME (GitHub-inspired, non-Obsidian)
    ───────────────────────────────────────── */
 
 [data-theme='blue'] {
@@ -155,6 +188,7 @@
   --text-primary: #e6edf3;
   --text-secondary: #c9d1d9;
   --text-muted: #8b949e;
+  --text-faint: #484f58;
 
   /* Nav */
   --nav-active-bg: #1f3a5f;
@@ -189,6 +223,17 @@
   --graph-bg: #090d12;
   --graph-edge-color: #21262d;
   --graph-node-stroke: rgba(255, 255, 255, 0.08);
+
+  /* Scrollbar */
+  --scrollbar-bg: rgba(255, 255, 255, 0.04);
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.08);
+  --scrollbar-active-thumb-bg: rgba(255, 255, 255, 0.16);
+
+  /* Interactive elements */
+  --interactive-normal: #161b22;
+  --interactive-hover: #1c2028;
+  --interactive-accent: #1f6feb;
+  --interactive-accent-hover: #388bfd;
 
   /* File type colors */
   --file-type-promo: #4ade80;
