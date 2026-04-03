@@ -14,11 +14,14 @@ Design philosophy: Faithful Obsidian clone adapted for the web — dark-first, k
 3. [Content Panel (Center)](#3-content-panel-center)
 4. [Graph View (Right Panel)](#4-graph-view-right-panel)
 5. [Search](#5-search)
-6. [Theme System](#6-theme-system)
+6. [Theme System](#6-theme-system) (includes Obsidian design token reference)
 7. [Typography](#7-typography)
 8. [Component Inventory](#8-component-inventory)
 9. [Spacing and Grid](#9-spacing-and-grid)
 10. [States and Interactions](#10-states-and-interactions)
+
+> **Design token source:** All colors, typography, and spacing values in this guide are sourced from
+> Obsidian's official CSS variables. See `docs/spike/spike-obsidian-ui-tokens.md` for the full research.
 
 ---
 
@@ -332,14 +335,16 @@ All styles applied via a `.prose` wrapper class (custom, not Tailwind's `@tailwi
 
 **Note on Tailwind Typography:** The Tailwind `prose` plugin can be used as a base, but it must be heavily overridden to match the Obsidian aesthetic. Either use it and override, or write a custom `.prose` class. The custom approach is recommended for full control.
 
-**Headings:**
+**Headings (Obsidian em-based scale — see Section 7.2):**
 
-| Element | Size | Weight | Color               | Top margin | Bottom margin |
-| ------- | ---- | ------ | ------------------- | ---------- | ------------- |
-| H1      | 26px | 700    | `var(--foreground)` | 0          | 16px          |
-| H2      | 20px | 600    | `var(--foreground)` | 32px       | 12px          |
-| H3      | 16px | 600    | `var(--foreground)` | 24px       | 8px           |
-| H4      | 14px | 600    | `var(--foreground)` | 20px       | 6px           |
+| Element | Size     | Weight | Color               | Top margin | Bottom margin |
+| ------- | -------- | ------ | ------------------- | ---------- | ------------- |
+| H1      | `2em`    | 700    | `var(--foreground)` | 0          | 16px          |
+| H2      | `1.6em`  | 600    | `var(--foreground)` | 32px       | 12px          |
+| H3      | `1.37em` | 600    | `var(--foreground)` | 24px       | 8px           |
+| H4      | `1.25em` | 600    | `var(--foreground)` | 20px       | 6px           |
+| H5      | `1.12em` | 600    | `var(--foreground)` | 16px       | 4px           |
+| H6      | `1.12em` | 600    | `var(--foreground)` | 16px       | 4px           |
 
 H1 border-bottom: `1px solid var(--border)`, padding-bottom `12px`.
 H2 border-bottom: `1px solid var(--border)` at 40% opacity, padding-bottom `8px`.
@@ -347,12 +352,12 @@ H3, H4: no border.
 
 **Paragraph:**
 
-- Font: `15px / 1.6`, `var(--foreground)`
-- Margin-bottom: `16px`
+- Font: `16px / 1.5`, `var(--foreground)` (matches Obsidian `--font-text-size` / `--line-height-normal`)
+- Margin-bottom: `1rem` (16px, matches Obsidian `--p-spacing`)
 
 **Bold / Strong:**
 
-- `font-weight: 600`, same color as paragraph
+- `font-weight: 600` (matches Obsidian `--bold-weight`), same color as paragraph
 
 **Italic / Em:**
 
@@ -360,41 +365,59 @@ H3, H4: no border.
 
 **Inline code:**
 
-- Font: `var(--font-mono)`, `13px`
+- Font: `var(--font-mono)` (Obsidian: `Menlo, SFMono-Regular, Consolas, "Source Code Pro", monospace`)
+- Size: `0.875em` (~14px at 16px base — Obsidian `--code-size`)
 - Background: `var(--code-bg)`
 - Color: `var(--code-fg)`
 - Padding: `2px 5px`
-- Border-radius: `4px`
+- Border-radius: `4px` (`--radius-s`)
 - Border: `1px solid var(--border)`
 
-**Code blocks (fenced):**
+**Code blocks (fenced) — matches Obsidian code variables:**
 
-- Background: `var(--code-block-bg)`
+- Background: `var(--code-block-bg)` (Obsidian `--code-background`)
+- White-space: `pre-wrap` (Obsidian `--code-white-space`)
 - Border: `1px solid var(--border)`
 - Border-radius: `6px`
 - Padding: `16px`
-- Font: `var(--font-mono)`, `13px / 1.5`
+- Font: `var(--font-mono)`, `0.875em / 1.5`
 - Color: `var(--code-fg)`
 - Overflow-x: `auto`
 - Optional: line numbers in left gutter (v2 feature)
 - Language label: small badge top-right of block, `10px`, `var(--muted-foreground)`
 
-**Tables:**
+**Syntax highlighting colors (Obsidian defaults):**
+
+| Token        | Maps To               | Light     | Dark      |
+| ------------ | --------------------- | --------- | --------- |
+| Comment      | `--text-faint`        | `#ababab` | `#666666` |
+| Function     | `--color-yellow`      | `#e0ac00` | `#e0de71` |
+| Keyword      | `--color-pink`        | `#d53984` | `#fa99cd` |
+| String       | `--color-green`       | `#08b94e` | `#44cf6e` |
+| Tag          | `--color-red`         | `#e93147` | `#fb464c` |
+| Value/Number | `--color-purple`      | `#7852ee` | `#a882ff` |
+| Operator     | `--color-red`         | `#e93147` | `#fb464c` |
+| Punctuation  | `--text-muted`        | `#5a5a5a` | `#bababa` |
+
+**Tables (matches Obsidian table variables):**
 
 - Full width within content area
+- Background: `transparent` (Obsidian `--table-background`)
 - Border-collapse: `collapse`
-- Header row: background `var(--muted)`, `font-weight: 600`, `13px`
-- Cell: padding `8px 12px`, `border: 1px solid var(--border)`, `14px`
-- Alternating row striping: even rows `var(--muted)` at 30% opacity
+- Header row: background `transparent`, `font-weight: 400` (normal — Obsidian `--table-header-weight`), color `var(--muted-foreground)` (Obsidian `--table-header-color`)
+- Cell: padding `8px 12px`, `border: 1px solid var(--border)` (Obsidian `--table-border-width`), vertical-align `top`
+- Row hover: `var(--muted)` (Obsidian `--table-row-background-hover`)
+- No alternating row striping (Obsidian default has none)
 - Overflow: wrap in a `div` with `overflow-x: auto` for wide tables
 
-**Blockquotes:**
+**Blockquotes (matches Obsidian defaults):**
 
-- Left border: `3px solid var(--accent)`
+- Left border: `2px solid var(--accent)` (Obsidian `--blockquote-border-thickness`)
+- Background: `transparent` (Obsidian `--blockquote-background-color`)
 - Padding-left: `16px`
 - Margin: `16px 0`
-- Color: `var(--muted-foreground)`
-- Font: `15px / 1.6`, italic
+- Color: `inherit` (Obsidian `--blockquote-color`)
+- Font-style: `normal` (Obsidian `--blockquote-font-style` — NOT italic)
 
 **Unordered lists:**
 
@@ -408,9 +431,9 @@ H3, H4: no border.
 - `list-style: decimal`
 - Same spacing as unordered
 
-**Horizontal rule:**
+**Horizontal rule (matches Obsidian `--hr-thickness` and `--hr-color`):**
 
-- `border: none; border-top: 1px solid var(--border)`
+- `border: none; border-top: 2px solid var(--border)`
 - Margin: `32px 0`
 
 **Footnote references (inline `[^1]`):**
@@ -707,56 +730,80 @@ On initial load (in a `<script>` tag in `<head>` before page render, to prevent 
 </script>
 ```
 
-### 6.2 All CSS Custom Properties
+### 6.2 Obsidian Design Token Reference
+
+All color values below are sourced from Obsidian's official CSS variables (see `docs/spike/spike-obsidian-ui-tokens.md` for the full research). Our theme must match these exactly.
+
+**Accent color:** `hsl(254, 80%, 68%)` — the signature Obsidian purple.
+
+### 6.3 All CSS Custom Properties
 
 Defined in `styles/themes.css`:
 
 ```css
 /* ─────────────────────────────────────────
    BASE TOKENS (shared structure)
+   Source: Obsidian CSS Variables Reference
+   https://docs.obsidian.md/Reference/CSS+variables
 ───────────────────────────────────────── */
 
 :root {
-  --radius: 6px;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono:
-    'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+  /* Border radius — matches Obsidian scale */
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-xl: 16px;
+  --radius: 8px; /* default component radius = --radius-m */
+
+  /* Font stacks — matches Obsidian --default-font and --font-monospace-default */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-mono: Menlo, SFMono-Regular, Consolas, 'Source Code Pro', monospace;
+
+  /* Shadows — matches Obsidian --shadow-s and --shadow-l */
+  --shadow-s: rgba(0, 0, 0, 0.08) 0px 12px 24px -4px,
+    rgba(0, 0, 0, 0.04) 0px 8px 16px -4px;
+  --shadow-l: 0 14px 62px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* ─────────────────────────────────────────
    LIGHT THEME
+   Source: Obsidian base color scale (light)
 ───────────────────────────────────────── */
 
 [data-theme='light'] {
-  /* Core */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --muted: #f0f0f0;
-  --muted-foreground: #777777;
-  --border: #e0e0e0;
-  --accent: #7b61ff;
-  --accent-foreground: #ffffff;
+  /* Core — mapped from Obsidian base scale */
+  --background: #ffffff;           /* --color-base-00 */
+  --foreground: #222222;           /* --color-base-100 (--text-normal) */
+  --muted: #f6f6f6;               /* --color-base-20 (--background-secondary) */
+  --muted-foreground: #5a5a5a;    /* --color-base-70 (--text-muted) */
+  --border: #e0e0e0;              /* --color-base-30 (--background-modifier-border) */
+  --accent: #705dcf;              /* --text-accent (light) */
+  --accent-foreground: #ffffff;   /* --text-on-accent */
+
+  /* Faint text (for footnotes, graph legends, etc.) */
+  --text-faint: #ababab;          /* --color-base-50 */
 
   /* Sidebar / Nav */
-  --sidebar-bg: #f7f7f7;
-  --nav-active-bg: #eae8ff;
-  --nav-active-fg: #5a48d0;
+  --sidebar-bg: #fafafa;          /* --color-base-10 (--background-primary-alt) */
+  --nav-active-bg: #f2f3f5;       /* --interactive-normal */
+  --nav-active-fg: #705dcf;       /* --text-accent */
 
   /* Popovers / Dropdowns */
-  --popover-bg: #ffffff;
-  --popover-border: #e0e0e0;
+  --popover-bg: #ffffff;           /* --color-base-00 */
+  --popover-border: #e0e0e0;      /* --color-base-30 */
 
   /* Code */
-  --code-bg: #f0f0f0;
-  --code-block-bg: #f5f5f5;
-  --code-fg: #c7254e;
+  --code-bg: #f6f6f6;             /* --background-secondary */
+  --code-block-bg: #fafafa;       /* --background-primary-alt (--code-background) */
+  --code-fg: #222222;             /* --text-normal */
 
-  /* Links */
-  --link-fg: #7b61ff;
-  --wikilink-fg: #4a4a8a;
-  --wikilink-underline: #a0a0c0;
-  --wikilink-hover-fg: #7b61ff;
-  --wikilink-missing-fg: #c0504a;
+  /* Links — Obsidian uses purple accent for all links */
+  --link-fg: #705dcf;             /* --text-accent */
+  --wikilink-fg: #705dcf;         /* same accent, slightly transparent for internal */
+  --wikilink-underline: rgba(112, 93, 207, 0.3); /* --interactive-accent-hsl at 0.3 */
+  --wikilink-hover-fg: #7a6ae6;   /* --text-accent-hover */
+  --wikilink-missing-fg: #e93147; /* --color-red */
 
   /* Verified badge */
   --verified-badge-bg: #eff7f2;
@@ -764,67 +811,93 @@ Defined in `styles/themes.css`:
   --verified-badge-fg: #2d6a4f;
 
   /* Search */
-  --search-highlight-bg: #fff380;
-  --search-highlight-fg: #1a1a1a;
+  --search-highlight-bg: rgba(255, 208, 0, 0.4); /* --text-highlight-bg */
+  --search-highlight-fg: #222222;
 
   /* Graph */
-  --graph-bg: #fafafa;
-  --graph-edge-color: #bbbbbb;
+  --graph-bg: #fafafa;            /* --background-primary-alt */
+  --graph-edge-color: #bdbdbd;    /* --color-base-40 */
   --graph-node-stroke: rgba(0, 0, 0, 0.15);
+
+  /* Scrollbar — Obsidian opacity-based */
+  --scrollbar-bg: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb-bg: rgba(0, 0, 0, 0.1);
+  --scrollbar-active-thumb-bg: rgba(0, 0, 0, 0.2);
+
+  /* Interactive elements */
+  --interactive-normal: #f2f3f5;
+  --interactive-hover: #e9e9e9;
+  --interactive-accent: #7b6cd9;
+  --interactive-accent-hover: #8273e6;
 }
 
 /* ─────────────────────────────────────────
    DARK THEME (default)
+   Source: Obsidian base color scale (dark)
 ───────────────────────────────────────── */
 
 [data-theme='dark'] {
-  /* Core */
-  --background: #1e1e2e;
-  --foreground: #cdd6f4;
-  --muted: #2a2a3e;
-  --muted-foreground: #6c7086;
-  --border: #313244;
-  --accent: #cba6f7;
-  --accent-foreground: #1e1e2e;
+  /* Core — mapped from Obsidian base scale */
+  --background: #1e1e1e;          /* --color-base-00 */
+  --foreground: #dadada;          /* --color-base-100 (--text-normal) */
+  --muted: #262626;               /* --color-base-20 (--background-secondary) */
+  --muted-foreground: #bababa;    /* --color-base-70 (--text-muted) */
+  --border: #363636;              /* --color-base-30 (--background-modifier-border) */
+  --accent: #7f6df2;              /* --text-accent (dark) */
+  --accent-foreground: #1e1e1e;   /* --color-base-00 */
+
+  /* Faint text */
+  --text-faint: #666666;          /* --color-base-50 */
 
   /* Sidebar / Nav */
-  --sidebar-bg: #181825;
-  --nav-active-bg: #313244;
-  --nav-active-fg: #cba6f7;
+  --sidebar-bg: #242424;          /* --color-base-10 (--background-primary-alt) */
+  --nav-active-bg: #2a2a2a;       /* --interactive-normal */
+  --nav-active-fg: #7f6df2;       /* --text-accent */
 
   /* Popovers / Dropdowns */
-  --popover-bg: #24273a;
-  --popover-border: #363a52;
+  --popover-bg: #242424;          /* --color-base-05 */
+  --popover-border: #363636;      /* --color-base-30 */
 
   /* Code */
-  --code-bg: #2a2a3e;
-  --code-block-bg: #232336;
-  --code-fg: #f38ba8;
+  --code-bg: #262626;             /* --background-secondary */
+  --code-block-bg: #242424;       /* --background-primary-alt (--code-background) */
+  --code-fg: #dadada;             /* --text-normal */
 
   /* Links */
-  --link-fg: #89b4fa;
-  --wikilink-fg: #b4befe;
-  --wikilink-underline: #585b70;
-  --wikilink-hover-fg: #cba6f7;
-  --wikilink-missing-fg: #f38ba8;
+  --link-fg: #7f6df2;             /* --text-accent */
+  --wikilink-fg: #7f6df2;
+  --wikilink-underline: rgba(127, 109, 242, 0.3);
+  --wikilink-hover-fg: #8875ff;   /* --text-accent-hover */
+  --wikilink-missing-fg: #fb464c; /* --color-red */
 
   /* Verified badge */
   --verified-badge-bg: #1e2d24;
   --verified-badge-border: #2d4a38;
-  --verified-badge-fg: #a6e3a1;
+  --verified-badge-fg: #44cf6e;   /* --color-green (dark) */
 
   /* Search */
-  --search-highlight-bg: #f9e2af;
-  --search-highlight-fg: #1e1e2e;
+  --search-highlight-bg: rgba(255, 208, 0, 0.4); /* --text-highlight-bg */
+  --search-highlight-fg: #dadada;
 
   /* Graph */
-  --graph-bg: #181825;
-  --graph-edge-color: #45475a;
+  --graph-bg: #242424;            /* --background-primary-alt */
+  --graph-edge-color: #555555;    /* --color-base-40 */
   --graph-node-stroke: rgba(255, 255, 255, 0.1);
+
+  /* Scrollbar — Obsidian opacity-based */
+  --scrollbar-bg: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.1);
+  --scrollbar-active-thumb-bg: rgba(255, 255, 255, 0.2);
+
+  /* Interactive elements */
+  --interactive-normal: #2a2a2a;
+  --interactive-hover: #303030;
+  --interactive-accent: #483699;
+  --interactive-accent-hover: #4d3ca6;
 }
 
 /* ─────────────────────────────────────────
-   BLUE THEME
+   BLUE THEME (GitHub-inspired, non-Obsidian)
 ───────────────────────────────────────── */
 
 [data-theme='blue'] {
@@ -836,6 +909,9 @@ Defined in `styles/themes.css`:
   --border: #30363d;
   --accent: #58a6ff;
   --accent-foreground: #0d1117;
+
+  /* Faint text */
+  --text-faint: #484f58;
 
   /* Sidebar / Nav */
   --sidebar-bg: #090d12;
@@ -871,10 +947,21 @@ Defined in `styles/themes.css`:
   --graph-bg: #090d12;
   --graph-edge-color: #21262d;
   --graph-node-stroke: rgba(255, 255, 255, 0.08);
+
+  /* Scrollbar */
+  --scrollbar-bg: rgba(255, 255, 255, 0.04);
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.08);
+  --scrollbar-active-thumb-bg: rgba(255, 255, 255, 0.16);
+
+  /* Interactive elements */
+  --interactive-normal: #161b22;
+  --interactive-hover: #1c2028;
+  --interactive-accent: #1f6feb;
+  --interactive-accent-hover: #388bfd;
 }
 ```
 
-### 6.3 Adding a New Theme
+### 6.4 Adding a New Theme
 
 Themes are fully configuration-based. To add a new theme:
 
@@ -891,19 +978,13 @@ No other files need to change. The theme system is intentionally isolated to CSS
 
 ### 7.1 Font Stack
 
+Source: Obsidian `--default-font` and `--font-monospace-default`
+
 **Sans-serif (UI + content body):**
 
 ```css
-font-family:
-  'Inter',
-  system-ui,
-  -apple-system,
-  BlinkMacSystemFont,
-  'Segoe UI',
-  Roboto,
-  Oxygen,
-  Ubuntu,
-  sans-serif;
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  Helvetica, Arial, sans-serif;
 ```
 
 Load Inter via `next/font/google`:
@@ -911,49 +992,73 @@ Load Inter via `next/font/google`:
 ```typescript
 // app/layout.tsx
 import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700'],
+})
 ```
 
-Use weights: 400 (normal), 500 (medium), 600 (semibold), 700 (bold).
+Required weights: 400 (normal), 500 (medium), 600 (semibold), 700 (bold).
 
-**Monospace (code):**
+**Monospace (code) — matches Obsidian `--font-monospace-default`:**
 
 ```css
-font-family:
-  'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New',
-  monospace;
+font-family: Menlo, SFMono-Regular, Consolas, 'Source Code Pro', monospace;
 ```
 
-Load JetBrains Mono from Google Fonts. Use weight 400 only.
+These are system fonts — no Google Fonts load required for monospace.
 
 ### 7.2 Type Scale
 
-| Token         | Size | Line height | Usage                           |
-| ------------- | ---- | ----------- | ------------------------------- |
-| `--text-xs`   | 10px | 1.4         | Kbd badges, graph legend        |
-| `--text-sm`   | 12px | 1.5         | Footnotes, metadata, badge text |
-| `--text-base` | 13px | 1.5         | Nav items, tabs, breadcrumbs    |
-| `--text-body` | 15px | 1.6         | Markdown paragraph text         |
-| `--text-md`   | 16px | 1.5         | Search input                    |
-| `--text-h4`   | 14px | 1.4         | H4 headings                     |
-| `--text-h3`   | 16px | 1.4         | H3 headings                     |
-| `--text-h2`   | 20px | 1.3         | H2 headings                     |
-| `--text-h1`   | 26px | 1.2         | H1 headings                     |
-| `--text-lg`   | 18px | 1.4         | Modal titles                    |
+**Body text:** `16px` base (`--font-text-size`), weight `400`, line-height `1.5`.
+
+**Heading scale — exact Obsidian values (em-based, relative to 16px body):**
+
+| Level | Size     | Computed | Weight | Line-Height |
+| ----- | -------- | -------- | ------ | ----------- |
+| H1    | `2em`    | 32px     | `700`  | `1.2`       |
+| H2    | `1.6em`  | 25.6px   | `600`  | `1.2`       |
+| H3    | `1.37em` | 21.9px   | `600`  | `1.3`       |
+| H4    | `1.25em` | 20px     | `600`  | `1.4`       |
+| H5    | `1.12em` | 17.9px   | `600`  | `1.5`       |
+| H6    | `1.12em` | 17.9px   | `600`  | `1.5`       |
+
+**UI type scale (for non-content elements):**
+
+| Token         | Size   | Line height | Usage                           |
+| ------------- | ------ | ----------- | ------------------------------- |
+| `--text-xs`   | 10px   | 1.4         | Kbd badges, graph legend        |
+| `--text-sm`   | 12px   | 1.5         | Footnotes, metadata, badge text |
+| `--text-base` | 13px   | 1.5         | Nav items, tabs, breadcrumbs    |
+| `--text-body` | 16px   | 1.5         | Markdown paragraph text         |
+| `--text-md`   | 16px   | 1.5         | Search input                    |
+| `--text-lg`   | 20px   | 1.4         | Modal titles                    |
+
+**Font weight tokens:**
+
+| Token              | Value | Usage                      |
+| ------------------ | ----- | -------------------------- |
+| `--font-normal`    | `400` | Body text, table headers   |
+| `--font-medium`    | `500` | Active nav items           |
+| `--font-semibold`  | `600` | Headings (H2–H6), bold    |
+| `--font-bold`      | `700` | H1 only                    |
+
+Note: Obsidian's `--bold-weight` is `600` (semibold), not `700`. Use `font-semibold` for `<strong>` tags.
 
 ### 7.3 Content Max Width
 
-The markdown content area has a max-width of `720px`. This is the sweet spot for readability at the default font size (15px body).
+The markdown content area has a max-width of `720px`. This is the sweet spot for readability at the default font size (16px body).
 
 - Below 720px (Panel 2 gets narrow): content fills available width, padding reduces to `24px` each side
 - Tables inside content that exceed content width: wrap in `overflow-x: auto` container
 
 ### 7.4 Markdown-Specific Typography Notes
 
-- List items: `15px / 1.6`, same as paragraph
-- Table cells: `14px / 1.5` to fit more data
-- Code blocks: `13px / 1.5` with JetBrains Mono
-- Blockquote text: `15px / 1.6`, italic, `var(--muted-foreground)`
+- List items: `16px / 1.5`, same as paragraph
+- Table cells: `inherit` (Obsidian `--table-text-size`) — same as body text
+- Code blocks: `0.875em / 1.5` with Menlo/SFMono-Regular/Consolas monospace stack
+- Blockquote text: `16px / 1.5`, normal (not italic), `inherit` color
 - All heading anchors (H2, H3) get a `#` link on hover for deep linking (Obsidian behavior, optional for v1)
 
 ---
@@ -1077,31 +1182,39 @@ const processor = unified()
 
 ### 9.3 Spacing Scale Reference
 
-Use these values only (based on a 4px base unit):
+Obsidian uses a **4px grid** (`--size-4-*`) with a supplementary **2px grid** (`--size-2-*`).
 
-| Token      | Value  | Common use                               |
-| ---------- | ------ | ---------------------------------------- |
-| `space-1`  | `4px`  | Icon gaps, tight padding                 |
-| `space-2`  | `8px`  | Internal padding, row gaps               |
-| `space-3`  | `12px` | Nav padding, button padding              |
-| `space-4`  | `16px` | Section spacing, indent width            |
-| `space-5`  | `20px` | Heading margins                          |
-| `space-6`  | `24px` | Large section gaps                       |
-| `space-8`  | `32px` | Content top padding                      |
-| `space-10` | `40px` | Bottom bar height, large margins         |
-| `space-12` | `48px` | Nav header height equiv, content padding |
+**Obsidian spacing tokens (authoritative reference):**
 
-### 9.4 Border Radius
+| Obsidian Variable | Value  | Our Token  | Common use                               |
+| ----------------- | ------ | ---------- | ---------------------------------------- |
+| `--size-2-1`      | `2px`  | —          | Hairline gaps                            |
+| `--size-2-2`      | `4px`  | `space-1`  | Icon gaps, tight padding                 |
+| `--size-2-3`      | `6px`  | —          | Small element padding                    |
+| `--size-4-1`      | `4px`  | `space-1`  | Icon gaps, tight padding                 |
+| `--size-4-2`      | `8px`  | `space-2`  | Internal padding, row gaps               |
+| `--size-4-3`      | `12px` | `space-3`  | Nav padding, button padding              |
+| `--size-4-4`      | `16px` | `space-4`  | Section spacing, indent width, `--p-spacing` |
+| `--size-4-5`      | `20px` | `space-5`  | Heading margins                          |
+| `--size-4-6`      | `24px` | `space-6`  | Large section gaps                       |
+| `--size-4-8`      | `32px` | `space-8`  | Content top padding                      |
+| `--size-4-9`      | `36px` | —          | Tab bar height, search bar height        |
+| `--size-4-12`     | `48px` | `space-12` | Nav header height, content padding       |
+| `--size-4-16`     | `64px` | —          | Large section spacing                    |
+| `--size-4-18`     | `72px` | —          | Extra-large spacing                      |
 
-| Context                 | Value           |
-| ----------------------- | --------------- |
-| Nav items, buttons      | `6px`           |
-| Modals, cards, popovers | `8px` or `10px` |
-| Inline code             | `4px`           |
-| Code blocks, tables     | `6px`           |
-| Badge / kbd             | `4px`           |
-| Tooltip                 | `6px`           |
-| Graph controls buttons  | `4px`           |
+**Paragraph spacing:** `--p-spacing` = `1rem` (16px) — use for margin between paragraphs and prose elements.
+
+### 9.4 Border Radius (Obsidian Scale)
+
+Use the Obsidian radius tokens. Map each component to the appropriate tier:
+
+| Obsidian Token | Value  | Components                              |
+| -------------- | ------ | --------------------------------------- |
+| `--radius-s`   | `4px`  | Inline code, badges, kbd, graph buttons |
+| `--radius-m`   | `8px`  | Nav items, buttons, tooltips, code blocks, modals |
+| `--radius-l`   | `12px` | Cards, large popovers                   |
+| `--radius-xl`  | `16px` | Hero sections, large containers         |
 
 ---
 
