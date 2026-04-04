@@ -33,6 +33,10 @@ Before writing any frontend/UI code, consult `docs/ui-guide.md` for exact design
 
 When in doubt, check `docs/spike/spike-obsidian-ui-tokens.md` for the source values.
 
+## Source / Citation System
+
+See `docs/source-reference-guide.md` for the frontmatter schema, authoring rules, and labeling conventions for the `sources` array used in every content page.
+
 ## Git Commit Conventions
 
 Prefix every commit message based on context:
