@@ -29,6 +29,13 @@ export type TabEntry = {
   title: string // display label from frontmatter or slug-derived
 }
 
+export interface PaneEntry {
+  id: string
+  slug: string | null
+  title: string
+  isCollapsed: boolean
+}
+
 export type SourceEntry = {
   url: string
   label: string
