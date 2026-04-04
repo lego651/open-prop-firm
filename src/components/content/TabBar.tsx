@@ -1,29 +1,21 @@
 'use client'
 
-import { Menu, X, PanelRight, Search } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Menu, Plus, PanelRight, Search } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useSearch } from '@/contexts/SearchContext'
-import type { TabEntry } from '@/types/content'
 
 type TabBarProps = {
-  openTabs: TabEntry[]
-  activeSlug: string
-  onTabClick: (slug: string) => void
-  onTabClose: (slug: string) => void
+  onNewPane?: () => void
   onTogglePanel3?: () => void
   onHamburger?: () => void
 }
 
 export default function TabBar({
-  openTabs,
-  activeSlug,
-  onTabClick,
-  onTabClose,
+  onNewPane,
   onTogglePanel3,
   onHamburger,
 }: TabBarProps) {
@@ -43,49 +35,23 @@ export default function TabBar({
         </button>
       )}
 
-      {/* Tabs scroll container */}
-      <div className="tab-scroll flex flex-1 overflow-x-auto">
-        {openTabs.map((tab) => {
-          const isActive = tab.slug === activeSlug
-          return (
-            <div
-              key={tab.slug}
-              role="tab"
-              tabIndex={0}
-              aria-selected={isActive}
-              onClick={() => onTabClick(tab.slug)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onTabClick(tab.slug)
-                }
-              }}
-              className={cn(
-                'group flex h-9 max-w-[200px] min-w-[120px] shrink-0 items-center gap-1.5 px-3',
-                'relative cursor-pointer border-r border-[var(--border)]',
-                isActive
-                  ? 'border-b-2 border-b-[var(--accent)] bg-[var(--background)]'
-                  : 'bg-[var(--sidebar-bg)] hover:bg-[var(--muted)]',
-              )}
-            >
-              <span className="flex-1 truncate text-[13px] text-[var(--foreground)]">
-                {tab.title}
-              </span>
-              <button
-                type="button"
-                aria-label="Close tab"
-                className="rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[var(--muted)]"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onTabClose(tab.slug)
-                }}
-              >
-                <X size={11} />
-              </button>
-            </div>
-          )
-        })}
-      </div>
+      {/* Spacer — fills the centre so action buttons stay right-aligned */}
+      <div className="flex-1" />
+
+      {/* New pane button */}
+      {onNewPane && (
+        <Tooltip>
+          <TooltipTrigger
+            type="button"
+            onClick={onNewPane}
+            aria-label="New pane"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+          >
+            <Plus size={16} />
+          </TooltipTrigger>
+          <TooltipContent>New pane</TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Search button — reads from SearchContext */}
       <button

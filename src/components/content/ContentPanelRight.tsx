@@ -5,7 +5,6 @@ import TabBar from '@/components/content/TabBar'
 import { PaneHeader } from '@/components/content/PaneHeader'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useTabManager } from '@/hooks/useTabManager'
 import { useAppShell } from '@/contexts/AppShellContext'
 import { DEFAULT_FIRM_SLUG } from '@/lib/constants'
 import type { PageContent, ContentApiResponse } from '@/types/content'
@@ -15,22 +14,11 @@ type ContentPanelRightProps = {
 }
 
 export default function ContentPanelRight({ externalSlug }: ContentPanelRightProps) {
-  const { treeData } = useAppShell()
+  const { activeSlug } = useAppShell()
   const [compareSlug, setCompareSlug] = useState(DEFAULT_FIRM_SLUG)
-  const { openTabs, activeSlug, closeTab } = useTabManager(
-    treeData,
-    '/' + compareSlug,
-    'compareTab',
-    (slug) => setCompareSlug(slug),
-  )
 
   useEffect(() => {
     if (externalSlug) {
-      // externalSlug is a one-way override: when the user cmd+clicks a graph node,
-      // it sets the slug here. After that, compareSlug advances independently via
-      // tab interactions. The invariant: external takes precedence when set, then
-      // local navigation takes over.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCompareSlug(externalSlug)
     }
   }, [externalSlug])
@@ -42,7 +30,6 @@ export default function ContentPanelRight({ externalSlug }: ContentPanelRightPro
   useEffect(() => {
     if (!compareSlug) return
     const controller = new AbortController()
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     setContent(null)
     setError(null)
@@ -66,13 +53,7 @@ export default function ContentPanelRight({ externalSlug }: ContentPanelRightPro
 
   return (
     <div className="flex h-full flex-col">
-      <TabBar
-        openTabs={openTabs}
-        activeSlug={activeSlug}
-        onTabClick={(slug) => setCompareSlug(slug)}
-        onTabClose={closeTab}
-        onTogglePanel3={undefined}
-      />
+      <TabBar />
       <PaneHeader paneId="pane-compare" activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto p-6">
         {loading ? (
