@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileText, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Breadcrumb,
@@ -11,10 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-
-type BreadcrumbBarProps = {
-  activeSlug: string
-}
+import { useAppShell } from '@/contexts/AppShellContext'
 
 const MAX_HISTORY = 100
 const CATEGORY_SEGMENTS = new Set(['cfd', 'futures'])
@@ -29,8 +26,15 @@ function formatSegment(segment: string): string {
     .join(' ')
 }
 
-export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
+type PaneHeaderProps = {
+  paneId: string
+  activeSlug: string
+}
+
+export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
   const router = useRouter()
+  const { closePane } = useAppShell()
+
   const backStack = useRef<string[]>([])
   const forwardStack = useRef<string[]>([])
   const prevSlug = useRef<string>('')
@@ -68,6 +72,10 @@ export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
     router.push('/' + slug)
   }
 
+  function handleClose() {
+    closePane(paneId)
+  }
+
   const withoutPrefix = activeSlug.startsWith('firms/')
     ? activeSlug.slice('firms/'.length)
     : activeSlug
@@ -75,7 +83,19 @@ export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
   const labels = rawSegments.map(formatSegment)
 
   return (
-    <div className="flex h-9 items-center gap-1 border-b border-[var(--border)] px-6">
+    <div className="flex h-9 items-center gap-1 border-b border-[var(--border)] px-2">
+      {/* Close button */}
+      <button
+        type="button"
+        onClick={handleClose}
+        aria-label="Close pane"
+        className="flex items-center justify-center rounded p-0.5 cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+      >
+        <X size={14} />
+      </button>
+
+      <span className="text-[var(--border)] select-none px-0.5">|</span>
+
       {/* Back button */}
       <button
         type="button"
@@ -108,8 +128,14 @@ export function BreadcrumbBar({ activeSlug }: BreadcrumbBarProps) {
         <ChevronRight size={16} />
       </button>
 
-      <span className="mx-2 text-[var(--muted-foreground)]">/</span>
+      {/* File icon */}
+      <FileText
+        size={14}
+        className="shrink-0 text-[var(--muted-foreground)]"
+        aria-hidden="true"
+      />
 
+      {/* Breadcrumb path */}
       <Breadcrumb>
         <BreadcrumbList className="flex-nowrap gap-1">
           {labels.map((label, index) => {

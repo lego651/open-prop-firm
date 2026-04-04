@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import TabBar from '@/components/content/TabBar'
-import { BreadcrumbBar } from '@/components/content/BreadcrumbBar'
+import { PaneHeader } from '@/components/content/PaneHeader'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTabManager } from '@/hooks/useTabManager'
@@ -73,7 +73,7 @@ export default function ContentPanelRight({ externalSlug }: ContentPanelRightPro
         onTabClose={closeTab}
         onTogglePanel3={undefined}
       />
-      <BreadcrumbBar activeSlug={activeSlug} />
+      <PaneHeader paneId="pane-compare" activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto p-6">
         {loading ? (
           <>
