@@ -32,6 +32,8 @@ export type TabEntry = {
 export type SourceEntry = {
   url: string
   label: string
+  description?: string
+  isOfficial?: boolean
 }
 
 export type Frontmatter = {
