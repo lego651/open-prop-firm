@@ -24,6 +24,7 @@ export default function GraphPanel() {
     navigateTo,
     compareSlug,
     sourcesEntries,
+    focusedSourceIndex,
   } = useAppShell()
 
   const [pendingCompare, setPendingCompare] = useState(false)
@@ -73,7 +74,7 @@ export default function GraphPanel() {
 
       <div className="flex-1 overflow-hidden">
         {panel3Mode === 'sources' ? (
-          <SourcesPanel sources={sourcesEntries} />
+          <SourcesPanel sources={sourcesEntries} focusedIndex={focusedSourceIndex} />
         ) : pendingCompare || (panel3Mode === 'compare' && !user) ? (
           <CompareAuthGate
             onDismiss={() => {
