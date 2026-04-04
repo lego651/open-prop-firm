@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight, FileText, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -13,7 +11,6 @@ import {
 } from '@/components/ui/breadcrumb'
 import { useAppShell } from '@/contexts/AppShellContext'
 
-const MAX_HISTORY = 100
 const CATEGORY_SEGMENTS = new Set(['cfd', 'futures'])
 
 function formatSegment(segment: string): string {
@@ -32,44 +29,21 @@ type PaneHeaderProps = {
 }
 
 export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
-  const router = useRouter()
-  const { closePane } = useAppShell()
+  const { panes, activePaneId, closePane, navigatePane, goBackPane, goForwardPane } = useAppShell()
 
-  const backStack = useRef<string[]>([])
-  const forwardStack = useRef<string[]>([])
-  const prevSlug = useRef<string>('')
-  const [canGoBack, setCanGoBack] = useState(false)
-  const [canGoForward, setCanGoForward] = useState(false)
+  const pane = panes.find((p) => p.id === paneId)
+  const isActivePane = paneId === activePaneId
 
-  useEffect(() => {
-    if (prevSlug.current && prevSlug.current !== activeSlug) {
-      if (backStack.current.length >= MAX_HISTORY) {
-        backStack.current.shift()
-      }
-      backStack.current.push(prevSlug.current)
-      forwardStack.current = []
-      setCanGoBack(backStack.current.length > 0)
-      setCanGoForward(false)
-    }
-    prevSlug.current = activeSlug
-  }, [activeSlug])
+  // Derive back/forward availability from the pane's own history stack.
+  const canGoBack = pane ? pane.historyIndex > 0 : false
+  const canGoForward = pane ? pane.historyIndex < pane.history.length - 1 : false
 
   function handleBack() {
-    const slug = backStack.current.pop()
-    if (!slug) return
-    forwardStack.current.push(activeSlug)
-    setCanGoForward(true)
-    setCanGoBack(backStack.current.length > 0)
-    router.push('/' + slug)
+    goBackPane(paneId)
   }
 
   function handleForward() {
-    const slug = forwardStack.current.pop()
-    if (!slug) return
-    backStack.current.push(activeSlug)
-    setCanGoBack(true)
-    setCanGoForward(forwardStack.current.length > 0)
-    router.push('/' + slug)
+    goForwardPane(paneId)
   }
 
   function handleClose() {
@@ -162,7 +136,7 @@ export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => router.push('/' + cumulativePath)}
+                    onClick={() => navigatePane(paneId, cumulativePath)}
                     className="cursor-pointer text-[13px] text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
                   >
                     {label}
@@ -173,6 +147,13 @@ export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
           })}
         </BreadcrumbList>
       </Breadcrumb>
+
+      {/* Visual indicator for inactive panes */}
+      {!isActivePane && (
+        <span className="ml-auto shrink-0 text-[11px] text-[var(--muted-foreground)] opacity-50 select-none pr-1">
+          inactive
+        </span>
+      )}
     </div>
   )
 }
