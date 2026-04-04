@@ -8,10 +8,11 @@ import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import type { Schema } from 'hast-util-sanitize'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeStringify from 'rehype-stringify'
 import { getContentTree } from './getContentTree'
-import type { Frontmatter, PageContent } from '@/types/content'
+import type { Frontmatter, PageContent, SourceEntry } from '@/types/content'
 import { WIKILINK_RE } from './wikilinks'
 
 const DATA_ROOT = path.join(process.cwd(), 'data')
@@ -45,13 +46,91 @@ function resolveWikilinks(
   })
 }
 
+/** Matches a single citation token — used inside the run-level replacer. */
+const SINGLE_CITATION_TOKEN_RE = /\[\^src:(\d+)\]/g
+
+/**
+ * Extract the domain name from a URL, stripping "www." prefix.
+ * Falls back to the raw URL string if parsing fails.
+ */
+function extractCitationDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
+/**
+ * Convert inline citation markers [^src:N] to badge HTML before the
+ * unified pipeline runs. This is the same preprocessor pattern used by
+ * resolveWikilinks() and avoids any remark/rehype plugin compatibility issues.
+ *
+ * Multiple adjacent citations in one run are collapsed into a single badge:
+ * the first source's domain plus "+N" if there are more.
+ *
+ * The emitted <span> uses data attributes so the client-side handler can
+ * identify and act on it without parsing label text:
+ *   data-citation-indices="0,1"   (comma-separated source indices)
+ *
+ * rehypeSanitize is configured below to allow this span and its data-* attrs.
+ */
+export function resolveCitations(markdown: string, sources: SourceEntry[]): string {
+  return markdown.replace(/(\[\^src:\d+\])+/g, (run) => {
+    const indices: number[] = []
+    const tokenRe = new RegExp(SINGLE_CITATION_TOKEN_RE.source, 'g')
+    let m: RegExpExecArray | null
+    while ((m = tokenRe.exec(run)) !== null) {
+      const idx = parseInt(m[1], 10)
+      if (!indices.includes(idx)) indices.push(idx)
+    }
+
+    const firstSource = sources[indices[0]]
+    if (!firstSource) {
+      // Index out of range — strip the marker silently to avoid broken HTML
+      return ''
+    }
+
+    const domain = extractCitationDomain(firstSource.url)
+    const extra = indices.length - 1
+    const label = extra > 0 ? `${domain} +${extra}` : domain
+    const indicesAttr = indices.join(',')
+    const safeLabel = label.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    return `<span class="citation-badge" data-citation-indices="${indicesAttr}" data-citation-label="${safeLabel}" role="button" tabindex="0" aria-label="View source: ${safeLabel}">${safeLabel}</span>`
+  })
+}
+
+/**
+ * Extended rehype-sanitize schema that permits the citation badge spans
+ * emitted by resolveCitations(). We extend only what we need beyond the
+ * defaults.
+ *
+ * rehype-sanitize supports wildcard attribute patterns via array tuples:
+ *   ['data*']  allows any attribute whose name starts with "data"
+ * See: https://github.com/rehypejs/rehype-sanitize#schema
+ */
+const sanitizeSchema: Schema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    span: [
+      ...(defaultSchema.attributes?.span ?? []),
+      'className',
+      'role',
+      'tabIndex',
+      'ariaLabel',
+      // Wildcard: allows data-citation-indices, data-citation-label, etc.
+      ['data*'],
+    ],
+  },
+}
+
 // cache() deduplicates calls within a single render pass (e.g. generateMetadata + page component
 // both call getPageContent for the same slug — only one filesystem read occurs).
 export const getPageContent = cache(async (slug: string): Promise<PageContent> => {
-  // Explicit path construction — no .. traversal
   let filePath = path.join(DATA_ROOT, slug + '.md')
 
-  // index.md fallback: slug 'firms/cfd/funded-next' → data/firms/cfd/funded-next/index.md
   try {
     await access(filePath)
   } catch {
@@ -69,19 +148,20 @@ export const getPageContent = cache(async (slug: string): Promise<PageContent> =
   const frontmatter = parseFrontmatter(data, slug)
 
   const { slugToPathMap } = await getContentTree()
-  const resolved = resolveWikilinks(content, slugToPathMap)
+  const wikisResolved = resolveWikilinks(content, slugToPathMap)
+  const fullyResolved = resolveCitations(wikisResolved, frontmatter.sources)
 
   const vfile = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: false })
-    .use(rehypeSanitize, defaultSchema)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeSanitize, sanitizeSchema)
     .use(rehypeExternalLinks, {
       target: '_blank',
       rel: ['noopener', 'noreferrer'],
     })
     .use(rehypeStringify)
-    .process(resolved)
+    .process(fullyResolved)
 
   return {
     frontmatter,

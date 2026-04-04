@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import type { SourceEntry } from '@/types/content'
 
 type SourcesPanelProps = {
   sources: SourceEntry[]
+  focusedIndex?: number | null
 }
 
 function extractDomain(url: string): string {
@@ -14,15 +16,39 @@ function extractDomain(url: string): string {
   }
 }
 
-function SourceRow({ source }: { source: SourceEntry }) {
+function SourceRow({
+  source,
+  index,
+  isFocused,
+}: {
+  source: SourceEntry
+  index: number
+  isFocused: boolean
+}) {
   const domain = extractDomain(source.url)
+  const rowRef = useRef<HTMLAnchorElement>(null)
+
+  useEffect(() => {
+    if (isFocused && rowRef.current) {
+      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [isFocused])
 
   return (
     <a
+      ref={rowRef}
+      id={`source-row-${index}`}
       href={source.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col gap-1 rounded-md border border-[var(--border)] bg-[var(--muted)] px-3 py-2.5 transition-colors hover:border-[var(--accent)] hover:bg-[var(--interactive-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      className={[
+        'group flex flex-col gap-1 rounded-md border px-3 py-2.5 transition-colors',
+        'hover:border-[var(--accent)] hover:bg-[var(--interactive-hover)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
+        isFocused
+          ? 'border-[var(--accent)] bg-[var(--interactive-hover)]'
+          : 'border-[var(--border)] bg-[var(--muted)]',
+      ].join(' ')}
     >
       <div className="flex items-center gap-2">
         {/* Favicon — external Google service, next/image not applicable */}
@@ -77,21 +103,25 @@ function SourceRow({ source }: { source: SourceEntry }) {
   )
 }
 
-export default function SourcesPanel({ sources }: SourcesPanelProps) {
-  // Deduplicate by URL
+export default function SourcesPanel({ sources, focusedIndex = null }: SourcesPanelProps) {
+  // Pair each entry with its original index before deduplication/sorting so that
+  // the id attribute always matches the [^src:N] citation index in markdown.
+  const indexed = sources.map((s, i) => ({ source: s, originalIndex: i }))
+
+  // Deduplicate by URL (keep first occurrence)
   const seen = new Set<string>()
-  const deduped: SourceEntry[] = []
-  for (const s of sources) {
-    if (!seen.has(s.url)) {
-      seen.add(s.url)
-      deduped.push(s)
+  const deduped: Array<{ source: SourceEntry; originalIndex: number }> = []
+  for (const item of indexed) {
+    if (!seen.has(item.source.url)) {
+      seen.add(item.source.url)
+      deduped.push(item)
     }
   }
 
   // Official sources first, then the rest
   const sorted = [
-    ...deduped.filter((s) => s.isOfficial),
-    ...deduped.filter((s) => !s.isOfficial),
+    ...deduped.filter((item) => item.source.isOfficial),
+    ...deduped.filter((item) => !item.source.isOfficial),
   ]
 
   if (sorted.length === 0) {
@@ -105,8 +135,13 @@ export default function SourcesPanel({ sources }: SourcesPanelProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto px-3 py-3">
       <div className="flex flex-col gap-2">
-        {sorted.map((source, i) => (
-          <SourceRow key={`${source.url}-${i}`} source={source} />
+        {sorted.map(({ source, originalIndex }) => (
+          <SourceRow
+            key={`${source.url}-${originalIndex}`}
+            source={source}
+            index={originalIndex}
+            isFocused={focusedIndex === originalIndex}
+          />
         ))}
       </div>
     </div>

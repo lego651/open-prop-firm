@@ -38,6 +38,8 @@ type AppShellContextValue = {
   openInPanel3: (slug: string) => void
   sourcesEntries: SourceEntry[]
   openSourcesPanel: (sources: SourceEntry[]) => void
+  focusedSourceIndex: number | null
+  focusSource: (index: number) => void
 
   // Auth
   user: User | null
@@ -109,6 +111,7 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
   const [panel1OverlayOpen, setPanel1OverlayOpen] = useState(false)
   const [compareSlug, setCompareSlug] = useState<string | null>(null)
   const [sourcesEntries, setSourcesEntries] = useState<SourceEntry[]>([])
+  const [focusedSourceIndex, setFocusedSourceIndex] = useState<number | null>(null)
 
   const navigateTo = useCallback((slug: string) => {
     router.push('/' + slug)
@@ -122,9 +125,14 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
 
   const openSourcesPanel = useCallback((sources: SourceEntry[]) => {
     setSourcesEntries(sources)
+    setFocusedSourceIndex(null)
     setPanel3Mode('sources')
     setPanel3Visible(true)
   }, [setPanel3Mode])
+
+  const focusSource = useCallback((index: number) => {
+    setFocusedSourceIndex(index)
+  }, [])
 
   const value: AppShellContextValue = {
     activeSlug,
@@ -146,6 +154,8 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     openInPanel3,
     sourcesEntries,
     openSourcesPanel,
+    focusedSourceIndex,
+    focusSource,
     user,
     authLoading,
     viewportWidth,
