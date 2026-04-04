@@ -3,7 +3,7 @@ import { getPageContent } from '@/lib/content/getPageContent'
 import VerifiedBadge from '@/components/content/VerifiedBadge'
 import MarkdownRenderer from '@/components/content/MarkdownRenderer'
 import SourceFootnotes from '@/components/content/SourceFootnotes'
-import SourcesFooter from '@/components/content/SourcesFooter'
+import SourcesFooterConnected from '@/components/content/SourcesFooterConnected'
 
 export const dynamic = 'force-static'
 
@@ -58,7 +58,7 @@ export default async function FirmPage({
       />
       <MarkdownRenderer htmlContent={htmlContent} />
       <SourceFootnotes sources={frontmatter.sources} />
-      <SourcesFooter sources={frontmatter.sources} />
+      <SourcesFooterConnected sources={frontmatter.sources} />
     </article>
   )
 }

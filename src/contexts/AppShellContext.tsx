@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
-import type { TreeNode, TabEntry, PaneEntry } from '@/types/content'
+import type { TreeNode, TabEntry, PaneEntry, SourceEntry } from '@/types/content'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useViewport } from '@/hooks/useViewport'
 import { useSupabaseUser } from '@/hooks/useSupabaseUser'
@@ -30,12 +30,14 @@ type AppShellContextValue = {
   setActivePane: (id: string) => void
 
   // Panel 3
-  panel3Mode: 'graph' | 'compare'
-  setPanel3Mode: (mode: 'graph' | 'compare') => void
+  panel3Mode: 'graph' | 'compare' | 'sources'
+  setPanel3Mode: (mode: 'graph' | 'compare' | 'sources') => void
   panel3Visible: boolean
   setPanel3Visible: (visible: boolean) => void
   compareSlug: string | null
   openInPanel3: (slug: string) => void
+  sourcesEntries: SourceEntry[]
+  openSourcesPanel: (sources: SourceEntry[]) => void
 
   // Auth
   user: User | null
@@ -102,10 +104,11 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     setActivePaneId(id)
   }, [setActivePaneId])
 
-  const [panel3Mode, setPanel3Mode] = useLocalStorage<'graph' | 'compare'>('panel3Mode', 'graph')
+  const [panel3Mode, setPanel3Mode] = useLocalStorage<'graph' | 'compare' | 'sources'>('panel3Mode', 'graph')
   const [panel3Visible, setPanel3Visible] = useState(false)
   const [panel1OverlayOpen, setPanel1OverlayOpen] = useState(false)
   const [compareSlug, setCompareSlug] = useState<string | null>(null)
+  const [sourcesEntries, setSourcesEntries] = useState<SourceEntry[]>([])
 
   const navigateTo = useCallback((slug: string) => {
     router.push('/' + slug)
@@ -114,6 +117,12 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
   const openInPanel3 = useCallback((slug: string) => {
     setCompareSlug(slug)
     setPanel3Mode('compare')
+    setPanel3Visible(true)
+  }, [setPanel3Mode])
+
+  const openSourcesPanel = useCallback((sources: SourceEntry[]) => {
+    setSourcesEntries(sources)
+    setPanel3Mode('sources')
     setPanel3Visible(true)
   }, [setPanel3Mode])
 
@@ -135,6 +144,8 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     setPanel3Visible,
     compareSlug,
     openInPanel3,
+    sourcesEntries,
+    openSourcesPanel,
     user,
     authLoading,
     viewportWidth,

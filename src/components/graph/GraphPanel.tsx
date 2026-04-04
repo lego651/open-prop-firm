@@ -12,6 +12,7 @@ import { useAppShell } from '@/contexts/AppShellContext'
 import CompareAuthGate from '@/components/auth/CompareAuthGate'
 import GraphViewLoader from '@/components/graph/GraphViewLoader'
 import ContentPanelRight from '@/components/content/ContentPanelRight'
+import SourcesPanel from '@/components/content/SourcesPanel'
 
 export default function GraphPanel() {
   const {
@@ -22,12 +23,13 @@ export default function GraphPanel() {
     activeSlug,
     navigateTo,
     compareSlug,
+    sourcesEntries,
   } = useAppShell()
 
   const [pendingCompare, setPendingCompare] = useState(false)
 
   const handleModeToggleClick = () => {
-    if (panel3Mode === 'compare') {
+    if (panel3Mode === 'compare' || panel3Mode === 'sources') {
       setPanel3Mode('graph')
     } else {
       if (user) {
@@ -51,7 +53,7 @@ export default function GraphPanel() {
     <div className="flex h-full flex-col">
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-[var(--border)] px-3">
         <span className="text-[12px] font-medium text-[var(--muted-foreground)]">
-          {panel3Mode === 'graph' ? 'Graph' : 'Compare'}
+          {panel3Mode === 'graph' ? 'Graph' : panel3Mode === 'sources' ? 'Sources' : 'Compare'}
         </span>
         <Tooltip>
           <TooltipTrigger
@@ -70,7 +72,9 @@ export default function GraphPanel() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        {pendingCompare || (panel3Mode === 'compare' && !user) ? (
+        {panel3Mode === 'sources' ? (
+          <SourcesPanel sources={sourcesEntries} />
+        ) : pendingCompare || (panel3Mode === 'compare' && !user) ? (
           <CompareAuthGate
             onDismiss={() => {
               setPendingCompare(false)
