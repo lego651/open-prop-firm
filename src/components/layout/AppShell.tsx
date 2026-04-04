@@ -28,7 +28,7 @@ function AppShellLayout({ children }: { children: React.ReactNode }) {
       {viewportWidth >= BREAKPOINTS.MOBILE ? (
         <div
           style={{ width: panel1Collapsed ? LAYOUT.PANEL1_COLLAPSED : LAYOUT.PANEL1_WIDTH, transition: 'width 200ms ease' }}
-          className="shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--sidebar-bg)]"
+          className="shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--sidebar-bg)] cursor-default"
         >
           <NavPanel collapsed={panel1Collapsed} onToggleCollapse={() => setPanel1Collapsed((v) => !v)} />
         </div>
