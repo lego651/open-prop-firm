@@ -3,15 +3,12 @@
 import { BREAKPOINTS } from '@/lib/constants'
 import { useAppShell } from '@/contexts/AppShellContext'
 import TabBar from '@/components/content/TabBar'
-import { PaneHeader } from '@/components/content/PaneHeader'
+import SplitPaneLayout from '@/components/content/SplitPaneLayout'
 import ContentFooter from '@/components/content/ContentFooter'
 
 export default function ContentPanel({ children }: { children: React.ReactNode }) {
   const {
-    openTabs,
-    activeSlug,
-    navigateTo,
-    closeTab,
+    openPane,
     panel3Visible,
     setPanel3Visible,
     viewportWidth,
@@ -21,10 +18,7 @@ export default function ContentPanel({ children }: { children: React.ReactNode }
   return (
     <div className="flex h-full flex-col">
       <TabBar
-        openTabs={openTabs}
-        activeSlug={activeSlug}
-        onTabClick={navigateTo}
-        onTabClose={closeTab}
+        onNewPane={() => openPane(null)}
         onTogglePanel3={() => setPanel3Visible(!panel3Visible)}
         onHamburger={
           viewportWidth < BREAKPOINTS.MOBILE
@@ -32,11 +26,10 @@ export default function ContentPanel({ children }: { children: React.ReactNode }
             : undefined
         }
       />
-      <PaneHeader paneId="pane-default" activeSlug={activeSlug} />
-      <div className="flex-1 overflow-y-auto">
+      <SplitPaneLayout>
         {children}
         <ContentFooter />
-      </div>
+      </SplitPaneLayout>
     </div>
   )
 }

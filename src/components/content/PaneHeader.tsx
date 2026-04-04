@@ -94,7 +94,7 @@ export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
         <X size={14} />
       </button>
 
-      <span className="text-[var(--border)] select-none">|</span>
+      <span className="text-[var(--border)] select-none px-0.5">|</span>
 
       {/* Back button */}
       <button
@@ -129,7 +129,11 @@ export function PaneHeader({ paneId, activeSlug }: PaneHeaderProps) {
       </button>
 
       {/* File icon */}
-      <FileText size={14} className="shrink-0 text-[var(--muted-foreground)]" aria-hidden="true" />
+      <FileText
+        size={14}
+        className="shrink-0 text-[var(--muted-foreground)]"
+        aria-hidden="true"
+      />
 
       {/* Breadcrumb path */}
       <Breadcrumb>
