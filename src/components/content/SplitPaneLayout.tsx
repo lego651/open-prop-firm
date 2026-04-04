@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import { useAppShell } from '@/contexts/AppShellContext'
 import { PaneHeader } from '@/components/content/PaneHeader'
 import PaneTitleStrip from '@/components/content/PaneTitleStrip'
+import EmptyPaneState from '@/components/content/EmptyPaneState'
 import { BREAKPOINTS } from '@/lib/constants'
 import type { PaneEntry } from '@/types/content'
 
@@ -53,7 +54,11 @@ export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
       <div className="flex h-full min-w-0 flex-1 flex-col">
         <PaneHeader paneId={activePane.id} activeSlug={activePane.slug ?? ''} />
         <div className="flex-1 overflow-y-auto">
-          {children}
+          {activePane.slug === null ? (
+            <EmptyPaneState paneId={activePane.id} />
+          ) : (
+            children
+          )}
         </div>
       </div>
     )
@@ -69,7 +74,7 @@ export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
           return (
             <PaneTitleStrip
               key={pane.id}
-              title={pane.title}
+              title={pane.slug === null ? 'New tab' : pane.title}
               isActive={pane.id === activePaneId}
               onClick={() => handleCollapsedClick(pane)}
             />
@@ -87,14 +92,16 @@ export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
           >
             <PaneHeader paneId={pane.id} activeSlug={pane.slug ?? ''} />
             <div className="flex-1 overflow-y-auto">
-              {isRightmost ? (
+              {pane.slug === null ? (
+                <EmptyPaneState paneId={pane.id} />
+              ) : isRightmost ? (
                 children
               ) : (
-                // Second expanded pane — shows empty/placeholder state until
-                // the pane data model wires up per-pane content loading.
+                // Second expanded pane — shows placeholder until per-pane
+                // content loading is wired up.
                 <div className="flex h-full items-center justify-center">
                   <p className="text-sm text-[var(--muted-foreground)]">
-                    {pane.slug ? pane.title : 'Empty pane'}
+                    {pane.title}
                   </p>
                 </div>
               )}
