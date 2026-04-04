@@ -33,7 +33,6 @@ export interface PaneEntry {
   id: string
   slug: string | null
   title: string
-  isCollapsed: boolean
   /** Full URL slugs visited in this pane, oldest first */
   history: string[]
   /** Zero-based index into `history` pointing at the current position */

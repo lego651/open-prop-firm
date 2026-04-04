@@ -28,7 +28,7 @@ type SplitPaneLayoutProps = {
  * collapsed strips are hidden entirely.
  */
 export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
-  const { panes, activePaneId, setActivePane, viewportWidth } = useAppShell()
+  const { panes, activePaneId, bringPaneForward, viewportWidth } = useAppShell()
 
   // Determine which panes are collapsed.
   // The 2 rightmost panes are always expanded; all others are collapsed.
@@ -37,12 +37,10 @@ export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
 
   const handleCollapsedClick = useCallback(
     (clickedPane: PaneEntry) => {
-      // Swap the clicked collapsed pane into the leftmost expanded slot.
-      // We do this by making it active — the consumer (page) is responsible
-      // for navigating to its slug. For the layout, mark it as the active pane.
-      setActivePane(clickedPane.id)
+      // Move the collapsed pane to the rightmost position (expanded) and activate it.
+      bringPaneForward(clickedPane.id)
     },
-    [setActivePane],
+    [bringPaneForward],
   )
 
   const isMobile = viewportWidth < BREAKPOINTS.MOBILE

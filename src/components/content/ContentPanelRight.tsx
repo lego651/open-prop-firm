@@ -35,11 +35,17 @@ export default function ContentPanelRight({ externalSlug }: ContentPanelRightPro
     setError(null)
     fetch('/api/content/' + compareSlug, { signal: controller.signal })
       .then((r) => r.json())
-      .then((data: ContentApiResponse) => {
-        if (data.ok) {
-          setContent(data.data)
+      .then((data: unknown) => {
+        const resp = data as ContentApiResponse
+        if (!resp || typeof resp !== 'object' || !('ok' in resp)) {
+          setError('Unexpected response format.')
+          setLoading(false)
+          return
+        }
+        if (resp.ok) {
+          setContent(resp.data)
         } else {
-          setError(data.error)
+          setError(resp.error)
         }
         setLoading(false)
       })

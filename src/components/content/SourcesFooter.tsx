@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { SourceEntry } from '@/types/content'
 
 type SourcesFooterProps = {
@@ -8,6 +9,7 @@ type SourcesFooterProps = {
 }
 
 function FaviconDot({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false)
   let hostname = ''
   try {
     hostname = new URL(url).hostname
@@ -15,7 +17,7 @@ function FaviconDot({ url }: { url: string }) {
     // invalid URL — skip favicon
   }
 
-  if (!hostname) {
+  if (!hostname || failed) {
     return (
       <span className="inline-block size-4 rounded-full bg-[var(--muted)] ring-1 ring-[var(--border)]" />
     )
@@ -30,13 +32,7 @@ function FaviconDot({ url }: { url: string }) {
       width={16}
       height={16}
       className="size-4 rounded-sm object-contain"
-      onError={(e) => {
-        // Replace broken favicon with a plain dot
-        const target = e.currentTarget
-        target.style.display = 'none'
-        const fallback = target.nextElementSibling as HTMLElement | null
-        if (fallback) fallback.style.display = 'inline-block'
-      }}
+      onError={() => setFailed(true)}
     />
   )
 }
@@ -66,11 +62,6 @@ export default function SourcesFooter({ sources, onOpen }: SourcesFooterProps) {
               className="inline-flex size-5 items-center justify-center rounded-full bg-[var(--background)] ring-1 ring-[var(--border)]"
             >
               <FaviconDot url={source.url} />
-              {/* Fallback dot shown by JS when img fails */}
-              <span
-                className="hidden size-2 rounded-full bg-[var(--muted-foreground)]"
-                aria-hidden="true"
-              />
             </span>
           ))}
           {count > 5 && (

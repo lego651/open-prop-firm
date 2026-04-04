@@ -78,9 +78,9 @@ function extractCitationDomain(url: string): string {
 export function resolveCitations(markdown: string, sources: SourceEntry[]): string {
   return markdown.replace(/(\[\^src:\d+\])+/g, (run) => {
     const indices: number[] = []
-    const tokenRe = new RegExp(SINGLE_CITATION_TOKEN_RE.source, 'g')
     let m: RegExpExecArray | null
-    while ((m = tokenRe.exec(run)) !== null) {
+    SINGLE_CITATION_TOKEN_RE.lastIndex = 0
+    while ((m = SINGLE_CITATION_TOKEN_RE.exec(run)) !== null) {
       const idx = parseInt(m[1], 10)
       if (!indices.includes(idx)) indices.push(idx)
     }

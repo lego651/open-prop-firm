@@ -28,6 +28,7 @@ type AppShellContextValue = {
   openPane: (slug: string | null) => void
   closePane: (id: string) => void
   setActivePane: (id: string) => void
+  bringPaneForward: (id: string) => void
   navigatePane: (paneId: string, slug: string) => void
   goBackPane: (paneId: string) => void
   goForwardPane: (paneId: string) => void
@@ -82,20 +83,18 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     id: 'pane-default',
     slug: activeSlug || null,
     title: 'Home',
-    isCollapsed: false,
     history: activeSlug ? [activeSlug] : [],
     historyIndex: activeSlug ? 0 : -1,
   }])
   const [activePaneId, setActivePaneId] = useLocalStorage<string>('activePaneId', 'pane-default')
 
   const openPane = useCallback((slug: string | null) => {
-    const id = `pane-${Date.now()}`
+    const id = crypto.randomUUID()
     const title = slug ? slug.split('/').pop() ?? 'Untitled' : 'Empty'
     const newPane: PaneEntry = {
       id,
       slug,
       title,
-      isCollapsed: false,
       history: slug ? [slug] : [],
       historyIndex: slug ? 0 : -1,
     }
@@ -119,6 +118,21 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
   const setActivePane = useCallback((id: string) => {
     setActivePaneId(id)
   }, [setActivePaneId])
+
+  /**
+   * Move a pane to the rightmost expanded position (end of array)
+   * and make it active. Used when clicking a collapsed title strip.
+   */
+  const bringPaneForward = useCallback((id: string) => {
+    setPanes((prev) => {
+      const idx = prev.findIndex((p) => p.id === id)
+      if (idx === -1 || idx === prev.length - 1) return prev
+      const pane = prev[idx]
+      const rest = prev.filter((p) => p.id !== id)
+      return [...rest, pane]
+    })
+    setActivePaneId(id)
+  }, [setPanes, setActivePaneId])
 
   /**
    * Navigate a specific pane to a new slug.
@@ -150,55 +164,47 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
 
   /**
    * Navigate back in a specific pane's history.
+   * All pane reads happen inside the setPanes updater to avoid stale closures.
    * Only the active pane syncs with the Next.js router.
    */
   const goBackPane = useCallback((paneId: string) => {
-    const pane = panes.find((p) => p.id === paneId)
-    if (!pane || pane.historyIndex <= 0) return
-
-    const newIndex = pane.historyIndex - 1
-    const targetSlug = pane.history[newIndex]
-
-    setPanes((prev) =>
-      prev.map((p) => {
-        if (p.id !== paneId) return p
-        const title = targetSlug.split('/').pop() ?? 'Untitled'
-        return { ...p, slug: targetSlug, title, historyIndex: newIndex }
-      })
-    )
-
-    // Sync the Next.js router only when navigating the active pane.
-    if (activePaneId === paneId) {
-      router.push('/' + targetSlug)
-    }
-  }, [panes, activePaneId, setPanes, router])
+    let routerTarget: string | null = null
+    setPanes((prev) => {
+      const pane = prev.find((p) => p.id === paneId)
+      if (!pane || pane.historyIndex <= 0) return prev
+      const newIndex = pane.historyIndex - 1
+      const targetSlug = pane.history[newIndex]
+      const title = targetSlug.split('/').pop() ?? 'Untitled'
+      if (activePaneId === paneId) routerTarget = targetSlug
+      return prev.map((p) =>
+        p.id !== paneId ? p : { ...p, slug: targetSlug, title, historyIndex: newIndex }
+      )
+    })
+    if (routerTarget) router.push('/' + routerTarget)
+  }, [activePaneId, setPanes, router])
 
   /**
    * Navigate forward in a specific pane's history.
+   * All pane reads happen inside the setPanes updater to avoid stale closures.
    * Only the active pane syncs with the Next.js router.
    */
   const goForwardPane = useCallback((paneId: string) => {
-    const pane = panes.find((p) => p.id === paneId)
-    if (!pane || pane.historyIndex >= pane.history.length - 1) return
+    let routerTarget: string | null = null
+    setPanes((prev) => {
+      const pane = prev.find((p) => p.id === paneId)
+      if (!pane || pane.historyIndex >= pane.history.length - 1) return prev
+      const newIndex = pane.historyIndex + 1
+      const targetSlug = pane.history[newIndex]
+      const title = targetSlug.split('/').pop() ?? 'Untitled'
+      if (activePaneId === paneId) routerTarget = targetSlug
+      return prev.map((p) =>
+        p.id !== paneId ? p : { ...p, slug: targetSlug, title, historyIndex: newIndex }
+      )
+    })
+    if (routerTarget) router.push('/' + routerTarget)
+  }, [activePaneId, setPanes, router])
 
-    const newIndex = pane.historyIndex + 1
-    const targetSlug = pane.history[newIndex]
-
-    setPanes((prev) =>
-      prev.map((p) => {
-        if (p.id !== paneId) return p
-        const title = targetSlug.split('/').pop() ?? 'Untitled'
-        return { ...p, slug: targetSlug, title, historyIndex: newIndex }
-      })
-    )
-
-    // Sync the Next.js router only when navigating the active pane.
-    if (activePaneId === paneId) {
-      router.push('/' + targetSlug)
-    }
-  }, [panes, activePaneId, setPanes, router])
-
-  const [panel3Mode, setPanel3Mode] = useLocalStorage<'graph' | 'compare' | 'sources'>('panel3Mode', 'graph')
+  const [panel3Mode, setPanel3Mode] = useState<'graph' | 'compare' | 'sources'>('graph')
   const [panel3Visible, setPanel3Visible] = useState(false)
   const [panel1OverlayOpen, setPanel1OverlayOpen] = useState(false)
   const [compareSlug, setCompareSlug] = useState<string | null>(null)
@@ -236,6 +242,7 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     openPane,
     closePane,
     setActivePane,
+    bringPaneForward,
     navigatePane,
     goBackPane,
     goForwardPane,
