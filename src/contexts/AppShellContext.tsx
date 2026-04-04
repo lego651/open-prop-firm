@@ -89,16 +89,14 @@ export function AppShellProvider({ treeData, children }: AppShellProviderProps) 
     setPanes((prev) => {
       // Never close the last pane
       if (prev.length <= 1) return prev
-      return prev.filter((p) => p.id !== id)
+      const next = prev.filter((p) => p.id !== id)
+      // If closing the active pane, activate an adjacent one
+      setActivePaneId((prevId) =>
+        prevId === id ? (next[0]?.id ?? prevId) : prevId
+      )
+      return next
     })
-    // If closing the active pane, activate an adjacent one
-    setActivePaneId((prevId) => {
-      if (prevId !== id) return prevId
-      return panes.length > 1
-        ? (panes.find((p) => p.id !== id)?.id ?? panes[0].id)
-        : prevId
-    })
-  }, [setPanes, setActivePaneId, panes])
+  }, [setPanes, setActivePaneId])
 
   const setActivePane = useCallback((id: string) => {
     setActivePaneId(id)
