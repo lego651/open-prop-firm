@@ -1,10 +1,14 @@
 'use client'
 
-import { PanelLeft, Search } from 'lucide-react'
-import Link from 'next/link'
+import { PanelLeft, Search, Settings } from 'lucide-react'
 import { useAppShell } from '@/contexts/AppShellContext'
 import NavFileTree from '@/components/nav/NavFileTree'
 import { ThemeToggle } from '@/components/nav/ThemeToggle'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useSearch } from '@/contexts/SearchContext'
 import { AuthButton } from '@/components/auth/AuthButton'
 
@@ -61,27 +65,18 @@ export default function NavPanel({ collapsed, onToggleCollapse }: NavPanelProps)
         </div>
       )}
 
-      {/* Legal links */}
-      {!collapsed && (
-        <div className="flex shrink-0 items-center gap-3 border-t border-[var(--border)] px-3 py-1.5">
-          <Link
-            href="/legal/terms-of-service"
-            className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/legal/disclaimer"
-            className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          >
-            Disclaimer
-          </Link>
-        </div>
-      )}
-
-      {/* Bottom bar */}
+      {/* Bottom bar — single compact row matching Obsidian */}
       {!collapsed && (
         <div className="flex h-10 shrink-0 items-center justify-between border-t border-[var(--border)] px-3">
+          <Tooltip>
+            <TooltipTrigger
+              aria-label="Settings"
+              className="flex size-7 items-center justify-center rounded-md hover:bg-[var(--muted)]"
+            >
+              <Settings size={16} />
+            </TooltipTrigger>
+            <TooltipContent>Settings</TooltipContent>
+          </Tooltip>
           <ThemeToggle />
         </div>
       )}
