@@ -17,7 +17,7 @@ type ContentPanelRightProps = {
 export default function ContentPanelRight({ externalSlug }: ContentPanelRightProps) {
   const { treeData } = useAppShell()
   const [compareSlug, setCompareSlug] = useState(DEFAULT_FIRM_SLUG)
-  const { openTabs, activeSlug, closeTab } = useTabManager(
+  const { activeSlug } = useTabManager(
     treeData,
     '/' + compareSlug,
     'compareTab',
@@ -66,13 +66,7 @@ export default function ContentPanelRight({ externalSlug }: ContentPanelRightPro
 
   return (
     <div className="flex h-full flex-col">
-      <TabBar
-        openTabs={openTabs}
-        activeSlug={activeSlug}
-        onTabClick={(slug) => setCompareSlug(slug)}
-        onTabClose={closeTab}
-        onTogglePanel3={undefined}
-      />
+      <TabBar />
       <BreadcrumbBar activeSlug={activeSlug} />
       <div className="flex-1 overflow-y-auto p-6">
         {loading ? (

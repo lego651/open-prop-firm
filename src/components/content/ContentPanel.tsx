@@ -8,10 +8,8 @@ import ContentFooter from '@/components/content/ContentFooter'
 
 export default function ContentPanel({ children }: { children: React.ReactNode }) {
   const {
-    openTabs,
     activeSlug,
-    navigateTo,
-    closeTab,
+    openPane,
     panel3Visible,
     setPanel3Visible,
     viewportWidth,
@@ -21,10 +19,7 @@ export default function ContentPanel({ children }: { children: React.ReactNode }
   return (
     <div className="flex h-full flex-col">
       <TabBar
-        openTabs={openTabs}
-        activeSlug={activeSlug}
-        onTabClick={navigateTo}
-        onTabClose={closeTab}
+        onNewPane={() => openPane(null)}
         onTogglePanel3={() => setPanel3Visible(!panel3Visible)}
         onHamburger={
           viewportWidth < BREAKPOINTS.MOBILE
