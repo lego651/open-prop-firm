@@ -18,6 +18,51 @@ sources:
     label: 'Funded Next — Affiliate / Partner Program'
   - url: 'https://help.fundednext.com/en/'
     label: 'Funded Next Help Center'
+decision:
+  snapshot:
+    news_trading_allowed: true
+    overnight_holding_allowed: true
+    weekend_holding_allowed: true
+    max_drawdown:
+      type: static
+      value_usd: 5000
+      source_url: 'https://fundednext.com/stellar-model'
+    consistency_rule:
+      enabled: false
+      source_url: 'https://help.fundednext.com/en/articles/6781539-what-are-the-restricted-prohibited-trading-strategies'
+    payout_split_pct: 80
+    best_for: 'Swing + discretionary traders — $50k Stellar 2-Step flagship'
+  kill_you_first:
+    - title: '40% news-profit cap on funded accounts'
+      detail: 'On funded accounts, no more than 40% of total profit can come from trades opened or closed within 5 minutes of a high-impact news event. Challenge phases are unaffected — the rule bites the moment you get funded.'
+      source_url: 'https://help.fundednext.com/en/articles/6781539-what-are-the-restricted-prohibited-trading-strategies'
+    - title: 'Weekend-close enforced on funded accounts'
+      detail: 'Challenge phases allow weekend holding. Funded accounts must flatten before the weekend cutoff, which surprises traders who passed with swing setups.'
+      source_url: 'https://fundednext.com/stellar-model'
+    - title: 'Hedging prohibited across all phases'
+      detail: 'Opposing positions on the same instrument are treated as a violation, including mirrored strategies across linked accounts.'
+      source_url: 'https://help.fundednext.com/en/articles/6781539-what-are-the-restricted-prohibited-trading-strategies'
+  fit_score:
+    ny_scalping: 3
+    swing_trading: 4
+    news_trading: 2
+    beginner_friendly: 3
+    scalable: 4
+  pre_trade_checklist:
+    - id: dd_buffer_ok
+      label: 'Daily drawdown buffer > 1% of initial balance'
+    - id: news_window_clear
+      label: 'No high-impact news within 5 minutes (funded account only)'
+    - id: weekend_close_plan
+      label: 'Exit plan set if holding into the weekend cutoff (funded account only)'
+    - id: hedging_off
+      label: 'Not mirroring opposing positions across linked accounts'
+    - id: strategy_consistency
+      label: 'Strategy matches the style declared at challenge purchase'
+  changelog: []
+  affiliate:
+    url: null
+    utm: 'openprop'
 ---
 
 # Funded Next — Overview
