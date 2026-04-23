@@ -67,6 +67,7 @@ export async function run(): Promise<BotRunResult> {
       firmSlug: FIRM_SLUG,
       lastVerified: today,
       changesDetected: diffs.length > 0,
+      diffs: [],
       diff: diffs.length > 0 ? diffs.join('\n') : null,
       error: null,
     }
@@ -75,6 +76,7 @@ export async function run(): Promise<BotRunResult> {
       firmSlug: FIRM_SLUG,
       lastVerified: today,
       changesDetected: false,
+      diffs: [],
       diff: null,
       error: err instanceof Error ? err.message : String(err),
     }
