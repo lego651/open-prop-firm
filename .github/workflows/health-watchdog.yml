@@ -1,0 +1,38 @@
+# .github/workflows/health-watchdog.yml
+name: Health Watchdog
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # Daily at 12:00 UTC (6h after Monday bot run; runs every day)
+  workflow_dispatch:        # Manual trigger for testing
+
+jobs:
+  watchdog:
+    name: Check bot silence and alert on staleness
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write           # post alert comment on the pinned issue
+      contents: read          # checkout the scripts
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run watchdog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTH_CHECK_ISSUE_NUMBER: ${{ vars.HEALTH_CHECK_ISSUE_NUMBER }}
+          MAX_SILENCE_HOURS: ${{ vars.MAX_SILENCE_HOURS }}
+          ALERT_COOLDOWN_HOURS: ${{ vars.ALERT_COOLDOWN_HOURS }}
+        run: |
+          npx tsx --project tsconfig.scripts.json scripts/monitor/health-watchdog.ts
