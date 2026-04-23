@@ -63,6 +63,17 @@ export function validateDecisionBlock(
   fm: Record<string, unknown>,
   relativePath: string,
 ): ValidationError[] {
+  // v1-f2: decision block is required on basic-info files. Other types
+  // (challenge, rules, promo, changelog) do not carry a decision block.
+  if (fm.type === 'basic-info' && !('decision' in fm)) {
+    return [
+      {
+        file: relativePath,
+        field: 'decision',
+        message: 'decision block is required on basic-info files',
+      },
+    ]
+  }
   if (!('decision' in fm)) return []
   const parsed = DecisionSchema.safeParse(fm.decision)
   if (parsed.success) return []
