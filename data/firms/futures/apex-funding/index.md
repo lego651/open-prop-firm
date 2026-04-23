@@ -12,6 +12,53 @@ headquarters: 'Austin, TX, USA'
 sources:
   - url: 'https://apextraderfunding.com/evaluation'
     label: 'Apex Trader Funding — Evaluations (Official)'
+  - url: 'https://support.apextraderfunding.com/hc/en-us/articles/4408610260507-How-Does-the-Trailing-Static-Drawdown-Threshold-Work-Master-Course'
+    label: 'Apex Trader Funding — How Trailing Drawdown Works (Help Center)'
+decision:
+  snapshot:
+    news_trading_allowed: true
+    overnight_holding_allowed: true
+    weekend_holding_allowed: false
+    max_drawdown:
+      type: trailing_eod
+      value_usd: 2000
+      source_url: 'https://support.apextraderfunding.com/hc/en-us/articles/4408610260507-How-Does-the-Trailing-Static-Drawdown-Threshold-Work-Master-Course'
+    consistency_rule:
+      enabled: false
+      source_url: 'https://apextraderfunding.com/evaluation'
+    payout_split_pct: 100
+    best_for: 'Intraday futures scalpers — $50k EOD flagship (trailing drawdown)'
+  kill_you_first:
+    - title: 'Trailing EOD drawdown locks up on every new equity high'
+      detail: 'The $2,000 trailing threshold raises at end-of-day whenever equity closes higher, and can only move up. Aggressive scaling after a green day leaves no buffer for the next session.'
+      source_url: 'https://support.apextraderfunding.com/hc/en-us/articles/4408610260507-How-Does-the-Trailing-Static-Drawdown-Threshold-Work-Master-Course'
+    - title: 'Weekend holding banned — flat by Friday close'
+      detail: 'All positions must close before the weekend market close. Futures traders attempting to hold through Monday open will be terminated, including otherwise-winning trades.'
+      source_url: 'https://apextraderfunding.com/evaluation'
+    - title: '$1,000 daily loss limit on EOD accounts'
+      detail: 'Separate from the trailing drawdown, the EOD $50k has a hard $1,000 daily loss cap. One bad session mechanically ends the evaluation even if the trailing threshold is untouched.'
+      source_url: 'https://apextraderfunding.com/evaluation'
+  fit_score:
+    ny_scalping: 4
+    swing_trading: 1
+    news_trading: 4
+    beginner_friendly: 2
+    scalable: 3
+  pre_trade_checklist:
+    - id: trail_dd_buffer
+      label: 'Trailing drawdown buffer > $500'
+    - id: daily_loss_buffer
+      label: 'Daily loss buffer intact on EOD account'
+    - id: weekend_flat_plan
+      label: 'All positions will close before Friday weekend cutoff'
+    - id: contract_count_ok
+      label: 'Not over the per-account contract limit (6 minis on $50k)'
+    - id: session_close_plan
+      label: 'No overnight carry beyond eval rules; scalp-out before session end if unsure'
+  changelog: []
+  affiliate:
+    url: null
+    utm: 'openprop'
 ---
 
 # Apex Trader Funding — Overview
