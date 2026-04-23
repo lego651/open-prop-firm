@@ -65,3 +65,9 @@ export const DecisionSnapshotSchema = z.object({
   best_for: z.string().min(1),
 })
 export type DecisionSnapshot = z.infer<typeof DecisionSnapshotSchema>
+
+export const AffiliateSchema = z.object({
+  url: z.string().url().nullable(),
+  utm: z.string().min(1),
+})
+export type Affiliate = z.infer<typeof AffiliateSchema>

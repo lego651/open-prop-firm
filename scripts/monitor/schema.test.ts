@@ -5,6 +5,7 @@ import {
   FitScoreSchema,
   KillYouFirstEntrySchema,
   DecisionSnapshotSchema,
+  AffiliateSchema,
 } from './schema'
 
 describe('ChangelogEntrySchema', () => {
@@ -233,5 +234,30 @@ describe('DecisionSnapshotSchema', () => {
       },
     }
     expect(() => DecisionSnapshotSchema.parse(input)).not.toThrow()
+  })
+})
+
+describe('AffiliateSchema', () => {
+  it('accepts null url with utm set', () => {
+    const input = { url: null, utm: 'openprop' }
+    expect(() => AffiliateSchema.parse(input)).not.toThrow()
+  })
+
+  it('accepts a valid url with utm', () => {
+    const input = {
+      url: 'https://apextraderfunding.com?aff=xyz',
+      utm: 'openprop',
+    }
+    expect(() => AffiliateSchema.parse(input)).not.toThrow()
+  })
+
+  it('rejects non-URL url when not null', () => {
+    const input = { url: 'not-a-url', utm: 'openprop' }
+    expect(() => AffiliateSchema.parse(input)).toThrow()
+  })
+
+  it('rejects empty utm', () => {
+    const input = { url: null, utm: '' }
+    expect(() => AffiliateSchema.parse(input)).toThrow()
   })
 })
