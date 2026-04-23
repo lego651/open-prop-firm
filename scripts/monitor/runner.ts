@@ -203,6 +203,10 @@ async function main() {
     console.warn(
       '  [health] HEALTH_CHECK_ISSUE_NUMBER not set — skipping pinned-issue health comment',
     )
+  } else if (!/^\d+$/.test(healthIssueNumber)) {
+    console.warn(
+      `  [health] HEALTH_CHECK_ISSUE_NUMBER must be a positive integer, got ${JSON.stringify(healthIssueNumber)} — skipping`,
+    )
   } else if (dryRun) {
     console.log('  [health] dry-run — skipping pinned-issue health comment')
   } else {
@@ -228,7 +232,9 @@ async function main() {
       }
     } catch (err) {
       console.warn(
-        `  [health] failed to post health comment: ${err instanceof Error ? err.message : err}`,
+        `  [health] failed to post health comment to issue #${healthIssueNumber}: ${
+          err instanceof Error ? err.message : err
+        }`,
       )
     }
   }
