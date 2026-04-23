@@ -107,3 +107,56 @@ export function diffSnapshots(
 
   return out
 }
+
+export interface RenderMetadata {
+  lastVerified: string
+  scrapedUrl: string
+}
+
+export function renderPRBody(
+  firmSlug: string,
+  diffs: FieldDiff[],
+  meta: RenderMetadata,
+): string {
+  const header = [
+    `Automated content update detected by the monitoring bot on ${meta.lastVerified}.`,
+    '',
+    `- **Firm:** \`${firmSlug}\``,
+    `- **Scraped URL:** ${meta.scrapedUrl}`,
+    `- **Last verified (new):** ${meta.lastVerified}`,
+    '',
+  ].join('\n')
+
+  const footer = [
+    '',
+    '---',
+    '_Opened by the OpenPropFirm monitoring bot. Review each row against the linked source before merging._',
+  ].join('\n')
+
+  if (diffs.length === 0) {
+    return [
+      header,
+      '## No field-level drift detected',
+      '',
+      'The bot could not confirm any watched-field change. `last_verified` has been bumped in place.',
+      footer,
+    ].join('\n')
+  }
+
+  const rows = diffs
+    .map(
+      (d) =>
+        `| \`${d.field}\` | \`${JSON.stringify(d.from)}\` | \`${JSON.stringify(d.to)}\` | [link](${d.source_url}) |`,
+    )
+    .join('\n')
+
+  return [
+    header,
+    '## Changes detected',
+    '',
+    '| Field | From | To | Source |',
+    '|---|---|---|---|',
+    rows,
+    footer,
+  ].join('\n')
+}
