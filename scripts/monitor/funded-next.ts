@@ -41,7 +41,8 @@ export function parseScrapedSnapshot(html: string): ScrapedSnapshot {
 
   const overnightProhibited = /overnight (?:positions? )?not\s+(?:permitted|allowed)|must close (?:all )?positions? before session end/i.test(text)
 
-  const priceMatches = [...text.matchAll(/\$[0-9,]+\s*account[^$]*\$([0-9]+(?:\.[0-9]+)?)/gi)]
+  // Require literal "account" word after size; reject "$50k EOD"-style matches.
+  const priceMatches = [...text.matchAll(/\$[0-9,]+(?:k)?\s+account\b[^$]*?\$([0-9]+(?:\.[0-9]+)?)/gi)]
   let cheapestPrice: number | null = null
   for (const m of priceMatches) {
     const price = Number.parseFloat(m[1])

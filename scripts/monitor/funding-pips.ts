@@ -42,7 +42,8 @@ export function parseScrapedSnapshot(html: string): ScrapedSnapshot {
   const weekendAllowed = /weekend hold(?:ing)?\s+(?:is\s+)?allowed|weekend hold(?:ing)?\s+(?:is\s+)?permitted/i.test(text)
   const weekendProhibited = /weekend hold(?:ing)?\s+(?:is\s+)?not\s+(?:permitted|allowed)/i.test(text)
 
-  const priceMatches = [...text.matchAll(/\$[0-9,]+\s*account[^$]*\$([0-9]+(?:\.[0-9]+)?)/gi)]
+  // Require literal "account" word after size; reject "$50k EOD"-style matches.
+  const priceMatches = [...text.matchAll(/\$[0-9,]+(?:k)?\s+account\b[^$]*?\$([0-9]+(?:\.[0-9]+)?)/gi)]
   let cheapestPrice: number | null = null
   for (const m of priceMatches) {
     const price = Number.parseFloat(m[1])
