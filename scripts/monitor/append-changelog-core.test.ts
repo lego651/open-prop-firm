@@ -209,4 +209,14 @@ describe('mergeEntries', () => {
     expect(JSON.stringify(incoming)).toBe(incomingBefore)
     expect(merged).not.toBe(existing)
   })
+
+  it('dedupes within the incoming batch when the same key appears twice', () => {
+    const incoming: NewChangelogEntry[] = [
+      { field: 'snapshot.news_trading_allowed', from: true, to: false, source_url: 'https://example.com/first' },
+      { field: 'snapshot.news_trading_allowed', from: true, to: false, source_url: 'https://example.com/second' },
+    ]
+    const out = mergeEntries([], incoming, MERGE_DATE)
+    expect(out).toHaveLength(1)
+    expect(out[0].source_url).toBe('https://example.com/first')
+  })
 })
