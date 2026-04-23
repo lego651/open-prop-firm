@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { ChangelogEntrySchema, ChecklistItemSchema } from './schema'
+import {
+  ChangelogEntrySchema,
+  ChecklistItemSchema,
+  FitScoreSchema,
+  KillYouFirstEntrySchema,
+} from './schema'
 
 describe('ChangelogEntrySchema', () => {
   it('accepts a valid entry', () => {
@@ -63,5 +68,73 @@ describe('ChecklistItemSchema', () => {
   it('rejects empty label', () => {
     const input = { id: 'news_clear', label: '' }
     expect(() => ChecklistItemSchema.parse(input)).toThrow()
+  })
+})
+
+describe('FitScoreSchema', () => {
+  it('accepts a valid score set', () => {
+    const input = {
+      ny_scalping: 4,
+      swing_trading: 1,
+      news_trading: 0,
+      beginner_friendly: 2,
+      scalable: 2,
+    }
+    expect(() => FitScoreSchema.parse(input)).not.toThrow()
+  })
+
+  it('rejects a star value > 5', () => {
+    const input = {
+      ny_scalping: 6,
+      swing_trading: 1,
+      news_trading: 0,
+      beginner_friendly: 2,
+      scalable: 2,
+    }
+    expect(() => FitScoreSchema.parse(input)).toThrow()
+  })
+
+  it('rejects a negative star value', () => {
+    const input = {
+      ny_scalping: -1,
+      swing_trading: 1,
+      news_trading: 0,
+      beginner_friendly: 2,
+      scalable: 2,
+    }
+    expect(() => FitScoreSchema.parse(input)).toThrow()
+  })
+
+  it('rejects missing keys', () => {
+    const input = { ny_scalping: 4 }
+    expect(() => FitScoreSchema.parse(input)).toThrow()
+  })
+})
+
+describe('KillYouFirstEntrySchema', () => {
+  it('accepts a valid entry', () => {
+    const input = {
+      title: 'Trailing DD follows equity',
+      detail: 'Profits cannot be locked early',
+      source_url: 'https://apextraderfunding.com/rules',
+    }
+    expect(() => KillYouFirstEntrySchema.parse(input)).not.toThrow()
+  })
+
+  it('rejects an empty title', () => {
+    const input = {
+      title: '',
+      detail: 'x',
+      source_url: 'https://example.com',
+    }
+    expect(() => KillYouFirstEntrySchema.parse(input)).toThrow()
+  })
+
+  it('rejects missing detail', () => {
+    const input = {
+      title: 'x',
+      source_url: 'https://example.com',
+    }
+    expect(() => KillYouFirstEntrySchema.parse(input)).toThrow()
   })
 })

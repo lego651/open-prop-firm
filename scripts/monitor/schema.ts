@@ -16,3 +16,21 @@ export const ChecklistItemSchema = z.object({
   label: z.string().min(1),
 })
 export type ChecklistItem = z.infer<typeof ChecklistItemSchema>
+
+const Stars = z.number().int().min(0).max(5)
+
+export const FitScoreSchema = z.object({
+  ny_scalping: Stars,
+  swing_trading: Stars,
+  news_trading: Stars,
+  beginner_friendly: Stars,
+  scalable: Stars,
+})
+export type FitScore = z.infer<typeof FitScoreSchema>
+
+export const KillYouFirstEntrySchema = z.object({
+  title: z.string().min(1),
+  detail: z.string().min(1),
+  source_url: z.string().url(),
+})
+export type KillYouFirstEntry = z.infer<typeof KillYouFirstEntrySchema>
