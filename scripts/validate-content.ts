@@ -3,6 +3,7 @@ import fg from 'fast-glob'
 import matter from 'gray-matter'
 import path from 'path'
 import { parseWikilinkTargets } from '../src/lib/content/wikilinks'
+import { DecisionSchema } from './monitor/schema'
 
 const PLACEHOLDER_PATTERNS = [
   /placeholder/i,
@@ -56,6 +57,20 @@ function slugFromFilePath(absPath: string): string {
   const dataRoot = path.join(process.cwd(), 'data')
   const rel = path.relative(dataRoot, absPath)
   return rel.replace(/\.md$/, '').replace(/\/index$/, '')
+}
+
+export function validateDecisionBlock(
+  fm: Record<string, unknown>,
+  relativePath: string,
+): ValidationError[] {
+  if (!('decision' in fm)) return []
+  const parsed = DecisionSchema.safeParse(fm.decision)
+  if (parsed.success) return []
+  return parsed.error.issues.map((issue) => ({
+    file: relativePath,
+    field: `decision.${issue.path.join('.')}`,
+    message: issue.message,
+  }))
 }
 
 async function validateFile(filePath: string): Promise<FileValidationResult> {
@@ -288,6 +303,14 @@ async function validateFile(filePath: string): Promise<FileValidationResult> {
       )
     }
   }
+
+  // Validate decision block if present (opt-in during v1 data migration —
+  // a file without a decision block passes; a file with a malformed one fails)
+  const decisionErrors = validateDecisionBlock(
+    fm as Record<string, unknown>,
+    relativePath,
+  )
+  errors.push(...decisionErrors)
 
   return { relativePath, errors, warnings, fm, content: parsed.content }
 }
