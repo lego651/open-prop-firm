@@ -34,3 +34,34 @@ export const KillYouFirstEntrySchema = z.object({
   source_url: z.string().url(),
 })
 export type KillYouFirstEntry = z.infer<typeof KillYouFirstEntrySchema>
+
+const MaxDrawdownSchema = z.object({
+  type: z.enum(['trailing_intraday', 'trailing_eod', 'static']),
+  value_usd: z.number().int().nonnegative(),
+  source_url: z.string().url(),
+})
+
+const ConsistencyRuleSchema = z
+  .object({
+    enabled: z.boolean(),
+    max_daily_pct: z.number().int().min(0).max(100).optional(),
+    source_url: z.string().url(),
+  })
+  .refine(
+    (v) => !v.enabled || typeof v.max_daily_pct === 'number',
+    {
+      message: 'max_daily_pct is required when enabled=true',
+      path: ['max_daily_pct'],
+    },
+  )
+
+export const DecisionSnapshotSchema = z.object({
+  news_trading_allowed: z.boolean(),
+  overnight_holding_allowed: z.boolean(),
+  weekend_holding_allowed: z.boolean(),
+  max_drawdown: MaxDrawdownSchema,
+  consistency_rule: ConsistencyRuleSchema,
+  payout_split_pct: z.number().int().min(0).max(100),
+  best_for: z.string().min(1),
+})
+export type DecisionSnapshot = z.infer<typeof DecisionSnapshotSchema>

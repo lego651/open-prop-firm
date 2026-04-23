@@ -4,6 +4,7 @@ import {
   ChecklistItemSchema,
   FitScoreSchema,
   KillYouFirstEntrySchema,
+  DecisionSnapshotSchema,
 } from './schema'
 
 describe('ChangelogEntrySchema', () => {
@@ -136,5 +137,101 @@ describe('KillYouFirstEntrySchema', () => {
       source_url: 'https://example.com',
     }
     expect(() => KillYouFirstEntrySchema.parse(input)).toThrow()
+  })
+})
+
+describe('DecisionSnapshotSchema', () => {
+  const validSnapshot = {
+    news_trading_allowed: false,
+    overnight_holding_allowed: false,
+    weekend_holding_allowed: false,
+    max_drawdown: {
+      type: 'trailing_intraday',
+      value_usd: 2500,
+      source_url: 'https://apextraderfunding.com/rules#dd',
+    },
+    consistency_rule: {
+      enabled: true,
+      max_daily_pct: 30,
+      source_url: 'https://apextraderfunding.com/payouts',
+    },
+    payout_split_pct: 80,
+    best_for: 'Intraday scalpers',
+  }
+
+  it('accepts a complete valid snapshot', () => {
+    expect(() => DecisionSnapshotSchema.parse(validSnapshot)).not.toThrow()
+  })
+
+  it('accepts max_drawdown with type=trailing_eod', () => {
+    const input = {
+      ...validSnapshot,
+      max_drawdown: { ...validSnapshot.max_drawdown, type: 'trailing_eod' },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).not.toThrow()
+  })
+
+  it('accepts max_drawdown with type=static', () => {
+    const input = {
+      ...validSnapshot,
+      max_drawdown: { ...validSnapshot.max_drawdown, type: 'static' },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).not.toThrow()
+  })
+
+  it('rejects max_drawdown with unknown type', () => {
+    const input = {
+      ...validSnapshot,
+      max_drawdown: { ...validSnapshot.max_drawdown, type: 'percentage' },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('rejects payout_split_pct > 100', () => {
+    const input = { ...validSnapshot, payout_split_pct: 110 }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('rejects payout_split_pct < 0', () => {
+    const input = { ...validSnapshot, payout_split_pct: -5 }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('rejects max_drawdown with missing source_url', () => {
+    const input = {
+      ...validSnapshot,
+      max_drawdown: { type: 'trailing_intraday', value_usd: 2500 },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('rejects negative max_drawdown.value_usd', () => {
+    const input = {
+      ...validSnapshot,
+      max_drawdown: { ...validSnapshot.max_drawdown, value_usd: -100 },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('rejects consistency_rule enabled=true without max_daily_pct', () => {
+    const input = {
+      ...validSnapshot,
+      consistency_rule: {
+        enabled: true,
+        source_url: 'https://example.com',
+      },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).toThrow()
+  })
+
+  it('accepts consistency_rule enabled=false without max_daily_pct', () => {
+    const input = {
+      ...validSnapshot,
+      consistency_rule: {
+        enabled: false,
+        source_url: 'https://example.com',
+      },
+    }
+    expect(() => DecisionSnapshotSchema.parse(input)).not.toThrow()
   })
 })
