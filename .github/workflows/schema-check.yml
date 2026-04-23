@@ -1,0 +1,30 @@
+name: Schema Check
+
+on:
+  pull_request:
+    paths:
+      - 'data/firms/**/index.md'
+      - 'scripts/monitor/schema.ts'
+      - 'scripts/validate-content.ts'
+
+jobs:
+  validate-frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run validator
+        run: npx tsx scripts/validate-content.ts
+
+      - name: Run schema unit tests
+        run: npm test -- schema validate-content
