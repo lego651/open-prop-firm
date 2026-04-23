@@ -44,3 +44,7 @@ next-env.d.ts
 # Build artifacts — generated at prebuild, not committed
 /public/search-index.json
 /public/graph-data.json
+
+# local tooling
+/.claude/
+/review-last.md
