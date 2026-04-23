@@ -35,13 +35,14 @@ export const KillYouFirstEntrySchema = z.object({
 })
 export type KillYouFirstEntry = z.infer<typeof KillYouFirstEntrySchema>
 
-const MaxDrawdownSchema = z.object({
+export const MaxDrawdownSchema = z.object({
   type: z.enum(['trailing_intraday', 'trailing_eod', 'static']),
   value_usd: z.number().int().nonnegative(),
   source_url: z.string().url(),
 })
+export type MaxDrawdown = z.infer<typeof MaxDrawdownSchema>
 
-const ConsistencyRuleSchema = z
+export const ConsistencyRuleSchema = z
   .object({
     enabled: z.boolean(),
     max_daily_pct: z.number().int().min(0).max(100).optional(),
@@ -54,6 +55,7 @@ const ConsistencyRuleSchema = z
       path: ['max_daily_pct'],
     },
   )
+export type ConsistencyRule = z.infer<typeof ConsistencyRuleSchema>
 
 export const DecisionSnapshotSchema = z.object({
   news_trading_allowed: z.boolean(),
