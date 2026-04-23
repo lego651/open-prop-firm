@@ -1,0 +1,44 @@
+# .github/workflows/append-changelog.yml
+name: Append Changelog
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  append-changelog:
+    # Only run when a bot-labeled PR is actually merged (not just closed).
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'bot-update')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write       # commit + push to main
+      pull-requests: read   # read the merged PR body
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name  "OpenPropFirm Bot"
+          git config user.email "bot@openpropfirm.com"
+
+      - name: Append changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx tsx --project tsconfig.scripts.json scripts/monitor/append-changelog.ts \
+            --pr-number ${{ github.event.pull_request.number }}
