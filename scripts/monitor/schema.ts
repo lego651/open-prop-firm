@@ -71,3 +71,13 @@ export const AffiliateSchema = z.object({
   utm: z.string().min(1),
 })
 export type Affiliate = z.infer<typeof AffiliateSchema>
+
+export const DecisionSchema = z.object({
+  snapshot: DecisionSnapshotSchema,
+  kill_you_first: z.array(KillYouFirstEntrySchema).min(1),
+  fit_score: FitScoreSchema,
+  pre_trade_checklist: z.array(ChecklistItemSchema).min(1),
+  changelog: z.array(ChangelogEntrySchema),
+  affiliate: AffiliateSchema,
+})
+export type Decision = z.infer<typeof DecisionSchema>

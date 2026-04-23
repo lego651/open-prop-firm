@@ -6,6 +6,7 @@ import {
   KillYouFirstEntrySchema,
   DecisionSnapshotSchema,
   AffiliateSchema,
+  DecisionSchema,
 } from './schema'
 
 describe('ChangelogEntrySchema', () => {
@@ -259,5 +260,83 @@ describe('AffiliateSchema', () => {
   it('rejects empty utm', () => {
     const input = { url: null, utm: '' }
     expect(() => AffiliateSchema.parse(input)).toThrow()
+  })
+})
+
+describe('DecisionSchema (top-level composition)', () => {
+  const snapshot = {
+    news_trading_allowed: false,
+    overnight_holding_allowed: false,
+    weekend_holding_allowed: false,
+    max_drawdown: {
+      type: 'trailing_intraday',
+      value_usd: 2500,
+      source_url: 'https://apextraderfunding.com/rules#dd',
+    },
+    consistency_rule: {
+      enabled: true,
+      max_daily_pct: 30,
+      source_url: 'https://apextraderfunding.com/payouts',
+    },
+    payout_split_pct: 80,
+    best_for: 'Intraday scalpers',
+  }
+
+  const validDecision = {
+    snapshot,
+    kill_you_first: [
+      {
+        title: 'Trailing DD follows equity',
+        detail: 'Profits cannot be locked early',
+        source_url: 'https://apextraderfunding.com/rules',
+      },
+    ],
+    fit_score: {
+      ny_scalping: 4,
+      swing_trading: 1,
+      news_trading: 0,
+      beginner_friendly: 2,
+      scalable: 2,
+    },
+    pre_trade_checklist: [
+      { id: 'news_clear', label: 'No major news in next 30 minutes' },
+    ],
+    changelog: [],
+    affiliate: { url: null, utm: 'openprop' },
+  }
+
+  it('accepts a complete valid decision block', () => {
+    expect(() => DecisionSchema.parse(validDecision)).not.toThrow()
+  })
+
+  it('accepts changelog with entries', () => {
+    const input = {
+      ...validDecision,
+      changelog: [
+        {
+          date: '2026-04-22',
+          field: 'snapshot.consistency_rule.enabled',
+          from: false,
+          to: true,
+          source_url: 'https://apextraderfunding.com/rules',
+        },
+      ],
+    }
+    expect(() => DecisionSchema.parse(input)).not.toThrow()
+  })
+
+  it('rejects an empty kill_you_first array (at least 1 required)', () => {
+    const input = { ...validDecision, kill_you_first: [] }
+    expect(() => DecisionSchema.parse(input)).toThrow()
+  })
+
+  it('rejects an empty pre_trade_checklist (at least 1 required)', () => {
+    const input = { ...validDecision, pre_trade_checklist: [] }
+    expect(() => DecisionSchema.parse(input)).toThrow()
+  })
+
+  it('rejects missing affiliate block', () => {
+    const { affiliate: _affiliate, ...rest } = validDecision
+    expect(() => DecisionSchema.parse(rest)).toThrow()
   })
 })
