@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   BookOpen,
   ChevronRight,
@@ -11,6 +10,7 @@ import {
   Trophy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAppShell } from '@/contexts/AppShellContext'
 import type { TreeNode } from '@/types/content'
 
 type NavFileTreeProps = {
@@ -228,7 +228,7 @@ function TreeNodeList({
 }
 
 export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) {
-  const router = useRouter()
+  const { activePaneId, navigatePane } = useAppShell()
   const nodeRefs = useRef<Map<string, HTMLElement>>(new Map())
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => ({}))
@@ -277,9 +277,9 @@ export default function NavFileTree({ treeData, activeSlug }: NavFileTreeProps) 
 
   const handleFileClick = useCallback(
     (id: string) => {
-      router.push('/' + id)
+      navigatePane(activePaneId, id)
     },
-    [router],
+    [navigatePane, activePaneId],
   )
 
   // Memoized visible list — recomputed only when treeData or expanded changes, not on every keypress

@@ -28,7 +28,7 @@ type SplitPaneLayoutProps = {
  * collapsed strips are hidden entirely.
  */
 export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
-  const { panes, activePaneId, bringPaneForward, viewportWidth } = useAppShell()
+  const { panes, activePaneId, bringPaneForward, setActivePane, viewportWidth } = useAppShell()
 
   // Determine which panes are collapsed.
   // The 2 rightmost panes are always expanded; all others are collapsed.
@@ -87,6 +87,7 @@ export default function SplitPaneLayout({ children }: SplitPaneLayoutProps) {
           <div
             key={pane.id}
             className="flex min-w-0 flex-1 flex-col border-r border-[var(--border)] last:border-r-0"
+            onClick={() => setActivePane(pane.id)}
           >
             <PaneHeader paneId={pane.id} activeSlug={pane.slug ?? ''} />
             <div className="flex-1 overflow-y-auto">
