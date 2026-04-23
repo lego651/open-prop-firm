@@ -88,16 +88,8 @@ async function updateLastVerified(slug: string, date: string) {
 function createPR(result: BotRunResult): string | null {
   const branch = `bot/${result.firmSlug}-${result.lastVerified}`
   const title = `[bot] ${result.firmSlug} — content update ${result.lastVerified}`
-  const body = [
-    `Automated content update detected by the monitoring bot on ${result.lastVerified}.`,
-    '',
-    '## Changes detected',
-    '',
-    result.diff ?? 'See diff for details.',
-    '',
-    '---',
-    '_Opened by the OpenPropFirm monitoring bot. Review before merging._',
-  ].join('\n')
+  // result.diff is already a fully rendered markdown body from diff.ts/renderPRBody
+  const body = result.diff ?? 'No PR body produced by scraper — check runner logs.'
 
   // Write body to a temp file to prevent shell metacharacter injection
   const bodyFile = path.join(tmpdir(), `opf-bot-pr-body-${Date.now()}.md`)
@@ -146,6 +138,7 @@ function createPR(result: BotRunResult): string | null {
 async function main() {
   const args = process.argv.slice(2)
   const firmFilter = args.includes('--firm') ? args[args.indexOf('--firm') + 1] : null
+  const dryRun = args.includes('--dry-run')
 
   const scrapers = firmFilter
     ? SCRAPERS.filter((s) => s.slug === firmFilter)
@@ -156,7 +149,9 @@ async function main() {
     process.exit(1)
   }
 
-  console.log(`Running monitor for: ${scrapers.map((s) => s.slug).join(', ')}\n`)
+  console.log(
+    `Running monitor for: ${scrapers.map((s) => s.slug).join(', ')}${dryRun ? ' (dry-run)' : ''}\n`,
+  )
 
   let hasUnhandledError = false
 
@@ -174,8 +169,15 @@ async function main() {
     if (result.error) {
       console.error(`[${slug}] Scraper error: ${result.error}`)
     } else {
-      console.log(`[${slug}] changesDetected=${result.changesDetected}`)
-      if (result.diff) console.log(`[${slug}] diff:\n${result.diff}`)
+      console.log(`[${slug}] changesDetected=${result.changesDetected} (${result.diffs.length} field diffs)`)
+      if (result.diff) {
+        console.log(`[${slug}] PR body preview:\n${result.diff}\n`)
+      }
+    }
+
+    if (dryRun) {
+      console.log(`[${slug}] dry-run — skipping last_verified update, PR creation, and Supabase log.\n`)
+      continue
     }
 
     // Always update last_verified
