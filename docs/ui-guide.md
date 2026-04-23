@@ -972,6 +972,35 @@ Themes are fully configuration-based. To add a new theme:
 
 No other files need to change. The theme system is intentionally isolated to CSS variables and a single utility file.
 
+### 6.5 Opinion + Action Tints
+
+The firm detail page (`/firms/<slug>`) is rendered as three stacked layers — **data** (neutral), **opinion** (amber-tinted), and **action** (green-tinted). Two theme-token families separate the opinion and action layers visually from the neutral data above them.
+
+**Token reference (defined in `src/styles/themes.css`):**
+
+| Token                    | Purpose                              | Light      | Dark       | Blue       |
+|--------------------------|--------------------------------------|------------|------------|------------|
+| `--opinion-tint-bg`      | Surface for OPINION layer blocks     | `#fdf7e7`  | `#2a230f`  | `#1f1a08`  |
+| `--opinion-tint-border`  | Subtle border separating from data   | `#e7d9a9`  | `#4a3a18`  | `#3a3018`  |
+| `--action-tint-bg`       | Surface for ACTION layer blocks      | `#eff7f2`  | `#1e2d24`  | `#0d1f2d`  |
+| `--action-tint-border`   | Subtle border separating from opinion| `#b8dec8`  | `#2d4a38`  | `#133d5e`  |
+
+**Usage contract for v1-f7 / v1-f8 components:**
+
+- `<KillYouFirstList>`, `<FitScoreTable>`, and any future "founder's opinion" block use `background: var(--opinion-tint-bg)` and `border: 1px solid var(--opinion-tint-border)`. Label text (e.g. "Founder's opinion") stays `var(--muted-foreground)`.
+- `<PreTradeChecklist>`, `<AffiliateCTA>`, and any future "action" block use `background: var(--action-tint-bg)` and `border: 1px solid var(--action-tint-border)`.
+- Foreground text inside both layers inherits the theme's `var(--foreground)` — do NOT override text color from the tint palette. If a future component needs a tinted label color, add `--opinion-tint-fg` / `--action-tint-fg` at that time; do not invent ad-hoc colors.
+- Do not apply tint tokens to the DATA layer (Snapshot Bar, RuleBreakdown, Changelog). The data layer uses the neutral `var(--background)` so the three-layer separation is legible.
+
+**Accessibility:**
+
+Both tint backgrounds are low-saturation and designed to preserve WCAG AA contrast against `var(--foreground)`:
+- Light: `#fdf7e7` bg + `#222222` fg → contrast ratio ~14:1 (far above AA's 4.5:1 threshold).
+- Dark: `#2a230f` bg + `#dadada` fg → contrast ratio ~11:1.
+- Blue: `#1f1a08` bg + `#e6edf3` fg → contrast ratio ~14:1.
+
+If a future component adds a semi-transparent overlay on top of a tint, re-run a contrast check (WebAIM contrast checker is fine) before merging.
+
 ---
 
 ## 7. Typography
