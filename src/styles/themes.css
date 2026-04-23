@@ -88,6 +88,12 @@
 
   /* File type colors */
   --file-type-promo: #2a9d4e;
+
+  /* Decision page tints (v1-f6) — consumed by v1-f7 Decision Header + v1-f8 action components */
+  --opinion-tint-bg: #fdf7e7;       /* subtle amber surface */
+  --opinion-tint-border: #e7d9a9;   /* one hue-step deeper than bg */
+  --action-tint-bg: #eff7f2;        /* matches --verified-badge-bg */
+  --action-tint-border: #b8dec8;    /* matches --verified-badge-border */
 }
 
 /* ─────────────────────────────────────────
@@ -163,6 +169,12 @@
 
   /* File type colors */
   --file-type-promo: #3fb950;
+
+  /* Decision page tints (v1-f6) — consumed by v1-f7 Decision Header + v1-f8 action components */
+  --opinion-tint-bg: #2a230f;       /* dark amber surface */
+  --opinion-tint-border: #4a3a18;   /* subtle amber boundary */
+  --action-tint-bg: #1e2d24;        /* matches --verified-badge-bg */
+  --action-tint-border: #2d4a38;    /* matches --verified-badge-border */
 }
 
 /* ─────────────────────────────────────────
@@ -237,4 +249,10 @@
 
   /* File type colors */
   --file-type-promo: #4ade80;
+
+  /* Decision page tints (v1-f6) — consumed by v1-f7 Decision Header + v1-f8 action components */
+  --opinion-tint-bg: #1f1a08;       /* dark amber surface */
+  --opinion-tint-border: #3a3018;   /* subtle amber boundary */
+  --action-tint-bg: #0d1f2d;        /* matches --verified-badge-bg */
+  --action-tint-border: #133d5e;    /* matches --verified-badge-border */
 }
