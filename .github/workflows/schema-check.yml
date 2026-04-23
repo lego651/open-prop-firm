@@ -21,7 +21,11 @@ jobs:
           cache: 'npm'
 
       - name: Install deps
-        run: npm ci
+        # Using `npm install` instead of `npm ci` because the lock file
+        # does not yet capture Linux-specific optional deps for the
+        # cross-platform vitest/rollup binaries. Revisit once the lock is
+        # regenerated from a Linux environment.
+        run: npm install --no-audit --no-fund
 
       - name: Run validator
         run: npx tsx scripts/validate-content.ts
