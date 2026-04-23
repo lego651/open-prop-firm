@@ -46,4 +46,5 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTH_CHECK_ISSUE_NUMBER: ${{ vars.HEALTH_CHECK_ISSUE_NUMBER }}
         run: npx tsx --project tsconfig.scripts.json scripts/monitor/runner.ts

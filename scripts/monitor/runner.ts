@@ -18,6 +18,7 @@ import path from 'path'
 import { execFileSync } from 'child_process'
 import { createClient } from '@supabase/supabase-js'
 import type { BotRunResult } from './types'
+import { buildHealthCommentBody } from './health-comment'
 
 // --- Scrapers ------------------------------------------------------------------
 
@@ -154,6 +155,7 @@ async function main() {
   )
 
   let hasUnhandledError = false
+  const allResults: Array<{ slug: string; result: BotRunResult | null; unhandled: boolean }> = []
 
   for (const { slug, run } of scrapers) {
     console.log(`[${slug}] Starting...`)
@@ -163,8 +165,10 @@ async function main() {
     } catch (err) {
       console.error(`[${slug}] Unhandled error:`, err)
       hasUnhandledError = true
+      allResults.push({ slug, result: null, unhandled: true })
       continue
     }
+    allResults.push({ slug, result, unhandled: false })
 
     if (result.error) {
       console.error(`[${slug}] Scraper error: ${result.error}`)
@@ -191,6 +195,48 @@ async function main() {
 
     await logToSupabase(result, prUrl)
     console.log(`[${slug}] Done.\n`)
+  }
+
+  // Post health-check comment to the pinned issue (spec §3.3).
+  const healthIssueNumber = process.env.HEALTH_CHECK_ISSUE_NUMBER
+  if (!healthIssueNumber) {
+    console.warn(
+      '  [health] HEALTH_CHECK_ISSUE_NUMBER not set — skipping pinned-issue health comment',
+    )
+  } else if (!/^\d+$/.test(healthIssueNumber)) {
+    console.warn(
+      `  [health] HEALTH_CHECK_ISSUE_NUMBER must be a positive integer, got ${JSON.stringify(healthIssueNumber)} — skipping`,
+    )
+  } else if (dryRun) {
+    console.log('  [health] dry-run — skipping pinned-issue health comment')
+  } else {
+    try {
+      const body = buildHealthCommentBody({
+        runAt: new Date().toISOString(),
+        perFirm: allResults.map(({ slug, result, unhandled }) => {
+          if (unhandled) return { slug, ok: false, error: 'unhandled exception' }
+          if (!result) return { slug, ok: false, error: 'no result' }
+          if (result.error) return { slug, ok: false, error: result.error }
+          return { slug, ok: true, error: null }
+        }),
+      })
+      const bodyFile = path.join(tmpdir(), `opf-health-${Date.now()}.md`)
+      writeFileSync(bodyFile, body, 'utf-8')
+      try {
+        execFileSync('gh', ['issue', 'comment', healthIssueNumber, '--body-file', bodyFile], {
+          stdio: 'inherit',
+        })
+        console.log(`  [health] Posted health comment to issue #${healthIssueNumber}`)
+      } finally {
+        try { unlinkSync(bodyFile) } catch { /* ignore */ }
+      }
+    } catch (err) {
+      console.warn(
+        `  [health] failed to post health comment to issue #${healthIssueNumber}: ${
+          err instanceof Error ? err.message : err
+        }`,
+      )
+    }
   }
 
   if (hasUnhandledError) {
