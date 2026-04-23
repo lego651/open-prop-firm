@@ -106,7 +106,7 @@ decision:
       max_daily_pct: 30
       source_url: ...
     payout_split_pct: 80
-    best_for: intraday_scalpers
+    best_for: "Intraday scalpers"   # free-text label, rendered as-is in Snapshot Bar; no enum constraint
 
   kill_you_first:
     - title: "Trailing DD follows equity"
@@ -198,7 +198,7 @@ returns BotRunResult
   changelog entry live within minutes
 ```
 
-**Watched fields (6 per firm):** `max_drawdown`, `consistency_rule`, `news_trading_allowed`, `overnight_holding_allowed`, `payout_split_pct`, cheapest-tier challenge price (`challenges/*.md`).
+**Watched fields — the SAME 6 across every firm (not per-firm overrides):** `max_drawdown`, `consistency_rule`, `news_trading_allowed`, `overnight_holding_allowed`, `payout_split_pct`, cheapest-tier challenge price (sourced from the firm's `challenges/*.md`, lowest-priced tier). Uniform coverage means the Snapshot Bar renders the same shape on every firm page — a trader scanning across firms never wonders "why is this field missing on that firm?"
 
 **Health check:** runner.ts posts to a pinned GitHub Issue on every run ("✅ 2026-04-22 09:00 UTC — 4/4 scrapers OK"). Separate tiny workflow alerts Jason on 24h silence via GitHub email notification. Silent failure is the single failure mode that quietly destroys the trust asset and must be caught.
 
@@ -256,7 +256,7 @@ Visual separation uses two new theme tokens (`--opinion-tint` amber, `--action-t
 |---|---|---|---|
 | RuleBreakdown | `{ body: Markdown }` | data | Four collapsible sections (Drawdown / News / Holding / Payout); example + implication format |
 | Changelog | `{ entries: ChangelogEntry[] }` | data | Vertical list, date + field + before/after + source; Stability Indicator **UI placeholder** (renders "—" in v1) |
-| PreTradeChecklist | `{ items: ChecklistItem[], firmSlug: string }` | action | Interactive checklist; localStorage key `checklist:<firmSlug>`; reset-for-today link |
+| PreTradeChecklist | `{ items: ChecklistItem[], firmSlug: string }` | action | Interactive checklist; localStorage key `checklist:<firmSlug>`; user-initiated reset only — no auto-reset on date change, session, or app reload |
 | AffiliateCTA | `{ firmSlug: string, url: string \| null }` | action | Single disclosed button with UTM; **renders nothing if url is null** |
 | VerificationBadge | `{ lastVerified: Date, verifiedBy: 'bot' \| 'manual' }` | data | Badge with hover-link to sources; renders amber-warning if > 7 days stale |
 
