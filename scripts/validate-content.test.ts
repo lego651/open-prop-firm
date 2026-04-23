@@ -67,4 +67,26 @@ describe('validateDecisionBlock', () => {
       field: expect.stringContaining('decision'),
     })
   })
+
+  it('errors when a basic-info file has no decision block', () => {
+    const fm = {
+      title: 'Test Firm — Overview',
+      firm: 'Test Firm',
+      category: 'cfd',
+      type: 'basic-info',
+      status: 'active',
+      last_verified: '2026-04-23T00:00:00Z',
+      verified_by: 'manual',
+      sources: [{ url: 'https://example.com/page', label: 'Test' }],
+      website: 'https://example.com',
+      founded: 2020,
+    }
+    const errors = validateDecisionBlock(
+      fm,
+      'data/firms/cfd/test-firm/index.md',
+    )
+    expect(errors).toHaveLength(1)
+    expect(errors[0].field).toBe('decision')
+    expect(errors[0].message).toMatch(/required/i)
+  })
 })
