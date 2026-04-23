@@ -12,6 +12,54 @@ headquarters: 'USA'
 sources:
   - url: 'https://lucidtrading.com/how-it-works'
     label: 'Lucid Trading — How It Works (Official)'
+  - url: 'https://lucidtrading.com/rules'
+    label: 'Lucid Trading — Trading Rules (Official)'
+decision:
+  snapshot:
+    news_trading_allowed: true
+    overnight_holding_allowed: false
+    weekend_holding_allowed: false
+    max_drawdown:
+      type: trailing_eod
+      value_usd: 2000
+      source_url: 'https://lucidtrading.com/how-it-works'
+    consistency_rule:
+      enabled: true
+      max_daily_pct: 50
+      source_url: 'https://lucidtrading.com/rules'
+    payout_split_pct: 90
+    best_for: 'Session scalpers — $50k LucidFlex flagship (EOD trail, 50% eval consistency)'
+  kill_you_first:
+    - title: 'EOD trailing drawdown raises on each winning close'
+      detail: 'The $2,000 trailing threshold ratchets up at end-of-day and cannot move down. A green close that you do not protect with tighter next-day risk leaves almost no buffer.'
+      source_url: 'https://lucidtrading.com/how-it-works'
+    - title: '50% consistency rule during LucidFlex evaluation'
+      detail: 'No single day can account for more than 50% of total evaluation profits. One outlier green day can stall the eval until other sessions catch up — not a violation, but you cannot withdraw until the ratio balances.'
+      source_url: 'https://lucidtrading.com/rules'
+    - title: 'No overnight or weekend holds — session-only futures trading'
+      detail: 'Swing trading is explicitly not permitted. All positions must close before session end and before the weekend. Attempting to hold ends the account.'
+      source_url: 'https://lucidtrading.com/rules'
+  fit_score:
+    ny_scalping: 4
+    swing_trading: 0
+    news_trading: 4
+    beginner_friendly: 3
+    scalable: 2
+  pre_trade_checklist:
+    - id: trail_dd_buffer
+      label: 'EOD trailing drawdown buffer > $500'
+    - id: consistency_50_check
+      label: "Today's P&L won't push any single day above 50% of total eval profit"
+    - id: no_overnight_carry
+      label: 'All positions will close before session end'
+    - id: weekend_flat_plan
+      label: 'Flat before weekend / Friday close'
+    - id: five_second_rule
+      label: '≥50% of profits come from trades held longer than 5 seconds'
+  changelog: []
+  affiliate:
+    url: null
+    utm: 'openprop'
 ---
 
 # Lucid Trading — Overview
