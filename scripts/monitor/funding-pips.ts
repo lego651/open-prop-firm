@@ -1,68 +1,84 @@
 /**
- * Monitor scraper for Funding Pips (fundingpips.com)
+ * Monitor scraper for Funding Pips (fundingpips.com).
  *
- * Keyword-based page structure monitor: detects removed products and pricing
- * signal changes on the live website. Not a field-level diff — it cannot
- * detect granular content edits, only structural changes.
+ * Parses 6 watched fields into a ScrapedSnapshot, then hands off to
+ * diffSnapshots + readCurrentSnapshot in the shared run() code path.
  */
 
 import * as cheerio from 'cheerio'
-import type { BotRunResult } from './types'
+import type { BotRunResult, ScrapedSnapshot } from './types'
 import { fetchPage } from './utils'
+import { diffSnapshots, renderPRBody } from './diff'
+import { readCurrentSnapshot } from './read-current'
 
 const FIRM_SLUG = 'funding-pips'
 const SCRAPE_URL = 'https://fundingpips.com/challenge'
 
-async function scrapeRemote(): Promise<Record<string, string>> {
-  const html = await fetchPage(SCRAPE_URL)
+export function parseScrapedSnapshot(html: string): ScrapedSnapshot {
   const $ = cheerio.load(html)
+  const text = $('body').text().replace(/\s+/g, ' ')
 
-  const pageTitle = $('title').text().trim()
-  const bodyText = $('body').text().replace(/\s+/g, ' ').slice(0, 3000)
+  const ddPctMatch = /max overall drawdown[^%]*?(\d+)%/i.exec(text)
+  const accountSizeMatch = /\$([0-9]{1,3}(?:,[0-9]{3})+)\s*account/i.exec(text)
+  let ddUsd: number | null = null
+  if (ddPctMatch && accountSizeMatch) {
+    const pct = Number.parseFloat(ddPctMatch[1])
+    const size = Number.parseFloat(accountSizeMatch[1].replace(/,/g, ''))
+    if (Number.isFinite(pct) && Number.isFinite(size)) ddUsd = (pct / 100) * size
+  }
 
-  // Check for the four known models
-  const hasZeroModel = /zero/i.test(bodyText)
-  const has1Step = /1.?step/i.test(bodyText)
-  const has2Step = /2.?step/i.test(bodyText)
-  const hasChallengePricing = /\$\d{2,3}/.test(bodyText)
+  // Payout split — first N in "60%/80%/100%" form, else any N% near "split"
+  let payoutPct: number | null = null
+  const tri = /(\d+)\s*%\s*\/\s*(\d+)\s*%\s*\/\s*(\d+)\s*%/.exec(text)
+  if (tri) payoutPct = Number.parseInt(tri[1], 10)
+  if (payoutPct === null) {
+    const m = /payout split[^%]*?(\d+)\s*%/i.exec(text)
+    if (m) payoutPct = Number.parseInt(m[1], 10)
+  }
+
+  const newsAllowed = /news trading\s+(?:is\s+)?permitted|news trading\s+allowed/i.test(text)
+  const newsProhibited = /news trading\s+(?:is\s+)?not\s+(?:permitted|allowed)/i.test(text)
+
+  const weekendAllowed = /weekend hold(?:ing)?\s+(?:is\s+)?allowed|weekend hold(?:ing)?\s+(?:is\s+)?permitted/i.test(text)
+  const weekendProhibited = /weekend hold(?:ing)?\s+(?:is\s+)?not\s+(?:permitted|allowed)/i.test(text)
+
+  const priceMatches = [...text.matchAll(/\$[0-9,]+\s*account[^$]*\$([0-9]+(?:\.[0-9]+)?)/gi)]
+  let cheapestPrice: number | null = null
+  for (const m of priceMatches) {
+    const price = Number.parseFloat(m[1])
+    if (Number.isFinite(price) && (cheapestPrice === null || price < cheapestPrice)) {
+      cheapestPrice = price
+    }
+  }
 
   return {
-    pageTitle,
-    hasZeroModel: String(hasZeroModel),
-    has1Step: String(has1Step),
-    has2Step: String(has2Step),
-    hasChallengePricing: String(hasChallengePricing),
-    bodySnippet: bodyText.slice(0, 500),
+    news_trading_allowed: newsAllowed ? true : newsProhibited ? false : null,
+    overnight_holding_allowed: null,
+    weekend_holding_allowed: weekendAllowed ? true : weekendProhibited ? false : null,
+    max_drawdown: ddUsd != null ? { type: 'static', value_usd: ddUsd } : null,
+    consistency_rule: null,
+    payout_split_pct: payoutPct,
+    cheapest_challenge_price_usd: cheapestPrice,
   }
 }
 
 export async function run(): Promise<BotRunResult> {
   const today = new Date().toISOString().slice(0, 10)
-
   try {
-    const remote = await scrapeRemote()
-
-    const diffs: string[] = []
-
-    if (remote.hasZeroModel === 'false') {
-      diffs.push('Zero model no longer detected on fundingpips.com/challenge.')
-    }
-    if (remote.has1Step === 'false') {
-      diffs.push('1-Step model no longer detected on fundingpips.com/challenge.')
-    }
-    if (remote.has2Step === 'false') {
-      diffs.push('2-Step model no longer detected on fundingpips.com/challenge.')
-    }
-    if (remote.hasChallengePricing === 'false') {
-      diffs.push('Challenge pricing patterns no longer detected — pricing may have changed significantly.')
-    }
-
+    const html = await fetchPage(SCRAPE_URL)
+    const scraped = parseScrapedSnapshot(html)
+    const current = await readCurrentSnapshot(FIRM_SLUG)
+    const diffs = diffSnapshots(current, scraped, SCRAPE_URL)
+    const body = renderPRBody(FIRM_SLUG, diffs, {
+      lastVerified: today,
+      scrapedUrl: SCRAPE_URL,
+    })
     return {
       firmSlug: FIRM_SLUG,
       lastVerified: today,
       changesDetected: diffs.length > 0,
-      diffs: [],
-      diff: diffs.length > 0 ? diffs.join('\n') : null,
+      diffs,
+      diff: body,
       error: null,
     }
   } catch (err) {
