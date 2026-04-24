@@ -22,10 +22,10 @@ export function Changelog({ entries }: ChangelogProps) {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-[var(--border)] text-[var(--muted-foreground)]">
-              <th className="py-2 pr-4 text-left font-normal">Date</th>
-              <th className="py-2 pr-4 text-left font-normal">Field</th>
-              <th className="py-2 pr-4 text-left font-normal">Change</th>
-              <th className="py-2 text-left font-normal">Source</th>
+              <th scope="col" className="py-2 pr-4 text-left font-normal">Date</th>
+              <th scope="col" className="py-2 pr-4 text-left font-normal">Field</th>
+              <th scope="col" className="py-2 pr-4 text-left font-normal">Change</th>
+              <th scope="col" className="py-2 text-left font-normal">Source</th>
             </tr>
           </thead>
           <tbody>
@@ -35,14 +35,16 @@ export function Changelog({ entries }: ChangelogProps) {
                 <td className="py-2 pr-4 font-mono">{r.field}</td>
                 <td className="py-2 pr-4">
                   <span>{r.fromDisplay}</span>
-                  <span aria-label="changed to" className="mx-1 text-[var(--muted-foreground)]">→</span>
+                  <span className="sr-only">changed to</span>
+                  <span aria-hidden="true" className="mx-1 text-[var(--muted-foreground)]">→</span>
                   <span>{r.toDisplay}</span>
                 </td>
                 <td className="py-2">
                   <a
                     href={r.sourceUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
+                    aria-label={`View source for ${r.field} change on ${r.date}`}
                     className="text-[var(--link-fg)] hover:underline"
                   >
                     view
