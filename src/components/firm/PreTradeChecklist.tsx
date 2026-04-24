@@ -37,6 +37,7 @@ export function PreTradeChecklist({ items, firmSlug }: PreTradeChecklistProps) {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
+    setHydrated(false)
     setState(loadChecklistState(firmSlug, getStorage()))
     setHydrated(true)
   }, [firmSlug])
