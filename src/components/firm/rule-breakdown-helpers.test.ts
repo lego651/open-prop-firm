@@ -56,4 +56,17 @@ describe('splitRulesIntoSections', () => {
     const joined = sections.map((s) => s.html).join('')
     expect(joined).not.toContain('Intro paragraph that should be dropped')
   })
+
+  it('skips empty-title H2s', () => {
+    const sections = splitRulesIntoSections('<h2></h2><h2>Real Section</h2><p>ok</p>')
+    expect(sections).toHaveLength(1)
+    expect(sections[0].title).toBe('Real Section')
+  })
+
+  it('dedupes slugs when titles collide', () => {
+    const html = '<h2>Notes</h2><p>A</p><h2>Notes</h2><p>B</p><h2>Notes</h2><p>C</p>'
+    const sections = splitRulesIntoSections(html)
+    expect(sections.map((s) => s.slug)).toEqual(['notes', 'notes-2', 'notes-3'])
+    expect(sections.map((s) => s.title)).toEqual(['Notes', 'Notes', 'Notes'])
+  })
 })
