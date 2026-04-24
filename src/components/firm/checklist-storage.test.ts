@@ -48,6 +48,16 @@ describe('loadChecklistState', () => {
     s.setItem('checklist:apex-funding', 'not-json')
     expect(loadChecklistState('apex-funding', s)).toEqual({})
   })
+
+  it('returns {} when stored JSON is an array or primitive', () => {
+    const s = makeMemoryStorage()
+    s.setItem('checklist:apex-funding', JSON.stringify([1, 2, 3]))
+    expect(loadChecklistState('apex-funding', s)).toEqual({})
+    s.setItem('checklist:apex-funding', '42')
+    expect(loadChecklistState('apex-funding', s)).toEqual({})
+    s.setItem('checklist:apex-funding', 'null')
+    expect(loadChecklistState('apex-funding', s)).toEqual({})
+  })
 })
 
 describe('saveChecklistState', () => {
