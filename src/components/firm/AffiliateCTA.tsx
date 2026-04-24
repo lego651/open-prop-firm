@@ -18,12 +18,12 @@ function buildHref(url: string, utm: string): string {
 }
 
 /**
- * ACTION layer. Renders nothing when url is null — critical invariant:
+ * ACTION layer. Renders nothing when url is null/undefined/empty — critical invariant:
  * no dead buttons ever (spec §6). Appends utm_source without clobbering
  * existing query params.
  */
 export function AffiliateCTA({ firmSlug, url, utm }: AffiliateCTAProps) {
-  if (url === null) return null
+  if (!url) return null
 
   const href = buildHref(url, utm)
 
