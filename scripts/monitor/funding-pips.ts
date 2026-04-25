@@ -12,7 +12,7 @@ import { diffSnapshots, renderPRBody } from './diff'
 import { readCurrentSnapshot } from './read-current'
 
 const FIRM_SLUG = 'funding-pips'
-const SCRAPE_URL = 'https://fundingpips.com/challenge'
+const SCRAPE_URL = 'https://fundingpips.com/trading-objectives'
 
 export function parseScrapedSnapshot(html: string): ScrapedSnapshot {
   const $ = cheerio.load(html)

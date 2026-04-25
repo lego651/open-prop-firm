@@ -1,7 +1,7 @@
 /** Shared utilities for the monitoring bot scrapers. */
 
 export const USER_AGENT =
-  'Mozilla/5.0 (compatible; OpenPropFirmBot/1.0; +https://openpropfirm.com/bot)'
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
 const DEFAULT_TIMEOUT_MS = 30_000
 
