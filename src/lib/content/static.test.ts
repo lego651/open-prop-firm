@@ -18,7 +18,7 @@ describe('loadStaticPage', () => {
 
   it('exposes title from frontmatter, not slug', async () => {
     const page = await loadStaticPage('about', { rootDir: REAL_DATA })
-    expect(page.title).toBe('About')
+    expect(page.title).toBe('About OpenPropFirm')
   })
 
   it('throws a clear error if the file is missing', async () => {
