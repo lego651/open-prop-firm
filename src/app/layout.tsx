@@ -1,9 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { getContentTree } from '@/lib/content/getContentTree'
-import AppShell from '@/components/layout/AppShell'
-import { SearchProvider } from '@/contexts/SearchContext'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
@@ -23,11 +20,11 @@ export const metadata: Metadata = {
     template: '%s — OpenPropFirm',
   },
   description:
-    'Free, community-maintained information hub for prop firm traders. Compare challenges, rules, and promo codes across top prop trading firms.',
+    'Pre-trade decision tool for prop firm traders. Compare challenges, rules, and fit across top prop trading firms.',
   openGraph: {
     title: 'OpenPropFirm',
     description:
-      'Free, community-maintained information hub for prop firm traders. Compare challenges, rules, and promo codes across top prop trading firms.',
+      'Pre-trade decision tool for prop firm traders. Compare challenges, rules, and fit across top prop trading firms.',
     url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://openpropfirm.com',
     siteName: 'OpenPropFirm',
     images: [{ url: '/og.png', width: 1200, height: 630, alt: 'OpenPropFirm' }],
@@ -37,18 +34,16 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'OpenPropFirm',
     description:
-      'Free, community-maintained information hub for prop firm traders.',
+      'Pre-trade decision tool for prop firm traders.',
     images: ['/og.png'],
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { treeData } = await getContentTree()
-
   return (
     <html
       lang="en"
@@ -64,11 +59,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <TooltipProvider>
-          <SearchProvider>
-            <AppShell treeData={treeData}>{children}</AppShell>
-          </SearchProvider>
-        </TooltipProvider>
+        <TooltipProvider>{children}</TooltipProvider>
         <Analytics />
         <SpeedInsights />
       </body>
